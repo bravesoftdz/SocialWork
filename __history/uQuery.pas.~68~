@@ -1,0 +1,146 @@
+unit uQuery;
+
+interface
+uses SysUtils, uGlobal;
+
+function QueryFamily(nInOutID: integer): String;
+function QueryIntake(oInOut: TID): string;
+function QuerySurvey1(oInOut: TID): string;
+function QuerySurvey2(oInOut: TID): string;
+function QueryCounseling(oInOut: TID): string;
+function QueryTraining(oInOut: TID): string;
+function QueryVisit(oInOut: TID): string;
+function QuerySchedule(sYear, sContent, sChairmanID: string;
+      nHospitalID, nWardID, nProgramID: integer): string;
+function QueryProgramPatients(nScheduleID: integer): string;
+function QueryUpdater: string;
+function QueryUser(nHospitalID: integer; bUsed: Boolean): string;
+function QueryWard(nHospitalID: integer; bUsed: Boolean): string;
+
+implementation
+
+function QueryCounseling(oInOut: TID): string;
+begin
+  result := 'SELECT *' +
+            '  FROM Counseling' +
+            ' WHERE InOutID=' + oInOut.ToString +
+            ' ORDER BY Seq';
+end;
+
+function QueryFamily(nInOutID: integer): String;
+begin
+  result := 'SELECT FAMILIES.*' +
+            '       ,SEQ' +
+            '       ,RELATIONSHIPNAME' +
+            '  FROM FAMILIES LEFT JOIN RELATIONSHIPS ON RELATIONSHIPS.RELATIONSHIPID=FAMILIES.RELATIONSHIPID' +
+            ' WHERE InOutID=' + inttostr(nInOutID) +
+            ' ORDER BY SEQ, FAMILYNAME';
+end;
+
+function QueryIntake(oInOut: TID): string;
+begin
+  result := 'SELECT *' + '  FROM Intake' + ' WHERE InOutID=' + oInOut.ToString;
+end;
+
+function QueryProgramPatients(nScheduleID: integer): string;
+begin
+result := 'select *' +
+          ',(select PatientName from Patients where Patients.HospitalID=InOut.HospitalID and Patients.PatientID = InOut.PatientID) as PatientName' +
+          ',(select Sex from Patients where Patients.HospitalID=InOut.HospitalID and Patients.PatientID = InOut.PatientID) as Sex' +
+          ',(select Birthday from Patients where Patients.HospitalID=InOut.HospitalID and Patients.PatientID = InOut.PatientID) as Birthday' +
+          ',(case State When 0 then ''ÀÔ¿ø''' +
+          '             When 1 then ''Åð¿ø''' +
+          '  end) as InState' +
+          '  from ProgramPatients Inner Join InOut on ProgramPatients.InOutID = InOut.InOutID' +
+          ' where ProgramPatients.ScheduleID=' + IntToStr(nScheduleID) +
+          '  order by PatientName';
+end;
+
+function QuerySurvey1(oInOut: TID): string;
+begin
+  result := 'SELECT *' + '  FROM Survey1' + ' WHERE InOutID=' + oInOut.ToString;
+end;
+
+function QuerySurvey2(oInOut: TID): string;
+begin
+  result := 'SELECT *' + '  FROM Survey2' + ' WHERE InOutID=' + oInOut.ToString;
+end;
+
+function QuerySchedule(sYear, sContent, sChairmanID: string;
+  nHospitalID, nWardID, nProgramID: integer): string;
+var
+  sBYear, sNYear: string;
+  sHospitalID: string;
+begin
+  sBYear := inttostr(strtoint(sYear) - 1);
+  sNYear := inttostr(strtoint(sYear) + 1);
+
+  sHospitalID := inttostr(nHospitalID);
+
+  result := 'select *' +
+            '       ,(select UserName from Users where HospitalID=' + sHospitalID + ' and Users.UserID = Schedule.WorkerID) as WorkerName' +
+            '       ,(select UserName from Users where Users.UserID = Schedule.DoctorID) as DoctorName' +
+            '       ,(select ProgramName from Programs where Programs.ProgramID = Schedule.ProgramID) as ProgramName' +
+            '       ,(select Color from Programs where Programs.ProgramID = Schedule.ProgramID) as LabelColor' +
+            '  from Schedule' + ' Where HospitalID = ' + inttostr(nHospitalID) +
+            '    and (SDate Like ''' + sYear + '%'' OR SDate Like ''' + sBYear + '%'' OR SDate Like ''' + sNYear + '%'')' +
+            '    and WardID = ' + inttostr(nWardID);
+
+  if oGlobal.isNotNullStr(sContent) then
+    result := result + '    and Content Like + ''%' + sContent + '%''';
+
+  if oGlobal.isNotNullStr(sChairmanID) then
+    result := result + '    and ChairmanIDs Like ''%' + sChairmanID + ';%''';
+
+  if nProgramID <> -1 then
+    result := result + '    and ProgramID = ' + inttostr(nProgramID);
+
+  result := result + '  order by SDate desc, STime';
+end;
+
+function QueryTraining(oInOut: TID): string;
+begin
+  result := 'SELECT *' +
+            '  FROM Training' +
+            ' WHERE InOutID=' +
+    oInOut.ToString + ' ORDER BY Seq';
+end;
+
+function QueryVisit(oInOut: TID): string;
+begin
+  result := 'SELECT *' +
+            '  FROM Visit' +
+            ' WHERE InOutID=' +
+    oInOut.ToString + ' ORDER BY Seq';
+end;
+
+function QueryUpdater: string;
+begin
+  result := 'SELECT * FROM UPDATER';
+end;
+
+function QueryUser(nHospitalID: integer; bUsed: Boolean): string;
+begin
+  result := 'SELECT *' +
+            '  FROM USERS' +
+            ' WHERE HOSPITALID=' + IntToStr(nHospitalID);
+  if bUsed then
+    result := result +
+            '   AND USED=1';
+end;
+
+function QueryWard(nHospitalID: integer; bUsed: Boolean): string;
+begin
+  result := 'SELECT *' +
+            '  FROM WARDS' +
+            ' WHERE HOSPITALID=' + inttostr(nHospitalID);
+
+  if bUsed then
+    result := result +
+            '    AND USED=1';
+
+  result := result +
+            '  ORDER BY WARDNAME';
+end;
+
+end.

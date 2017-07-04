@@ -1,0 +1,54 @@
+object dbMain: TdbMain
+  OldCreateOrder = False
+  Height = 258
+  Width = 277
+  object adoSocialWorkDB: TADOConnection
+    ConnectionString = 
+      'Provider=SQLOLEDB.1;Password=socialworker;Persist Security Info=' +
+      'True;User ID=socialworker;Initial Catalog=SocialWorkDB;Data Sour' +
+      'ce=erp.ambu.or.kr;Use Procedure for Prepare=1;Auto Translate=Tru' +
+      'e;Packet Size=4096;Workstation ID=CIZEL0U;Use Encryption for Dat' +
+      'a=False;Tag with column collation when possible=False'
+    LoginPrompt = False
+    Provider = 'SQLOLEDB.1'
+    Left = 40
+    Top = 72
+  end
+  object adoUpdateDB: TADOConnection
+    LoginPrompt = False
+    Left = 42
+    Top = 14
+  end
+  object adoTemp: TADOQuery
+    Connection = adoSocialWorkDB
+    Parameters = <>
+    Left = 138
+    Top = 68
+  end
+  object cxStyle: TcxStyleRepository
+    Left = 38
+    Top = 134
+    PixelsPerInch = 96
+    object cxHeaderIndex: TcxStyle
+      AssignedValues = [svColor]
+      Color = 11328249
+    end
+    object cxSelection: TcxStyle
+      AssignedValues = [svColor, svTextColor]
+      Color = clBackground
+      TextColor = clWhite
+    end
+    object cxReadOnlyEdit: TcxStyle
+      AssignedValues = [svColor]
+      Color = 11401379
+    end
+    object cxVerticalHeader: TcxStyle
+      AssignedValues = [svColor]
+      Color = clInactiveCaptionText
+    end
+    object cxBackground: TcxStyle
+      AssignedValues = [svColor]
+      Color = clWindow
+    end
+  end
+end

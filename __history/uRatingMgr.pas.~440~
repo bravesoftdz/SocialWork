@@ -1,0 +1,393 @@
+unit uRatingMgr;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, uGlobal, cxGraphics, cxControls, cxLookAndFeels,
+  cxLookAndFeelPainters, cxContainer, cxEdit, dxSkinsCore, dxSkinCaramel, Menus,
+  cxStyles, dxSkinscxPC3Painter, cxCustomData, cxFilter, cxData, cxDataStorage,
+  DB, cxDBData, cxLabel, cxCheckBox, ADODB, cxGridLevel, cxGridBandedTableView,
+  cxGridDBBandedTableView, cxGridCustomTableView, cxGridTableView,
+  cxGridDBTableView, cxClasses, cxGridCustomView, cxGrid, cxDBEdit, cxTextEdit,
+  StdCtrls, cxButtons, cxRadioGroup, cxMaskEdit, cxDropDownEdit, ExtCtrls,
+  dxSkinOffice2007Blue, cxSpinEdit, Buttons, cxGroupBox, QRPrntr, jpeg, QRCtrls,
+  QuickRpt, cxCalendar, dxSkinBlack, dxSkinBlue, dxSkinCoffee, dxSkinDarkRoom,
+  dxSkinDarkSide, dxSkinFoggy, dxSkinGlassOceans, dxSkiniMaginary, dxSkinLilian,
+  dxSkinLiquidSky, dxSkinLondonLiquidSky, dxSkinMcSkin, dxSkinMoneyTwins,
+  dxSkinOffice2007Black, dxSkinOffice2007Green, dxSkinOffice2007Pink,
+  dxSkinOffice2007Silver, dxSkinPumpkin, dxSkinSeven, dxSkinSharp, dxSkinSilver,
+  dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinsDefaultPainters,
+  dxSkinValentine, dxSkinXmas2008Blue, uFrameInOutSearch;
+
+type
+  TfrmRatingMgr = class(TForm)
+    Panel1: TPanel;
+    dsInOut: TDataSource;
+    Panel8: TPanel;
+    btnPreviewFit: TSpeedButton;
+    btnPreviewWidth: TSpeedButton;
+    btnPreview100: TSpeedButton;
+    Label1: TLabel;
+    Label10: TLabel;
+    btnPrior: TcxButton;
+    btnNext: TcxButton;
+    pnlPageNum: TPanel;
+    btnPrinterSetup: TcxButton;
+    btnPrint: TcxButton;
+    cxSEZoom: TcxSpinEdit;
+    cxButton1: TcxButton;
+    cxGroupBox3: TcxGroupBox;
+    TimerClose: TTimer;
+    QRPP: TQuickRep;
+    PageHeaderBand1: TQRBand;
+    QRLabel1: TQRLabel;
+    bandFirst: TQRBand;
+    QRMemo6: TQRMemo;
+    QRMemo3: TQRMemo;
+    QRMemo4: TQRMemo;
+    QRMemo14: TQRMemo;
+    QRLabel33: TQRLabel;
+    QRMemo15: TQRMemo;
+    QRDBText1: TQRDBText;
+    QRMemo1: TQRMemo;
+    QRLabel2: TQRLabel;
+    QRMemo2: TQRMemo;
+    QRLabel4: TQRLabel;
+    QRMemo5: TQRMemo;
+    QRLabel5: TQRLabel;
+    subbandResult: TQRSubDetail;
+    qrMemoProgramBody: TQRMemo;
+    qrMemoResultTitle: TQRMemo;
+    QRDBText7: TQRDBText;
+    qrMemoResult: TQRMemo;
+    PageFooterBand1: TQRBand;
+    QRLabel122: TQRLabel;
+    QRPreview: TQRPreview;
+    QRMemo9: TQRMemo;
+    QRLabel14: TQRLabel;
+    QRMemo10: TQRMemo;
+    QRDBText9: TQRDBText;
+    lblSexAge: TQRLabel;
+    QRDBText2: TQRDBText;
+    QRMemo11: TQRMemo;
+    QRMemo16: TQRMemo;
+    QRLabel3: TQRLabel;
+    QRDBText3: TQRDBText;
+    QRMemo17: TQRMemo;
+    QRMemo18: TQRMemo;
+    QRLabel15: TQRLabel;
+    QRDBText4: TQRDBText;
+    QRDBText10: TQRDBText;
+    QRMemo19: TQRMemo;
+    QRMemo20: TQRMemo;
+    QRLabel16: TQRLabel;
+    QRDBText11: TQRDBText;
+    bandSubTitle: TQRChildBand;
+    QRMemo7: TQRMemo;
+    QRLabel6: TQRLabel;
+    QRMemo8: TQRMemo;
+    QRLabel17: TQRLabel;
+    qrMemoProgram: TQRMemo;
+    QRMemo22: TQRMemo;
+    QRLabel18: TQRLabel;
+    qrMemoResultBody: TQRMemo;
+    memoProgram: TMemo;
+    memoResult: TMemo;
+    adoPP: TADOQuery;
+    dsPP: TDataSource;
+    cxGroupBox6: TcxGroupBox;
+    cxGrid2: TcxGrid;
+    cxGInOut: TcxGridDBTableView;
+    cxGInOutPatientID: TcxGridDBColumn;
+    cxGInOutPatientName: TcxGridDBColumn;
+    cxGInOutSex: TcxGridDBColumn;
+    cxGInOutBirthday: TcxGridDBColumn;
+    cxGInOutInDate: TcxGridDBColumn;
+    cxGInOutOutDate: TcxGridDBColumn;
+    cxGridDBBandedTableView1: TcxGridDBBandedTableView;
+    cxGridDBTableView2: TcxGridDBTableView;
+    cxGridLevel1: TcxGridLevel;
+    cxDate: TcxDateEdit;
+    QRSysData1: TQRSysData;
+    lblPageCount: TQRLabel;
+    QRDBImage1: TQRDBImage;
+    adoHospital: TADOQuery;
+    frameInOut: TframeInOutSearch;
+    adopInOut: TADOStoredProc;
+    cxGInOutWard: TcxGridDBColumn;
+    cxGInOutBohum: TcxGridDBColumn;
+    cxGInOutNo: TcxGridDBColumn;
+    procedure FormShow(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure TimerCloseTimer(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure QRPPBeforePrint(Sender: TCustomQuickRep;
+      var PrintReport: Boolean);
+    procedure QRPPPreview(Sender: TObject);
+    procedure cxDatePropertiesChange(Sender: TObject);
+    procedure subbandResultBeforePrint(Sender: TQRCustomBand;
+      var PrintBand: Boolean);
+    procedure btnNextClick(Sender: TObject);
+    procedure btnPreviewFitClick(Sender: TObject);
+    procedure btnPrintClick(Sender: TObject);
+    procedure btnPrinterSetupClick(Sender: TObject);
+    procedure btnPriorClick(Sender: TObject);
+    procedure cxGInOutFocusedRecordChanged(Sender: TcxCustomGridTableView;
+      APrevFocusedRecord, AFocusedRecord: TcxCustomGridRecord;
+      ANewItemRecordFocusingChanged: Boolean);
+    procedure cxGInOutNoGetDataText(Sender: TcxCustomGridTableItem;
+      ARecordIndex: Integer; var AText: string);
+  private
+    { Private declarations }
+    FLoading: Boolean;
+    procedure SetQuery;
+    procedure SetLines(oMemo: TQRMemo; cnt: integer);
+    procedure ChangeInOut;
+    procedure DisplayPageNum;
+    procedure SetPreviewType;
+  public
+    { Public declarations }
+    FYear: string;
+    FContent: string;
+    oWard: TID;
+  end;
+
+var
+  frmRatingMgr: TfrmRatingMgr;
+
+implementation
+uses uDB, uConfig;
+
+{$R *.dfm}
+
+procedure TfrmRatingMgr.btnNextClick(Sender: TObject);
+begin
+  if QRPreview.PageNumber < QRPreview.QRPrinter.PageCount then
+    QRPreview.PageNumber := QRPreview.PageNumber + 1;
+
+  DisplaypageNum;
+end;
+
+procedure TfrmRatingMgr.btnPreviewFitClick(Sender: TObject);
+begin
+  SetPreviewType;
+end;
+
+procedure TfrmRatingMgr.btnPrintClick(Sender: TObject);
+begin
+  QRPP.PrinterSetup;
+  if QRPP.Tag = 0 then
+    QRPP.Print;
+end;
+
+procedure TfrmRatingMgr.btnPrinterSetupClick(Sender: TObject);
+begin
+  showmessage(inttostr(cxGInOut.Controller.FocusedRow.Index));
+//  QRPP.PrinterSetup;
+end;
+
+procedure TfrmRatingMgr.btnPriorClick(Sender: TObject);
+begin
+  if QRPreview.PageNumber > 1 then
+    QRPreview.PageNumber := QRPreview.PageNumber - 1;
+
+  DisplayPageNum;
+end;
+
+procedure TfrmRatingMgr.ChangeInOut;
+begin
+
+  btnPrior.Enabled := not adopInOut.IsEmpty;
+  btnNext.Enabled := not adopInOut.IsEmpty;
+  btnPreviewFit.Enabled := not adopInOut.IsEmpty;
+  btnPreviewWidth.Enabled := not adopInOut.IsEmpty;
+  btnPreview100.Enabled := not adopInOut.IsEmpty;
+  cxSEZoom.Enabled := not adopInOut.IsEmpty;
+  btnPrint.Enabled := not adopInOut.IsEmpty;
+  btnPrinterSetup.Enabled := not adopInOut.IsEmpty;
+
+  adoPP.DisableControls;
+  adoPP.Close;
+
+  QRPreview.QRPrinter := nil;
+
+
+  if adopInOut.IsEmpty then
+  begin
+    adoPP.EnableControls;
+    Exit;
+  end;
+
+  try
+    with adoPP.SQL do
+    begin
+      Clear;
+      Add('select *');
+      Add('  from vProgramPatients');
+      Add(' where InOutID=' + adopInOut.FieldByName('InOutID').AsString);
+      Add('   and SDate like ''' + oGlobal.DateToString(cxDate.Date,1,7) + '%''');
+      Add(' order by SDate');
+    end;
+    adoPP.Open;
+
+    QRPP.Prepare;
+    lblPageCount.Caption := ' / ' + inttostr(QRPP.QRPrinter.PageCount);
+
+    QRPP.PreviewModal;
+
+    DisplayPageNum;
+    SetPreviewType;
+  except
+    oGlobal.Msg('평가정보를 가져올 수 없습니다!');
+  end;
+
+  adoPP.EnableControls;
+end;
+
+procedure TfrmRatingMgr.cxDatePropertiesChange(Sender: TObject);
+begin
+  SetQuery;
+end;
+
+procedure TfrmRatingMgr.cxGInOutFocusedRecordChanged(
+  Sender: TcxCustomGridTableView; APrevFocusedRecord,
+  AFocusedRecord: TcxCustomGridRecord; ANewItemRecordFocusingChanged: Boolean);
+begin
+  if not adopInOut.Active then
+    Exit;
+
+  if FLoading then Exit;
+
+  ChangeInOut;
+end;
+
+procedure TfrmRatingMgr.cxGInOutNoGetDataText(Sender: TcxCustomGridTableItem;
+  ARecordIndex: Integer; var AText: string);
+begin
+  AText := inttostr(ARecordIndex + 1);
+end;
+
+procedure TfrmRatingMgr.DisplayPageNum;
+begin
+  if QRPreview.QRPrinter = nil then
+    pnlPageNum.Caption := '0/0'
+  else
+    pnlPageNum.Caption := inttostr(QRPreview.PageNumber) + '/' + inttostr(QRPreview.QRPrinter.PageCount);
+end;
+
+procedure TfrmRatingMgr.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  adopInOut.Close;
+  adoPP.Close;
+end;
+
+procedure TfrmRatingMgr.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then Close;
+end;
+
+procedure TfrmRatingMgr.FormShow(Sender: TObject);
+begin
+  FLoading := True;
+
+  QRPP.Visible := False;
+  QRPreview.Align := alClient;
+
+  cxDate.EditText := oGlobal.DateToString(Now);
+
+  FLoading := False;
+
+  SetQuery;
+
+  DisplayPageNum;
+  SetPreviewType;
+end;
+
+procedure TfrmRatingMgr.QRPPBeforePrint(Sender: TCustomQuickRep;
+  var PrintReport: Boolean);
+var
+  sAge: string;
+begin
+  sAge := oGlobal.GetAge(adopInOut.FieldByName('Birthday').AsString, adopInOut.FieldByName('InDate').AsString);
+
+  if adopInOut.FieldByName('Sex').AsString = cMale then
+    lblSexAge.Caption := '남 (만' + sAge + '세)'
+  else
+    lblSexAge.Caption := '여 (만' + sAge + '세)';
+end;
+
+procedure TfrmRatingMgr.QRPPPreview(Sender: TObject);
+begin
+  QRPreview.QRPrinter := TQRPrinter(Sender);
+end;
+
+procedure TfrmRatingMgr.SetLines(oMemo: TQRMemo; cnt: integer);
+var
+  i: integer;
+begin
+  oMemo.Lines.Clear;
+  for i := 0 to cnt-1 do
+    oMemo.Lines.Add(' ');
+end;
+
+procedure TfrmRatingMgr.SetPreviewType;
+begin
+  if btnPreviewFit.Down then
+    QRPreview.ZoomToFit
+  else if btnPreviewWidth.Down then
+    QRPreview.ZoomToWidth
+  else
+    QRPreview.Zoom := cxSEZoom.Value;
+end;
+
+procedure TfrmRatingMgr.SetQuery;
+var
+  sYearMonth: string;
+begin
+  if FLoading then Exit;
+
+  sYearMonth := oGlobal.DateToString(cxDate.Date, 1, 7);
+
+  FLoading := True;
+  frameInOut.SetValue(adopInOut, oWard.ID, '9999-99-99', sYearMonth);
+  FLoading := False;
+
+  ChangeInOut;
+end;
+
+procedure TfrmRatingMgr.subbandResultBeforePrint(Sender: TQRCustomBand;
+  var PrintBand: Boolean);
+var
+  n, nCount: integer;
+begin
+  memoProgram.Lines.Text := adoPP.FieldByName('ProgramName').AsString;
+  memoResult.Lines.Text := adoPP.FieldByName('Result').AsString;
+
+  if memoProgram.Lines.Count > memoResult.Lines.Count then
+    nCount := memoProgram.Lines.Count
+  else
+    nCount := memoResult.Lines.Count;
+
+  SetLines(qrMemoResultTitle, nCount);
+
+  qrMemoProgram.Lines.Text := memoProgram.Lines.Text;
+
+  // 2011.12.05 줄 바뀜 안되는 것 수정
+  qrMemoResult.Lines.Clear;
+  for n := 0 to nCount - 1 do
+    qrMemoResult.Lines.Add(memoResult.Lines[n]);
+//  qrMemoResult.Lines.Text := memoResult.Lines.Text;
+
+  SetLines(qrMemoProgramBody, nCount);
+  SetLines(qrMemoResultBody, nCount);
+end;
+
+procedure TfrmRatingMgr.TimerCloseTimer(Sender: TObject);
+begin
+  TimerClose.Enabled := False;
+  Close;
+end;
+
+end.

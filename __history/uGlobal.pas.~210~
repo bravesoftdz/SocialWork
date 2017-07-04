@@ -1,0 +1,14 @@
+unit uGlobal;
+
+interface
+uses IniFiles, Windows, sysUtils, StrUtils;
+
+const
+  cIniFileName = 'SocialWork.ini';
+  cUpdaterName = 'RHnCoUpdater.exe';
+  cAppName = 'SocialWork';
+  cVersion = '1.0';
+
+implementation
+
+end.

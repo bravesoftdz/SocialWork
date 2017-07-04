@@ -1,0 +1,73 @@
+unit uTherapyHistory;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters, Menus, StdCtrls,
+  cxButtons, uDB, uGlobal, cxControls, cxContainer, cxEdit, dxSkinsCore,
+  dxSkinCaramel, cxStyles, dxSkinscxPC3Painter, cxCustomData, cxFilter, cxData,
+  cxDataStorage, DB, cxDBData, ExtCtrls, cxGridLevel, cxGridBandedTableView,
+  cxGridDBBandedTableView, cxClasses, cxGridCustomView, cxGridCustomTableView,
+  cxGridTableView, cxGridDBTableView, cxGrid, cxGroupBox, ADODB;
+
+type
+  TfrmTherapyHistory = class(TForm)
+    btnOK: TcxButton;
+    btnClose: TcxButton;
+    adoSchedule: TADOQuery;
+    cxGroupBox1: TcxGroupBox;
+    cxGrid: TcxGrid;
+    cxGList: TcxGridDBTableView;
+    cxGridDBBandedTableView1: TcxGridDBBandedTableView;
+    cxGridDBTableView2: TcxGridDBTableView;
+    cxGridLevel1: TcxGridLevel;
+    dsSchedule: TDataSource;
+    cxGroupBox22: TcxGroupBox;
+    memoChairmanOpinion: TMemo;
+    cxGroupBox10: TcxGroupBox;
+    memoWorkerOpinion: TMemo;
+    cxGroupBox11: TcxGroupBox;
+    memoDoctorOpinion: TMemo;
+    TimerShow: TTimer;
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormShow(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    HospitalID: string;
+    ProgramID: string;
+  end;
+
+var
+  frmTherapyHistory: TfrmTherapyHistory;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmTherapyHistory.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then Close;
+end;
+
+procedure TfrmTherapyHistory.FormShow(Sender: TObject);
+begin
+  TimerShow.Enabled := False;
+
+  adoSchedule.SQL.Text := 'SELECT *' +
+                          '  FROM Schedule' +
+                          ' WHERE ProgramID=' + ProgramID +
+                          '   AND HospitalID=' + HospitalID +
+                          ' ORDER BY SDate';
+  try
+    adoSchedule.Open;
+  except
+    oGlobal.Msg('내역 가져오기에 실패했습니다!');
+    Close;
+  end;
+end;
+
+end.

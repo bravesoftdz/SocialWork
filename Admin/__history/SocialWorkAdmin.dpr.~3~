@@ -1,0 +1,15 @@
+program SocialWorkAdmin;
+
+uses
+  Forms,
+  uAdminMain in 'uAdminMain.pas' {frmMain},
+  uGlobal in '..\..\LIB\uGlobal.pas';
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TfrmMain, frmMain);
+  Application.Run;
+end.

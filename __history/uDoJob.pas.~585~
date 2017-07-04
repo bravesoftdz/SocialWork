@@ -1,0 +1,585 @@
+unit uDoJob;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters, Menus, StdCtrls,
+  cxButtons, uGlobal, DB, ADODB, cxControls, cxStyles, dxSkinsCore,
+  dxSkinCaramel, dxSkinOffice2007Blue, dxSkinscxPC3Painter, cxCustomData,
+  cxFilter, cxData, cxDataStorage, cxEdit, cxDBData, ExtCtrls, cxGridLevel,
+  cxGridBandedTableView, cxGridDBBandedTableView, cxClasses, cxGridCustomView,
+  cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
+  cxContainer, cxGroupBox, cxTextEdit, cxMemo, cxDBEdit, cxCheckListBox,
+  CheckLst, cxCheckBox, cxLabel, DBCtrls, cxRichEdit, cxMRUEdit, cxDropDownEdit,
+  dxLayoutContainer, cxGridLayoutView, cxGridDBLayoutView,
+  cxGridCustomLayoutView, dxSkinBlack, dxSkinBlue, dxSkinCoffee, dxSkinDarkRoom,
+  dxSkinDarkSide, dxSkinFoggy, dxSkinGlassOceans, dxSkiniMaginary, dxSkinLilian,
+  dxSkinLiquidSky, dxSkinLondonLiquidSky, dxSkinMcSkin, dxSkinMoneyTwins,
+  dxSkinOffice2007Black, dxSkinOffice2007Green, dxSkinOffice2007Pink,
+  dxSkinOffice2007Silver, dxSkinPumpkin, dxSkinSeven, dxSkinSharp, dxSkinSilver,
+  dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinsDefaultPainters,
+  dxSkinValentine, dxSkinXmas2008Blue, cxMaskEdit, uFrameInOutSearch, Grids,
+  DBGrids;
+
+type
+  TfrmDoJob = class(TForm)
+    dsPP: TDataSource;
+    adoPP: TADOQuery;
+    Panel1: TPanel;
+    btnRight: TcxButton;
+    btnLeft: TcxButton;
+    pnlRight: TPanel;
+    cxGroupBox1: TcxGroupBox;
+    cxGrid: TcxGrid;
+    cxGList: TcxGridDBTableView;
+    cxGridDBBandedTableView1: TcxGridDBBandedTableView;
+    cxGridDBTableView2: TcxGridDBTableView;
+    cxGridLevel1: TcxGridLevel;
+    cxGroupBox2: TcxGroupBox;
+    TimerEvent: TTimer;
+    cxGListInDate: TcxGridDBColumn;
+    cxGListPatientName: TcxGridDBColumn;
+    cxGListSex: TcxGridDBColumn;
+    cxGListBirthday: TcxGridDBColumn;
+    cxGListSelect: TcxGridDBColumn;
+    cxGListOutDate: TcxGridDBColumn;
+    cxGListAge: TcxGridDBColumn;
+    chkSelectAllList: TcxCheckBox;
+    dbMemoResult: TDBMemo;
+    Panel2: TPanel;
+    Panel3: TPanel;
+    cxGroupBox3: TcxGroupBox;
+    cxGroupBox5: TcxGroupBox;
+    cxGrid1: TcxGrid;
+    cxGInOut: TcxGridTableView;
+    cxGInOutSelect: TcxGridColumn;
+    cxGInOutPatientID: TcxGridColumn;
+    cxGInOutPatientName: TcxGridColumn;
+    cxGInOutSex: TcxGridColumn;
+    cxGInOutBohum: TcxGridColumn;
+    cxGInOutAge: TcxGridColumn;
+    cxGrid1Level1: TcxGridLevel;
+    TimerShow: TTimer;
+    cxGInOutInDate: TcxGridColumn;
+    chkSelectAllInPatient: TcxCheckBox;
+    cxGInOutEnabled: TcxGridColumn;
+    cxGListInOutID: TcxGridDBColumn;
+    cxGInOutInOutID: TcxGridColumn;
+    frameInOut: TframeInOutSearch;
+    cxGInOutOutDate: TcxGridColumn;
+    adopInOut: TADOStoredProc;
+    cxGInOutWard: TcxGridColumn;
+    cxGListBohumName: TcxGridDBColumn;
+    cxGListPatientID: TcxGridDBColumn;
+    cxGListWardName: TcxGridDBColumn;
+    btnClose: TcxButton;
+    cxButton1: TcxButton;
+    cxGInOutWardID: TcxGridColumn;
+    Panel4: TPanel;
+    pnlDate: TPanel;
+    cxGInOutWardDate: TcxGridColumn;
+    Panel5: TPanel;
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormShow(Sender: TObject);
+    procedure TimerEventTimer(Sender: TObject);
+    procedure cxGListAgeGetDataText(Sender: TcxCustomGridTableItem;
+      ARecordIndex: Integer; var AText: string);
+    procedure chkSelectAllInPatientClick(Sender: TObject);
+    procedure chkSelectAllListClick(Sender: TObject);
+    procedure btnRightClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure btnLeftClick(Sender: TObject);
+    procedure dbMemoResultKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure adoPPBeforePost(DataSet: TDataSet);
+    procedure cxButton1Click(Sender: TObject);
+    procedure TimerShowTimer(Sender: TObject);
+    procedure cxGInOutCustomDrawCell(Sender: TcxCustomGridTableView;
+      ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo;
+      var ADone: Boolean);
+    procedure cxGInOutCanFocusRecord(Sender: TcxCustomGridTableView;
+      ARecord: TcxCustomGridRecord; var AAllow: Boolean);
+    procedure adopInOutAfterOpen(DataSet: TDataSet);
+    procedure cxGListCustomDrawCell(Sender: TcxCustomGridTableView;
+      ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo;
+      var ADone: Boolean);
+  private
+    { Private declarations }
+    function InPP(const sInOutID: string): Boolean;
+    procedure SetInOutList;
+    function GetSelectedCountInInOut: Integer;
+    function GetSelectedCountInPP: Integer;
+    procedure SetInOutEnabled;
+  public
+    { Public declarations }
+    FSDate: string;
+    FScheduleID: Integer;
+    FWardID: Integer;
+  end;
+
+var
+  frmDoJob: TfrmDoJob;
+
+implementation
+
+uses uConfig, uDB, uQuery, uDoJobAll;
+{$R *.dfm}
+
+procedure TfrmDoJob.adopInOutAfterOpen(DataSet: TDataSet);
+begin
+  SetInOutList;
+end;
+
+procedure TfrmDoJob.adoPPBeforePost(DataSet: TDataSet);
+begin
+//  DataSet.FieldByName('Result').AsString := trim
+//    (DataSet.FieldByName('Result').AsString);
+end;
+
+procedure TfrmDoJob.btnLeftClick(Sender: TObject);
+var
+  oT: TADOQuery;
+begin
+  if adoPP.IsEmpty then
+    Exit;
+
+  if GetSelectedCountInPP < 1 then
+  begin
+    oGlobal.Msg('선택된 환자가 없습니다!');
+    Exit;
+  end;
+
+  if oGlobal.YesNo('선택된 환자의 프로그램 참여 내용을 삭제하시겠습니까?') <> mrYes then
+    Exit;
+
+  oT := TADOQuery.Create(self);
+  oT.Connection := adoPP.Connection;
+
+  screen.Cursor := crHourGlass;
+  adoPP.DisableControls;
+  try
+    if adoPP.State in [dsInsert, dsEdit] then
+      adoPP.Post;
+
+    oT.Connection.BeginTrans;
+
+    oT.SQL.Text := 'DELETE FROM PROGRAMPATIENTS WHERE SELECTED=1';
+    oT.ExecSQL;
+
+    oT.Connection.CommitTrans;
+
+    adoPP.Close;
+    adoPP.Open;
+  except
+    oT.Connection.RollbackTrans;
+    screen.Cursor := crDefault;
+    oGlobal.Msg('문제가 발생하여 삭제하지 못하였습니다!');
+  end;
+  adoPP.EnableControls;
+  SetInOutEnabled;
+  screen.Cursor := crDefault;
+
+  oT.Free;
+end;
+
+procedure TfrmDoJob.btnRightClick(Sender: TObject);
+var
+  n: Integer;
+  nInOutID, nWardID: Integer;
+  sWardDate: string;
+begin
+  if GetSelectedCountInInOut < 1 then
+  begin
+    oGlobal.Msg('선택된 환자가 없습니다!');
+    Exit;
+  end;
+
+  nInOutID := -1;
+
+  screen.Cursor := crHourGlass;
+  cxGInOut.BeginUpdate;
+
+  adoPP.DisableControls;
+  try
+    adoPP.Connection.BeginTrans;
+
+    for n := 0 to cxGInOut.DataController.RecordCount - 1 do
+    begin
+      if cxGInOut.DataController.GetValue(n, cxGInOutSelect.Index) = True then
+      begin
+        cxGInOut.DataController.SetValue(n, cxGInOutSelect.Index, False);
+        cxGInOut.DataController.SetValue(n, cxGInOutEnabled.Index, False);
+
+        nInOutID := strtoint(cxGInOut.DataController.GetValue
+            (n, cxGInOutInOutID.Index));
+        nWardID := strtoint(cxGInOut.DataController.GetValue
+            (n, cxGInOutWardID.Index));
+        sWardDate := cxGInOut.DataController.GetValue(n, cxGInOutWardDate.Index);
+
+        adoPP.Append;
+        adoPP.FieldByName('ScheduleID').AsInteger := FScheduleID;
+        adoPP.FieldByName('InOutID').AsInteger := nInOutID;
+        adoPP.FieldByName('WardID').AsInteger := nWardID;
+        adoPP.FieldByName('WardDate').AsString := sWardDate;
+        adoPP.Post;
+      end;
+    end;
+
+    adoPP.Connection.CommitTrans;
+
+    adoPP.Close;
+    adoPP.Open;
+    adoPP.Locate('InOutID', nInOutID, [loCaseInsensitive]);
+  except
+    adoPP.Connection.RollbackTrans;
+    screen.Cursor := crDefault;
+    oGlobal.Msg('문제가 발생하여 이동할 수 없습니다!');
+  end;
+  adoPP.EnableControls;
+
+  cxGInOut.EndUpdate;
+  cxGInOut.Controller.FocusedRecordIndex := -1;
+
+  screen.Cursor := crDefault;
+end;
+
+procedure TfrmDoJob.chkSelectAllInPatientClick(Sender: TObject);
+var
+  nRow: Integer;
+begin
+  cxGInOut.BeginUpdate;
+  for nRow := 0 to cxGInOut.DataController.RecordCount - 1 do
+    if cxGInOut.DataController.GetValue(nRow, cxGInOutEnabled.Index) = True then
+      cxGInOut.DataController.SetValue(nRow, cxGInOutSelect.Index,
+        chkSelectAllInPatient.Checked);
+  cxGInOut.EndUpdate;
+end;
+
+procedure TfrmDoJob.chkSelectAllListClick(Sender: TObject);
+begin
+  if adoPP.IsEmpty then
+    Exit;
+
+  screen.Cursor := crHourGlass;
+  adoPP.DisableControls;
+  try
+    adoPP.Connection.BeginTrans;
+
+    adoPP.First;
+    while not adoPP.Eof do
+    begin
+      if adoPP.FieldByName('Selected')
+        .AsBoolean <> chkSelectAllList.Checked then
+      begin
+        adoPP.Edit;
+        adoPP.FieldByName('Selected').AsBoolean := chkSelectAllList.Checked;
+        adoPP.Post;
+      end;
+      adoPP.Next;
+    end;
+
+    adoPP.Connection.CommitTrans;
+  except
+    adoPP.Connection.RollbackTrans;
+    screen.Cursor := crDefault;
+  end;
+  adoPP.EnableControls;
+  screen.Cursor := crDefault;
+end;
+
+procedure TfrmDoJob.cxButton1Click(Sender: TObject);
+var
+  oDoJobAll: TfrmDoJobAll;
+begin
+  if adoPP.IsEmpty then
+  begin
+    oGlobal.Msg('참여환자가 없습니다!');
+    Exit;
+  end;
+
+  if adoPP.State in [dsInsert, dsEdit] then
+    adoPP.Post;
+
+  Application.CreateForm(TfrmDoJobAll, oDoJobAll);
+  oDoJobAll.ShowModal;
+  oDoJobAll.Free;
+end;
+
+procedure TfrmDoJob.cxGInOutCanFocusRecord(Sender: TcxCustomGridTableView;
+  ARecord: TcxCustomGridRecord; var AAllow: Boolean);
+begin
+  AAllow := ARecord.Values[cxGInOutEnabled.Index] = True;
+end;
+
+procedure TfrmDoJob.cxGInOutCustomDrawCell(Sender: TcxCustomGridTableView;
+  ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo;
+  var ADone: Boolean);
+var
+  iIndex: Integer;
+begin
+  iIndex := AViewInfo.RecordViewInfo.GridRecord.Index;
+
+  if Sender.DataController.GetValue(iIndex, cxGInOutEnabled.Index) = False then
+    ACanvas.Font.Color := clSilver;
+end;
+
+procedure TfrmDoJob.cxGListAgeGetDataText(Sender: TcxCustomGridTableItem;
+  ARecordIndex: Integer; var AText: string);
+begin
+  if VarIsNull(cxGList.DataController.Values[ARecordIndex,
+    cxGListBirthday.Index]) or VarIsNull
+    (cxGList.DataController.Values[ARecordIndex, cxGListInDate.Index]) then
+    Exit;
+
+  AText := oGlobal.GetAge(cxGList.DataController.Values[ARecordIndex,
+    cxGListBirthday.Index], cxGList.DataController.Values[ARecordIndex,
+    cxGListInDate.Index]);
+end;
+
+procedure TfrmDoJob.cxGListCustomDrawCell(Sender: TcxCustomGridTableView;
+  ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo;
+  var ADone: Boolean);
+var
+  iIndex: Integer;
+  sInDate, sOutDate: string;
+begin
+  iIndex := AViewInfo.RecordViewInfo.GridRecord.RecordIndex;// .GridRecord.Index;
+
+  sInDate := Sender.DataController.GetValue(iIndex, cxGListInDate.Index);
+  sOutDate := Sender.DataController.GetValue(iIndex, cxGListOutDate.Index);
+  if oGlobal.isNullStr(sOutDate) then
+    sOutDate := '9999-99-99';
+
+  if (FSDate < sInDate) or (FSDate > sOutDate) then
+    ACanvas.Font.Color := clRed;
+end;
+
+procedure TfrmDoJob.dbMemoResultKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+    dbMain.SetCurrentKeyword(TMemo(Sender))
+  else if Key = VK_F1 then
+    oGlobal.GetKeywordContent(TDBMemo(Sender));
+end;
+
+procedure TfrmDoJob.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  if adoPP.State in [dsInsert, dsEdit] then
+    adoPP.Post;
+
+  adoPP.DisableControls;
+
+  try
+    adoPP.Connection.BeginTrans;
+    adoPP.First;
+    while not adoPP.Eof do
+    begin
+      if adoPP.FieldByName('Selected').AsBoolean then
+      begin
+        adoPP.Edit;
+        adoPP.FieldByName('Selected').AsBoolean := False;
+        adoPP.Post;
+      end;
+      adoPP.Next;
+    end;
+    adoPP.Connection.CommitTrans;
+  except
+    adoPP.Connection.RollbackTrans;
+  end;
+
+  adoPP.EnableControls;
+
+  adopInOut.Close;
+  // adoInOut.Close;
+  adoPP.Close;
+
+  cxGInOut.DataController.RecordCount := 0;
+end;
+
+procedure TfrmDoJob.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
+end;
+
+procedure TfrmDoJob.FormShow(Sender: TObject);
+var
+  n: integer;
+begin
+  chkSelectAllInPatient.Checked := False;
+  chkSelectAllList.Checked := False;
+
+  for n := 0 to cxGList.ColumnCount - 1 do
+  begin
+    if cxGList.Columns[n].Options.Sorting then
+    begin
+      cxGList.Columns[n].SortIndex := -1;
+      cxGList.Columns[n].SortOrder := soNone;
+    end;
+
+    if cxGList.Columns[n].Options.Filtering then
+      cxGList.Columns[n].Filtered := False;
+  end;
+
+  TimerShow.Enabled := True;
+end;
+
+function TfrmDoJob.GetSelectedCountInInOut: Integer;
+var
+  n: Integer;
+begin
+  result := 0;
+
+  for n := 0 to cxGInOut.DataController.RecordCount - 1 do
+    if cxGInOut.DataController.GetValue(n, cxGInOutSelect.Index) = True then
+      inc(result);
+end;
+
+function TfrmDoJob.GetSelectedCountInPP: Integer;
+var
+  n: Integer;
+begin
+  result := 0;
+  for n := 0 to cxGList.DataController.RecordCount - 1 do
+    if cxGList.DataController.Values[n, cxGListSelect.Index] then
+      inc(result);
+end;
+
+function TfrmDoJob.InPP(const sInOutID: string): Boolean;
+var
+  nRow: Integer;
+begin
+  result := False;
+  for nRow := 0 to cxGList.DataController.RecordCount - 1 do
+  begin
+    if sInOutID = cxGList.DataController.GetValue(nRow, cxGListInOutID.Index)
+      then
+    begin
+      result := True;
+      break;
+    end;
+  end;
+end;
+
+procedure TfrmDoJob.SetInOutEnabled;
+var
+  nRow: Integer;
+  sInOutID: string;
+begin
+  cxGInOut.BeginUpdate;
+  // for nRow := 0 to adoInOut.RecordCount - 1 do
+  for nRow := 0 to cxGInOut.DataController.RecordCount - 1 do
+  begin
+    sInOutID := cxGInOut.DataController.GetValue(nRow, cxGInOutInOutID.Index);
+    cxGInOut.DataController.SetValue(nRow, cxGInOutEnabled.Index, not InPP
+        (sInOutID));
+  end;
+  cxGInOut.EndUpdate;
+  cxGInOut.Controller.FocusedRecordIndex := -1;
+end;
+
+procedure TfrmDoJob.SetInOutList;
+var
+  nRow: Integer;
+  sPatientID, sPatientName, sSex, sBirthday, sAge, sWard, sInDate, sOutDate,
+    sBohum, sInOutID, sWardID, sWardDate: string;
+begin
+  cxGInOut.DataController.RecordCount := 0;
+  // cxGInOut.DataController.RecordCount := adoInOut.RecordCount;
+  cxGInOut.DataController.RecordCount := adopInOut.RecordCount;
+  // adoInOut.First;
+  adopInOut.First;
+  cxGInOut.BeginUpdate;
+  // for nRow := 0 to adoInOut.RecordCount - 1 do
+
+  for nRow := 0 to adopInOut.RecordCount - 1 do
+  begin
+    // sInOutID := adoInOut.FieldByName('InOutID').AsString;
+    // sPatientID := adoInOut.FieldByName('PatientID').AsString;
+    // sPatientName := adoInOut.FieldByName('PatientName').AsString;
+    // sBirthday := adoInOut.FieldByName('Birthday').AsString;
+    // sSex := adoInOut.FieldByName('Sex').AsString;
+    // sAge := oGlobal.GetAge(sBirthday, adoInOut.FieldByName('InDate').AsString);
+    // sWard := adoInOut.FieldByName('WardName').AsString;
+    // sState := adoInOut.FieldByName('StateName').AsString;
+    // sInDate := adoInOut.FieldByName('InDate').AsString;
+    // sBohum := adoInOut.FieldByName('BohumName').AsString;
+
+    sInOutID := adopInOut.FieldByName('InOutID').AsString;
+    sPatientID := adopInOut.FieldByName('PatientID').AsString;
+    sPatientName := adopInOut.FieldByName('PatientName').AsString;
+    sBirthday := adopInOut.FieldByName('Birthday').AsString;
+    sSex := adopInOut.FieldByName('Sex').AsString;
+    sAge := oGlobal.GetAge(sBirthday, adopInOut.FieldByName('InDate').AsString);
+    sWard := adopInOut.FieldByName('WardName').AsString;
+    // sState := adopInOut.FieldByName('StateName').AsString;
+    sInDate := adopInOut.FieldByName('InDate').AsString;
+    sOutDate := adopInOut.FieldByName('OutDate').AsString;
+    sBohum := adopInOut.FieldByName('BohumName').AsString;
+    sWardID := adopInOut.FieldByName('WardID').AsString;
+    sWardDate := adopInOut.FieldByName('WardDate').AsString;
+
+    cxGInOut.DataController.SetValue(nRow, cxGInOutSelect.Index, False);
+    cxGInOut.DataController.SetValue(nRow, cxGInOutPatientID.Index, sPatientID);
+    cxGInOut.DataController.SetValue(nRow, cxGInOutPatientName.index,
+      sPatientName);
+    cxGInOut.DataController.SetValue(nRow, cxGInOutSex.Index, sSex);
+    cxGInOut.DataController.SetValue(nRow, cxGInOutAge.Index, sAge);
+    // cxGInOut.DataController.SetValue(nRow, cxGInOutState.Index, sState);
+    cxGInOut.DataController.SetValue(nRow, cxGInOutInDate.Index, sInDate);
+    cxGInOut.DataController.SetValue(nRow, cxGInOutOutDate.Index, sOutDate);
+    cxGInOut.DataController.SetValue(nRow, cxGInOutWard.Index, sWard);
+    cxGInOut.DataController.SetValue(nRow, cxGInOutBohum.Index, sBohum);
+    cxGInOut.DataController.SetValue(nRow, cxGInOutEnabled.Index, not InPP
+        (sInOutID));
+    cxGInOut.DataController.SetValue(nRow, cxGInOutInOutID.Index, sInOutID);
+    cxGInOut.DataController.SetValue(nRow, cxGInOutWardID.Index, sWardID);
+    cxGInOut.DataController.SetValue(nRow, cxGInOutWardDate.Index, sWardDate);
+
+    // adoInOut.Next;
+    adopInOut.Next;
+  end;
+  cxGInOut.EndUpdate;
+
+  SetInOutEnabled;
+end;
+
+procedure TfrmDoJob.TimerEventTimer(Sender: TObject);
+begin
+  TimerEvent.Enabled := False;
+
+  Close;
+end;
+
+procedure TfrmDoJob.TimerShowTimer(Sender: TObject);
+begin
+  TimerShow.Enabled := False;
+
+  pnlDate.Caption := '기준일자 = ' + FSDate;
+
+  // frameInOutSearch.SetValue(adoInOut, FWardID, FSDate);
+  frameInOut.SetValue(adopInOut, FWardID, FSDate, '');
+
+  try
+    adoPP.SQL.Text := 'SELECT *' + '  FROM vProgramPatients' +
+      ' WHERE ScheduleID=' + inttostr(FScheduleID);
+    // adoPP.SQL.Text := QueryProgramPatients(FScheduleID);
+    adoPP.Open;
+
+    cxGListPatientName.SortIndex := 0;
+    cxGListPatientName.SortOrder := soAscending;
+
+    cxGList.Controller.FocusedRowIndex := 0;
+  except
+    oGlobal.Msg('프로그램 결과를 읽어올 수 없습니다!');
+    TimerEvent.Enabled := True;
+    Exit;
+  end;
+
+  SetInOutList;
+end;
+
+end.

@@ -1,0 +1,348 @@
+unit uOverNightMgr;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters,
+  cxContainer, cxEdit, dxSkinsCore, dxSkinCaramel, cxStyles,
+  dxSkinscxPC3Painter, cxCustomData, cxFilter, cxData, cxDataStorage, DB,
+  cxDBData, cxLabel, cxTextEdit, cxMaskEdit, cxDropDownEdit, ADODB, cxGridLevel,
+  cxGridBandedTableView, cxGridDBBandedTableView, cxGridCustomTableView,
+  cxGridTableView, cxGridDBTableView, cxClasses, cxGridCustomView, cxGrid,
+  cxGroupBox, ExtCtrls, Menus, StdCtrls, cxButtons, cxCalendar, cxSpinEdit,
+  cxTimeEdit, dxSkinBlack, dxSkinBlue, dxSkinCoffee, dxSkinDarkRoom,
+  dxSkinDarkSide, dxSkinFoggy, dxSkinGlassOceans, dxSkiniMaginary, dxSkinLilian,
+  dxSkinLiquidSky, dxSkinLondonLiquidSky, dxSkinMcSkin, dxSkinMoneyTwins,
+  dxSkinOffice2007Black, dxSkinOffice2007Blue, dxSkinOffice2007Green,
+  dxSkinOffice2007Pink, dxSkinOffice2007Silver, dxSkinPumpkin, dxSkinSeven,
+  dxSkinSharp, dxSkinSilver, dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008,
+  dxSkinsDefaultPainters, dxSkinValentine, dxSkinXmas2008Blue, uFrameInOutSearch;
+
+type
+  TfrmOverNightMgr = class(TForm)
+    Panel1: TPanel;
+    cxGroupBox6: TcxGroupBox;
+    cxGrid2: TcxGrid;
+    cxGInOut: TcxGridDBTableView;
+    cxGInOutPatientID: TcxGridDBColumn;
+    cxGInOutPatientName: TcxGridDBColumn;
+    cxGInOutSex: TcxGridDBColumn;
+    cxGInOutBirthday: TcxGridDBColumn;
+    cxGInOutStateName: TcxGridDBColumn;
+    cxGInOutInDate: TcxGridDBColumn;
+    cxGInOutOutDate: TcxGridDBColumn;
+    cxGridDBBandedTableView1: TcxGridDBBandedTableView;
+    cxGridDBTableView2: TcxGridDBTableView;
+    cxGridLevel1: TcxGridLevel;
+    dsInOut: TDataSource;
+    Panel2: TPanel;
+    cxGInOutWardName: TcxGridDBColumn;
+    Panel3: TPanel;
+    Panel4: TPanel;
+    adoOverNight: TADOQuery;
+    dsOverNight: TDataSource;
+    btnAppend: TcxButton;
+    btnUpdate: TcxButton;
+    btnDelete: TcxButton;
+    cxGroupBox1: TcxGroupBox;
+    cxGrid1: TcxGrid;
+    cxGridDBTableView1: TcxGridDBTableView;
+    cxGridDBTableView1StartTime: TcxGridDBColumn;
+    cxGridDBTableView1FinishTime: TcxGridDBColumn;
+    cxGridDBTableView1Comment: TcxGridDBColumn;
+    cxGridDBBandedTableView2: TcxGridDBBandedTableView;
+    cxGridDBTableView3: TcxGridDBTableView;
+    cxGridLevel2: TcxGridLevel;
+    adoList: TADOQuery;
+    dsList: TDataSource;
+    cxGrid3: TcxGrid;
+    cxGridDBTableView4: TcxGridDBTableView;
+    cxGridDBBandedTableView3: TcxGridDBBandedTableView;
+    cxGridDBTableView5: TcxGridDBTableView;
+    cxGridLevel3: TcxGridLevel;
+    cxGridDBTableView4StartTime: TcxGridDBColumn;
+    cxGridDBTableView4FinishTime: TcxGridDBColumn;
+    cxGridDBTableView4Comment: TcxGridDBColumn;
+    cxGridDBTableView4PatientID: TcxGridDBColumn;
+    cxGridDBTableView4PatientName: TcxGridDBColumn;
+    Label1: TLabel;
+    cxDESelectedDate: TcxDateEdit;
+    lblSelectedYear: TLabel;
+    Splitter1: TSplitter;
+    cxGridDBTableView1StateName: TcxGridDBColumn;
+    cboOvernightState: TcxComboBox;
+    Label3: TLabel;
+    cxGridDBTableView4StateName: TcxGridDBColumn;
+    adopInOut: TADOStoredProc;
+    cxGInOutColumn1: TcxGridDBColumn;
+    frameInOut: TframeInOutSearch;
+    Edit1: TEdit;
+    procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure dsInOutDataChange(Sender: TObject; Field: TField);
+    procedure cxDESelectedDatePropertiesChange(Sender: TObject);
+    procedure btnAppendClick(Sender: TObject);
+    procedure btnUpdateClick(Sender: TObject);
+    procedure cboOvernightStatePropertiesChange(Sender: TObject);
+    procedure btnDeleteClick(Sender: TObject);
+    procedure cxGInOutFocusedRecordChanged(Sender: TcxCustomGridTableView;
+      APrevFocusedRecord, AFocusedRecord: TcxCustomGridRecord;
+      ANewItemRecordFocusingChanged: Boolean);
+    procedure frameInOuttxtSearchKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure Edit1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+  private
+    { Private declarations }
+    procedure SetSubQuery;
+    procedure LoadOvernightPatient;
+  public
+    { Public declarations }
+  end;
+
+var
+  frmOverNightMgr: TfrmOverNightMgr;
+
+implementation
+uses uDB, uConfig, uGlobal, uOverNightMgrEdit;
+{$R *.dfm}
+
+{ TfrmOverNightMgr }
+procedure TfrmOverNightMgr.btnAppendClick(Sender: TObject);
+var
+  sInOutID, sStartTime: string;
+  oOverNightMgrEdit: TfrmOverNightMgrEdit;
+begin
+  if not adopInOut.Active then
+  begin
+    oGlobal.Msg('환자정보와 연결되지 않았습니다!');
+    Exit;
+  end;
+
+  Application.CreateForm(TfrmOverNightMgrEdit, oOverNightMgrEdit);
+
+  oOverNightMgrEdit.Mode := emAppend;
+  oOverNightMgrEdit.adoInOut := TAdoQuery(adopInOut);
+  oOverNightMgrEdit.adoList := adoList;
+
+  adoOverNight.DisableControls;
+  if oOverNightMgrEdit.ShowModal = mrOK then
+  begin
+    adoList.Close;
+    adoList.Open;
+
+    adoOverNight.Close;
+    adoOverNight.Open;
+
+    sInOutID := oOverNightMgrEdit.adoOverNight.FieldByName('InOutID').AsString;
+    sStartTime := copy(oGlobal.DateTimeToString(oOverNightMgrEdit.adoOverNight.FieldByName('StartTime').AsDateTime), 1, 16);
+
+    adoList.Locate('InOutID;StartTime', VarArrayOf([sInOutID, sStartTime]), [loCaseInsensitive]);
+  end;
+
+  adoOverNight.EnableControls;
+
+  oOverNightMgrEdit.Free;
+end;
+
+procedure TfrmOverNightMgr.btnDeleteClick(Sender: TObject);
+var
+  oT: TADOQuery;
+begin
+  if adoList.IsEmpty then
+  begin
+    oGlobal.Msg('삭제할 외출/외박 정보가 없습니다!');
+    Exit;
+  end;
+
+  if oGlobal.YesNo('삭제하시겠습니까?') <> mrYes then Exit;
+
+  oT := TADOQuery.Create(self);
+  oT.Connection := adoList.Connection;
+
+  try
+    oT.Connection.BeginTrans;
+    oT.SQL.Text := 'DELETE OverNight' +
+                   ' WHERE CONVERT(VARCHAR(16), starttime, 120) = ''' + adoList.FieldByName('StartTime').AsString + '''' +
+                   '   AND InOutID = ' + adoList.FieldByName('InOutID').AsString;
+    oT.ExecSQL;
+    oT.Connection.CommitTrans;
+
+    adoList.Close;
+    adoList.Open;
+
+    adoOverNight.Close;
+    adoOverNight.Open;
+  except
+    oT.Connection.RollbackTrans;
+  end;
+
+  oT.Free;
+end;
+
+procedure TfrmOverNightMgr.btnUpdateClick(Sender: TObject);
+var
+  sInOutID, sStartTime: string;
+  oOverNightMgrEdit: TfrmOverNightMgrEdit;
+begin
+  if adoList.IsEmpty then
+  begin
+    oGlobal.Msg('수정할 외출/외박 정보가 없습니다!');
+    Exit;
+  end;
+
+  Application.CreateForm(TfrmOverNightMgrEdit, oOverNightMgrEdit);
+
+  oOverNightMgrEdit.Mode := emUpdate;
+  oOverNightMgrEdit.adoInOut := TADOQuery(adopInOut);
+  oOverNightMgrEdit.adoList := adoList;
+
+  adoOverNight.DisableControls;
+  if oOverNightMgrEdit.ShowModal = mrOK then
+  begin
+    adoList.Close;
+    adoList.Open;
+
+    adoOverNight.Close;
+    adoOverNight.Open;
+
+    sInOutID := oOverNightMgrEdit.adoOverNight.FieldByName('InOutID').AsString;
+    sStartTime := copy(oGlobal.DateTimeToString(oOverNightMgrEdit.adoOverNight.FieldByName('StartTime').AsDateTime), 1, 16);
+
+    adoList.Locate('InOutID;StartTime', VarArrayOf([sInOutID, sStartTime]), [loCaseInsensitive]);
+  end;
+
+  adoOverNight.EnableControls;
+
+  oOverNightMgrEdit.Free;
+end;
+
+procedure TfrmOverNightMgr.cboOvernightStatePropertiesChange(Sender: TObject);
+begin
+  LoadOvernightPatient;
+end;
+
+procedure TfrmOverNightMgr.cxDESelectedDatePropertiesChange(Sender: TObject);
+begin
+  lblSelectedYear.Caption := '(' + Copy(cxDESelectedDate.EditText, 1, 4) + ' 년도)';
+  LoadOvernightPatient;
+end;
+
+procedure TfrmOverNightMgr.cxGInOutFocusedRecordChanged(
+  Sender: TcxCustomGridTableView; APrevFocusedRecord,
+  AFocusedRecord: TcxCustomGridRecord; ANewItemRecordFocusingChanged: Boolean);
+begin
+  if adopInOut.Active then
+    SetSubQuery;
+end;
+
+procedure TfrmOverNightMgr.dsInOutDataChange(Sender: TObject; Field: TField);
+begin
+//  SetSubQuery;
+end;
+
+procedure TfrmOverNightMgr.Edit1KeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  frameInOut.btnSearch.caption := inttostr(Key);
+end;
+
+procedure TfrmOverNightMgr.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  adopInOut.Close;
+  adoOverNight.Close;
+end;
+
+procedure TfrmOverNightMgr.FormShow(Sender: TObject);
+begin
+  cxDESelectedDate.EditText := oGlobal.DateToString(Now);
+  lblSelectedYear.Caption := '(' + Copy(cxDESelectedDate.EditText, 1, 4) + ' 년도)';
+
+  frameInOut.SetValue(adopInOut, -1, '9999-99-99', '');
+
+  LoadOvernightPatient;
+end;
+
+procedure TfrmOverNightMgr.frameInOuttxtSearchKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  showmessage('keydown');
+//  frameInOut.txtSearchKeyDown(Sender, Key, Shift);
+end;
+
+procedure TfrmOverNightMgr.LoadOvernightPatient;
+var
+  sDate: string;
+begin
+  adoList.Close;
+
+  if oGlobal.isNullStr(cxDESelectedDate.EditText) then
+  begin
+    oGlobal.Msg('일자가 선택되지 않았습니다!');
+    Exit;
+  end;
+
+  sDate := Copy(oGlobal.DateToString(cxDESelectedDate.Date), 1, 4);
+
+  with adoList.SQL do
+  begin
+    Clear;
+    Add('SELECT PatientID, Comment, o.InOutID as InOutID');
+    Add('       ,OverNightState');
+    Add('       ,CONVERT(VARCHAR(16), starttime, 120) as starttime');
+    Add('       ,CONVERT(VARCHAR(16), finishtime, 120) as finishtime');
+    Add('       ,CASE OverNightState WHEN 0 THEN ''외출/외박''');
+    Add('                            WHEN 1 THEN ''CR''');
+    Add('        END AS StateName');
+    Add('       ,(select PatientName from Patients where Patients.Hospitalid=i.HospitalID and Patients.PatientID = i.PatientID) as PatientName');
+    Add('  from overnight as o, inout as i');
+    Add(' where o.inoutid = i.inoutid');
+    Add('   and i.hospitalid = ' + inttostr(oConfig.User.HospitalID));
+    Add('   and convert(varchar(4), o.starttime, 120) = ''' + sDate + '''');
+
+    if cboOverNightState.ItemIndex > 0 then
+      Add('   and OverNightState = ' + inttostr(cboOverNightState.ItemIndex-1));
+
+    Add(' order by StartTime Desc');
+  end;
+
+  try
+    adoList.Open;
+  except
+    oGlobal.Msg('선택일자의 외출/외박 내역을 가져오지 못했습니다!');
+  end;
+end;
+
+procedure TfrmOverNightMgr.SetSubQuery;
+var
+  sInOutID: string;
+begin
+  adoOverNight.Close;
+
+  if adopInOut.IsEmpty then Exit;
+
+  sInOutID := adopInOut.FieldByName('InOutID').AsString;
+
+  with adoOverNight.SQL do
+  begin
+    Clear;
+    Add('SELECT InOutID');
+    Add('       ,CONVERT(VARCHAR(16), starttime, 120) as starttime');
+    Add('       ,CONVERT(VARCHAR(16), finishtime, 120) as finishtime');
+    Add('       ,CASE OverNightState WHEN 0 THEN ''외출/외박''');
+    Add('                            WHEN 1 THEN ''CR''');
+    Add('        END AS StateName');
+    Add('       ,Comment');
+    Add('  FROM OverNight');
+    Add(' WHERE InOutID=''' + sInOutID + '''');
+    Add(' ORDER BY StartTime DESC');
+  end;
+
+  try
+    adoOVerNight.Open;
+  except
+    oGlobal.Msg('외출/외박 내역을 가져올 수 없습니다!');
+  end;
+end;
+
+end.

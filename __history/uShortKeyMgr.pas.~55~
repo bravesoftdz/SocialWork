@@ -1,0 +1,226 @@
+unit uShortKeyMgr;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, uGlobal, cxGraphics, cxControls, cxLookAndFeels,
+  cxLookAndFeelPainters, cxStyles, dxSkinsCore, dxSkinCaramel,
+  dxSkinscxPC3Painter, cxCustomData, cxFilter, cxData, cxDataStorage, cxEdit,
+  DB, cxDBData, Menus, ADODB, StdCtrls, cxButtons, cxGridLevel,
+  cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxClasses,
+  cxGridCustomView, cxGrid, cxContainer, cxTextEdit, cxMemo, cxDBEdit,
+  dxSkinOffice2007Blue, dxSkinBlack, dxSkinBlue, dxSkinCoffee, dxSkinDarkRoom,
+  dxSkinDarkSide, dxSkinFoggy, dxSkinGlassOceans, dxSkiniMaginary, dxSkinLilian,
+  dxSkinLiquidSky, dxSkinLondonLiquidSky, dxSkinMcSkin, dxSkinMoneyTwins,
+  dxSkinOffice2007Black, dxSkinOffice2007Green, dxSkinOffice2007Pink,
+  dxSkinOffice2007Silver, dxSkinPumpkin, dxSkinSeven, dxSkinSharp, dxSkinSilver,
+  dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinsDefaultPainters,
+  dxSkinValentine, dxSkinXmas2008Blue, ExtCtrls, cxTL, cxMaskEdit,
+  cxTLdxBarBuiltInMenu, dxmdaset, cxInplaceContainer, cxDBTL, cxTLData, cxLabel;
+
+type
+  TfrmShortKeyMgr = class(TForm)
+    cxG: TcxGrid;
+    cxGShortKey: TcxGridDBTableView;
+    cxGLevel1: TcxGridLevel;
+    btnShortKeyAppend: TcxButton;
+    btnShortKeyUpdate: TcxButton;
+    adoShortKey: TADOQuery;
+    dsShortKey: TDataSource;
+    cxGShortKeyKeyword: TcxGridDBColumn;
+    cxDBMemo1: TcxDBMemo;
+    btnShortKeyDelete: TcxButton;
+    btnClose: TcxButton;
+    pnlExp: TPanel;
+    T1: TdxMemData;
+    T1Pr_id: TAutoIncField;
+    T1Pr_parent: TIntegerField;
+    T1Pr_name: TStringField;
+    T1Pr_bdate: TDateField;
+    T1Pr_edate: TDateField;
+    T1Image: TSmallintField;
+    DS1: TDataSource;
+    cxDBTreeList1: TcxDBTreeList;
+    cxDBTreeList1cxDBTreeListColumn1: TcxDBTreeListColumn;
+    cxGrid1DBTableView1: TcxGridDBTableView;
+    cxGrid1Level1: TcxGridLevel;
+    cxGrid1: TcxGrid;
+    cxGrid1DBTableView1RecId: TcxGridDBColumn;
+    cxGrid1DBTableView1Pr_id: TcxGridDBColumn;
+    cxGrid1DBTableView1Pr_parent: TcxGridDBColumn;
+    cxGrid1DBTableView1Pr_name: TcxGridDBColumn;
+    cxGrid1DBTableView1Pr_bdate: TcxGridDBColumn;
+    cxGrid1DBTableView1Pr_edate: TcxGridDBColumn;
+    cxGrid1DBTableView1Image: TcxGridDBColumn;
+    procedure FormShow(Sender: TObject);
+    procedure btnShortKeyAppendClick(Sender: TObject);
+    procedure btnShortKeyUpdateClick(Sender: TObject);
+    procedure dsShortKeyDataChange(Sender: TObject; Field: TField);
+    procedure btnShortKeyDeleteClick(Sender: TObject);
+    procedure cxGShortKeyDblClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure cxGShortKeyKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure cxDBTreeList1DblClick(Sender: TObject);
+  private
+    { Private declarations }
+    procedure SetControls;
+  public
+    { Public declarations }
+  end;
+
+var
+  frmShortKeyMgr: TfrmShortKeyMgr;
+
+implementation
+uses uConfig, uDB, uShortKeyInput;
+{$R *.dfm}
+
+procedure TfrmShortKeyMgr.btnShortKeyAppendClick(Sender: TObject);
+var
+  oInput: TfrmShortKeyInput;
+begin
+  if not adoShortKey.Active then
+  begin
+    oGlobal.Msg('단축키정보에 연결되지 못했습니다!');
+    Exit;
+  end;
+
+  Application.CreateForm(TfrmShortKeyInput, oInput);
+
+  oInput.ShortKey.Mode := emAppend;
+  oInput.ShortKey.Clear;
+
+  if oInput.ShowModal = mrOK then
+  begin
+    adoShortKey.DisableControls;
+    try
+      adoShortKey.Connection.BeginTrans;
+      adoShortKey.Append;
+
+      adoShortKey.FieldByName('HospitalID').AsInteger := oConfig.User.HospitalID;
+      adoShortKey.FieldByName('Keyword').AsString := oInput.ShortKey.Keyword;
+      adoShortKey.FieldByName('Content').AsString := oInput.ShortKey.Content;
+
+      adoShortKey.Post;
+      adoShortKey.Connection.CommitTrans;
+
+      screen.Cursor := crDefault;
+      oGlobal.Msg('추가하였습니다!');
+    except
+      adoShortKey.Cancel;
+      adoShortKey.Connection.RollbackTrans;
+      screen.Cursor := crDefault;
+      oGlobal.Msg('추가하지 못했습니다!');
+    end;
+    adoShortKey.EnableControls;
+  end;
+
+  oInput.Free;
+end;
+
+procedure TfrmShortKeyMgr.btnShortKeyDeleteClick(Sender: TObject);
+begin
+  if adoShortKey.IsEmpty then Exit;
+
+  if oGlobal.YesNo('삭제하시겠습니까?') = mrYes then
+    adoShortKey.Delete;
+end;
+
+procedure TfrmShortKeyMgr.btnShortKeyUpdateClick(Sender: TObject);
+var
+  oInput: TfrmShortKeyInput;
+begin
+  if adoShortKey.IsEmpty then Exit;
+
+  Application.CreateForm(TfrmShortKeyInput, oInput);
+
+  oInput.ShortKey.Mode := emUpdate;
+  oInput.ShortKey.Clear;
+  oInput.ShortKey.Keyword := adoShortKey.FieldByName('Keyword').AsString;
+  oInput.ShortKey.Content := adoShortKey.FieldByName('Content').AsString;
+
+  if oInput.ShowModal = mrOK then
+  begin
+    adoShortKey.DisableControls;
+    try
+      adoShortKey.Connection.BeginTrans;
+      adoShortKey.Edit;
+
+      adoShortKey.FieldByName('Keyword').AsString := oInput.ShortKey.Keyword;
+      adoShortKey.FieldByName('Content').AsString := oInput.ShortKey.Content;
+
+      adoShortKey.Post;
+      adoShortKey.Connection.CommitTrans;
+
+      screen.Cursor := crDefault;
+      oGlobal.Msg('수정하였습니다!');
+    except
+      adoShortKey.Cancel;
+      adoShortKey.Connection.RollbackTrans;
+      screen.Cursor := crDefault;
+      oGlobal.Msg('수정하지 못했습니다!');
+    end;
+    adoShortKey.EnableControls;
+  end;
+
+  oInput.Free;
+end;
+
+procedure TfrmShortKeyMgr.cxDBTreeList1DblClick(Sender: TObject);
+begin
+  showmessage(cxDBTreeList1.FocusedNode.Texts[0]);
+end;
+
+procedure TfrmShortKeyMgr.cxGShortKeyDblClick(Sender: TObject);
+begin
+  if btnClose.Visible then
+    ModalResult := mrOK;
+end;
+
+procedure TfrmShortKeyMgr.cxGShortKeyKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (btnClose.Visible) and (Key=VK_RETURN) then
+    ModalResult := mrOK;
+end;
+
+procedure TfrmShortKeyMgr.dsShortKeyDataChange(Sender: TObject; Field: TField);
+begin
+  SetControls;
+end;
+
+procedure TfrmShortKeyMgr.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if btnClose.Visible and (Key=VK_ESCAPE) then
+    Close;
+end;
+
+procedure TfrmShortKeyMgr.FormShow(Sender: TObject);
+begin
+  adoShortKey.SQL.Text := 'SELECT *' +
+                          '  FROM SHORTKEYS' +
+                          ' WHERE HOSPITALID=' + IntToStr(oConfig.User.HospitalID) +
+                          ' ORDER BY KEYWORD';
+  adoShortKey.DisableControls;
+  try
+    adoShortKey.Open;
+  except
+    oGlobal.Msg('단축키 정보에 접근하지 못했습니다!');
+    Close;
+  end;
+  adoShortKey.EnableControls;
+
+  SetControls;
+end;
+
+procedure TfrmShortKeyMgr.SetControls;
+begin
+  btnShortKeyAppend.Enabled := adoShortKey.Active;
+  btnShortKeyUpdate.Enabled := not adoShortKey.IsEmpty;
+  btnShortKeyDelete.Enabled := not adoShortKey.IsEmpty;
+end;
+
+end.

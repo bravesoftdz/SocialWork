@@ -1,0 +1,24 @@
+unit uPatientInfo;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs;
+
+type
+  TfrmPatientInfo = class(TForm)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmPatientInfo: TfrmPatientInfo;
+
+implementation
+
+{$R *.dfm}
+
+end.

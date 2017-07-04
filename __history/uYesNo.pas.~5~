@@ -1,0 +1,41 @@
+unit uYesNo;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters, Menus, StdCtrls,
+  cxButtons, ExtCtrls;
+
+type
+  TfrmYesNo = class(TForm)
+    pnlMsg: TPanel;
+    lblLength: TLabel;
+    pnlButton: TPanel;
+    btnYes: TcxButton;
+    btnNo: TcxButton;
+    procedure FormShow(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    Msg: string;
+  end;
+
+var
+  frmYesNo: TfrmYesNo;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmYesNo.FormShow(Sender: TObject);
+begin
+  pnlMsg.Caption := Msg;
+  lblLength.Caption := Msg;
+
+  SetControlSize;
+
+end;
+
+end.

@@ -1,0 +1,48 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{51AE33F2-FFF7-4DB9-8E7A-C80B946F299F}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="SocialWork.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Admin\SocialWorkAdmin.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="SocialWork">
+			<MSBuild Projects="SocialWork.dproj"/>
+		</Target>
+		<Target Name="SocialWork:Clean">
+			<MSBuild Targets="Clean" Projects="SocialWork.dproj"/>
+		</Target>
+		<Target Name="SocialWork:Make">
+			<MSBuild Targets="Make" Projects="SocialWork.dproj"/>
+		</Target>
+		<Target Name="SocialWorkAdmin">
+			<MSBuild Projects="Admin\SocialWorkAdmin.dproj"/>
+		</Target>
+		<Target Name="SocialWorkAdmin:Clean">
+			<MSBuild Targets="Clean" Projects="Admin\SocialWorkAdmin.dproj"/>
+		</Target>
+		<Target Name="SocialWorkAdmin:Make">
+			<MSBuild Targets="Make" Projects="Admin\SocialWorkAdmin.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="SocialWork;SocialWorkAdmin"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="SocialWork:Clean;SocialWorkAdmin:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="SocialWork:Make;SocialWorkAdmin:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

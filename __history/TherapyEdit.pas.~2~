@@ -1,0 +1,35 @@
+unit TherapyEdit;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters, Menus, StdCtrls,
+  cxButtons, ADODB;
+
+type
+  TfrmTherapyEdit = class(TForm)
+    btnOK: TcxButton;
+    btnClose: TcxButton;
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    adoSchedule: TAdoQuery;
+  end;
+
+var
+  frmTherapyEdit: TfrmTherapyEdit;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmTherapyEdit.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then Close;
+end;
+
+end.

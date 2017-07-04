@@ -1,0 +1,66 @@
+unit uMsg;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters, Menus, StdCtrls,
+  cxButtons, ExtCtrls;
+
+type
+  TfrmMsg = class(TForm)
+    pnlMsg: TPanel;
+    btnOK: TcxButton;
+    lblLength: TLabel;
+    Timer1: TTimer;
+    procedure FormShow(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+  private
+    { Private declarations }
+    procedure SetControlSize;
+  public
+    { Public declarations }
+    Msg: string;
+    Interval: integer;
+  end;
+
+var
+  frmMsg: TfrmMsg;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmMsg.FormShow(Sender: TObject);
+begin
+  pnlMsg.Caption := Msg;
+  lblLength.Caption := Msg;
+
+  SetControlSize;
+
+  if Interval <> 0 then
+  begin
+    Timer1.Interval := Interval;
+    Timer1.Enabled := True;
+  end;
+end;
+
+procedure TfrmMsg.SetControlSize;
+var
+  nLen: integer;
+begin
+  nLen := lblLength.Width;
+
+  if nLen < 200 then nLen := 200;
+
+
+  ClientWidth := nLen +
+end;
+
+procedure TfrmMsg.Timer1Timer(Sender: TObject);
+begin
+  Timer1.Enabled := False;
+  Close;
+end;
+
+end.

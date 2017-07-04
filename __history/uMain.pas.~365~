@@ -1,0 +1,284 @@
+unit uMain;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ExtCtrls, Menus, cxGraphics, cxControls,
+  cxLookAndFeels, cxLookAndFeelPainters, dxSkinsCore, dxSkinBlack, dxSkinBlue,
+  dxSkinCaramel, dxSkinCoffee, dxSkinDarkRoom, dxSkinDarkSide, dxSkinFoggy,
+  dxSkinGlassOceans, dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky,
+  dxSkinLondonLiquidSky, dxSkinMcSkin, dxSkinMoneyTwins, dxSkinOffice2007Black,
+  dxSkinOffice2007Blue, dxSkinOffice2007Green, dxSkinOffice2007Pink,
+  dxSkinOffice2007Silver, dxSkinPumpkin, dxSkinSeven, dxSkinSharp, dxSkinSilver,
+  dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinsDefaultPainters,
+  dxSkinValentine, dxSkinXmas2008Blue, cxPCdxBarPopupMenu,
+  cxPC, ActnList, uPatientMgr, uRecord, dxSkinsForm, dxLayoutLookAndFeels,
+  cxStyles, uTherapyMgr, uOverNightMgr, uStatistics, DB, dxSkinBlueprint,
+  dxSkinDevExpressDarkStyle, dxSkinDevExpressStyle, dxSkinHighContrast,
+  dxSkinMetropolis, dxSkinMetropolisDark, dxSkinOffice2010Black,
+  dxSkinOffice2010Blue, dxSkinOffice2010Silver, dxSkinOffice2013DarkGray,
+  dxSkinOffice2013LightGray, dxSkinOffice2013White, dxSkinSevenClassic,
+  dxSkinSharpPlus, dxSkinTheAsphaltWorld, dxSkinVS2010, dxSkinWhiteprint,
+  dxSkinscxPCPainter, dxBarBuiltInMenu, cxClasses;
+
+type
+  TfrmMain = class(TForm)
+    Timer1: TTimer;
+    MainMenu1: TMainMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    mDoctor: TMenuItem;
+    mPatientInOutInfo: TMenuItem;
+    mTherapy: TMenuItem;
+    mRecord: TMenuItem;
+    cxPage: TcxPageControl;
+    ActionList1: TActionList;
+    actClose: TAction;
+    actTherapyMgr: TAction;
+    actRatingMgr: TAction;
+    actRecord: TAction;
+    actSocialWorkGuide: TAction;
+    actPatientMgr: TAction;
+    cxLookAndFeelCaramel: TcxLookAndFeelController;
+    dxLayoutLookAndFeelList: TdxLayoutLookAndFeelList;
+    dxLayoutSkinLookAndFeel: TdxLayoutSkinLookAndFeel;
+    cxStyleRepository1: TcxStyleRepository;
+    cxStyleReadOnly: TcxStyle;
+    mSetting: TMenuItem;
+    actSetting: TAction;
+    N3: TMenuItem;
+    actOverNightMgr: TAction;
+    N4: TMenuItem;
+    actStatistics: TAction;
+    N5: TMenuItem;
+    procedure FormShow(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure actCloseExecute(Sender: TObject);
+    procedure actPatientMgrExecute(Sender: TObject);
+    procedure actRecordExecute(Sender: TObject);
+    procedure actTherapyMgrExecute(Sender: TObject);
+    procedure actSettingExecute(Sender: TObject);
+    procedure N3Click(Sender: TObject);
+    procedure actOverNightMgrExecute(Sender: TObject);
+    procedure actStatisticsExecute(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+  private
+    { Private declarations }
+    FKeyInput: string;
+    FRecordTab: TcxTabSheet;
+    FRecord: TfrmRecord;
+    FTherapyMgrTab: TcxTabSheet;
+    FTherapyMgr: TfrmTherapyMgr;
+    FOverNightMgrTab: TCxTabSheet;
+    FOverNightMgr: TfrmOverNightMgr;
+    FStatisticsTab: TcxTabSheet;
+    FStatistics: TfrmStatistics;
+    function isValidTab(oTab: TcxTabSheet): Boolean;
+  public
+    { Public declarations }
+    procedure ResetTables;
+  end;
+
+var
+  frmMain: TfrmMain;
+
+implementation
+uses uDB, uGlobal, uLogin, uConfig, uSetting, uPassword, uAdminSetup;
+{$R *.dfm}
+
+procedure TfrmMain.actCloseExecute(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TfrmMain.actOverNightMgrExecute(Sender: TObject);
+begin
+  if isValidTab(FOverNightMgrTab) then
+    cxPage.ActivePage := FOverNightMgrTab
+  else
+  begin
+    FOverNightMgrTab := TcxTabSheet.Create(cxPage);
+    FOverNightMgrTab.Parent := cxPage;
+    FOverNightMgrTab.PageControl := cxPage;
+    FOverNightMgrTab.Caption := '외출/외박 관리';
+
+    Application.CreateForm(TfrmOverNightMgr, FOverNightMgr);
+    FOverNightMgr.Parent := FOverNightMgrTab;
+    FOverNightMgr.Align := alClient;
+    FOverNightMgr.BorderStyle := bsNone;
+    FOverNightMgr.Visible := True;
+
+    cxPage.ActivePage := FOverNightMgrTab;
+  end;
+end;
+
+procedure TfrmMain.actPatientMgrExecute(Sender: TObject);
+begin
+  frmPatientMgr.ShowModal;
+end;
+
+procedure TfrmMain.actRecordExecute(Sender: TObject);
+begin
+  if isValidTab(FRecordTab) then
+    cxPage.ActivePage := FRecordTab
+  else
+  begin
+    FRecordTab := TcxTabSheet.Create(cxPage);
+    FRecordTab.Parent := cxPage;
+    FRecordTab.PageControl := cxPage;
+    FRecordTab.Caption := '기록지관리';
+
+    Application.CreateForm(TfrmRecord, FRecord);
+    FRecord.Parent := FRecordTab;
+    FRecord.Align := alClient;
+    FRecord.BorderStyle := bsNone;
+    FRecord.Visible := True;
+
+    cxPage.ActivePage := FRecordTab;
+  end;
+end;
+
+procedure TfrmMain.actSettingExecute(Sender: TObject);
+begin
+  frmSetting.cxPageControl1.ActivePage := frmSetting.tabWardMgr;
+  frmSetting.ShowModal;
+end;
+
+procedure TfrmMain.actStatisticsExecute(Sender: TObject);
+begin
+  if isValidTab(FStatisticsTab) then
+    cxPage.ActivePage := FStatisticsTab
+  else
+  begin
+    FStatisticsTab := TcxTabSheet.Create(cxPage);
+    FStatisticsTab.Parent := cxPage;
+    FStatisticsTab.PageControl := cxPage;
+    FStatisticsTab.Caption := '통계';
+
+    Application.CreateForm(TfrmStatistics, FStatistics);
+    FStatistics.Parent := FStatisticsTab;
+    FStatistics.Align := alClient;
+    FStatistics.BorderStyle := bsNone;
+    FStatistics.Visible := True;
+
+    cxPage.ActivePage := FStatisticsTab;
+  end;
+end;
+
+procedure TfrmMain.actTherapyMgrExecute(Sender: TObject);
+begin
+  if isValidTab(FTherapyMgrTab) then
+    cxPage.ActivePage := FTherapyMgrTab
+  else
+  begin
+    FTherapyMgrTab := TcxTabSheet.Create(cxPage);
+    FTherapyMgrTab.Parent := cxPage;
+    FTherapyMgrTab.PageControl := cxPage;
+    FTherapyMgrTab.Caption := '정신치료관리';
+
+    Application.CreateForm(TfrmTherapyMgr, FTherapyMgr);
+    FTherapyMgr.Parent := FTherapyMgrTab;
+    FTherapyMgr.Align := alClient;
+    FTherapyMgr.BorderStyle := bsNone;
+    FTherapyMgr.Visible := True;
+
+    cxPage.ActivePage := FTherapyMgrTab;
+  end;
+end;
+
+procedure TfrmMain.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+const
+  KeyValue = 'rhnco';
+var
+  cKey : Char;
+  nPos : integer;
+begin
+  cKey := Char(BYTE(Key));
+  if CharInSet(cKey, ['A'..'Z', 'a'..'z']) then
+  begin
+    nPos := Length(FKeyInput);
+
+    if UpperCase(cKey) = UpperCase(KeyValue[nPos+1]) then
+      FKeyInput := FKeyInput + cKey
+    else
+      FKeyInput := '';
+  end;
+
+  if Length(FKeyInput) = Length(KeyValue) then
+  begin
+    if UpperCase(FKeyInput) = UpperCase(KeyValue) then
+      frmAdminSetup.ShowModal;
+
+    FKeyInput := ''
+  end;
+end;
+
+procedure TfrmMain.FormShow(Sender: TObject);
+begin
+  Timer1.Enabled := True;
+end;
+
+function TfrmMain.isValidTab(oTab: TcxTabSheet): Boolean;
+var
+  n: integer;
+begin
+  result := false;
+  for n := 0 to cxPage.PageCount - 1 do
+    if cxPage.Pages[n] = oTab then
+    begin
+      result := True;
+      break;
+    end;
+end;
+
+procedure TfrmMain.N3Click(Sender: TObject);
+begin
+  frmPassword.ShowModal;
+end;
+
+procedure TfrmMain.ResetTables;
+var
+  nInOutID: integer;
+begin
+  if isValidTab(FRecordTab) then
+  begin
+    FRecord.FLoaded := False;
+
+    FRecord.adoInOut.DisableControls;
+    nInOutID := FRecord.adoInOut.FieldByName('InOutID').AsInteger;
+
+    try
+      FRecord.adoInOut.Close;
+      FRecord.adoInOut.Open;
+    except
+    end;
+
+    FRecord.adoInOut.Locate('InOutID', nInOutID, [loCaseInsensitive]);
+    FRecord.adoInOut.EnableControls;
+
+    FRecord.FLoaded := True;
+    FRecord.actChangeInOut.Execute;
+  end;
+end;
+
+procedure TfrmMain.Timer1Timer(Sender: TObject);
+begin
+  Timer1.Enabled := False;
+
+  if frmLogin.ShowModal <> mrOK then
+    Close
+  else
+  begin
+    caption := oConfig.User.AppTitle + ' - ' + oConfig.User.UserName;
+
+    mTherapy.Enabled := oConfig.User.Worker;
+    mRecord.Enabled := oConfig.User.Worker;
+    mPatientInOutInfo.Enabled := oConfig.User.Worker and oConfig.User.Admin;
+    mSetting.Enabled :=  oConfig.User.Worker and oConfig.User.Admin;
+    mDoctor.Enabled := oConfig.User.Doctor;
+  end;
+end;
+
+end.

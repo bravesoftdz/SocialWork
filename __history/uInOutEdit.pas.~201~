@@ -1,0 +1,374 @@
+unit uInOutEdit;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters, Menus, StdCtrls,
+  cxButtons, uGlobal, uDB, cxControls, cxContainer, cxEdit, dxSkinsCore,
+  dxSkinCaramel, cxSpinEdit, cxTimeEdit, cxDropDownEdit, cxTextEdit, cxMaskEdit,
+  cxCalendar, ExtCtrls, DB, ADODB, dxSkinBlack, dxSkinBlue, dxSkinCoffee,
+  dxSkinDarkRoom, dxSkinDarkSide, dxSkinFoggy, dxSkinGlassOceans,
+  dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky, dxSkinLondonLiquidSky,
+  dxSkinMcSkin, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue,
+  dxSkinOffice2007Green, dxSkinOffice2007Pink, dxSkinOffice2007Silver,
+  dxSkinPumpkin, dxSkinSeven, dxSkinSharp, dxSkinSilver, dxSkinSpringTime,
+  dxSkinStardust, dxSkinSummer2008, dxSkinsDefaultPainters, dxSkinValentine,
+  dxSkinXmas2008Blue;
+
+type
+  TfrmInOutEdit = class(TForm)
+    Panel1: TPanel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    Label1: TLabel;
+    Label10: TLabel;
+    Label11: TLabel;
+    Label13: TLabel;
+    Label12: TLabel;
+    Label14: TLabel;
+    cxDEInDate: TcxDateEdit;
+    txtDiagName: TcxTextEdit;
+    cboDoctor: TcxComboBox;
+    cboUser: TcxComboBox;
+    cxDEOutDate: TcxDateEdit;
+    cxTEInTime: TcxTimeEdit;
+    cxTEOutTime: TcxTimeEdit;
+    cboInType: TcxComboBox;
+    cboBohum: TcxComboBox;
+    txtRoom: TcxTextEdit;
+    btnSave: TcxButton;
+    cxButton1: TcxButton;
+    lblWard: TLabel;
+    cboWard: TcxComboBox;
+    Memo1: TMemo;
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormShow(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);
+    procedure cboInTypeKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+  private
+    { Private declarations }
+    function IsValidInput: Boolean;
+    function GetNewInDate: string;
+    function GetNewOutDate: string;
+    function GetOldInDate: string;
+    function GetInOutID: integer;
+  public
+    { Public declarations }
+    HospitalID: integer;
+    PatientID: string;
+    EditMode: TEditMode;
+    oInOut: TADOQuery;
+
+    property InOutID: integer read GetInOutID;
+    property OldInDate: string read GetOldInDate;
+    property NewInDate: string read GetNewInDate;
+    property NewOutDate: string read GetNewOutDate;
+  end;
+
+var
+  frmInOutEdit: TfrmInOutEdit;
+
+implementation
+uses uConfig;
+{$R *.dfm}
+
+procedure TfrmInOutEdit.btnSaveClick(Sender: TObject);
+var
+  nInOutID: integer;
+  oT: TADOQuery;
+  oAppend: TADOQuery;
+begin
+  if isValidInput and (oGlobal.YesNo('저장하시겠습니까?')=mrYes) then
+  begin
+    try
+      oT := TADOQuery.Create(self);
+      oT.Connection := oInOut.Connection;
+
+      oAppend := TADOQuery.Create(self);
+      oAppend.Connection := oInOut.Connection;
+
+      if EditMode = emAppend then
+      begin
+        oAppend
+
+      end;
+
+
+
+
+      oInOut.DisableControls;
+      oInOut.Connection.BeginTrans;
+
+      if EditMode = emAppend then
+      begin
+        oInOut.Append;
+        oInOut.FieldByName('HospitalID').AsInteger := HospitalID;
+        oInOut.FieldByName('PatientID').AsString := PatientID;
+      end
+      else
+      begin
+        if cxDEInDate.Text <> oInOut.FieldByName('InDate').AsString then
+        begin
+          oT.SQL.Text := 'UPDATE WardHistory' +
+                         '   SET WardDate = ''' + cxDEInDate.Text + '''' +
+                         ' WHERE InOutID = ' + oInOut.FieldByName('InOutID').AsString +
+                         '   AND WardDate = ''' + oInOut.FieldByName('InDate').AsString + '''';
+          oT.ExecSQL;
+
+          oT.SQL.Text := 'UPDATE ProgramPatients' +
+                         '   SET WardDate = ''' + cxDEInDate.Text + '''' +
+                         ' WHERE InOutID = ' + oInOut.FieldByName('InOutID').AsString +
+                         '   AND WardDate = ''' + oInOut.FieldByName('InDate').AsString + '''';
+          oT.ExecSQL;
+        end;
+
+        oInOut.Edit;
+      end;
+
+      oInOut.FieldByName('InDate').AsString := cxDEInDate.Text;// oGlobal.DateToString(cxDEInDate.Date);
+      oInOut.FieldByName('InTime').AsString := cxTEInTime.Text;// oGlobal.TimeToString(cxTEInTime.Time);
+
+      if oGlobal.isNullStr(cxDEOutDate.Text) then
+      begin
+        oInOut.FieldByName('OutDate').AsString := '';
+        oInOut.FieldByName('State').AsInteger := cIn;
+      end
+      else
+      begin
+        oInOut.FieldByName('OutDate').AsString := cxDEOutDate.Text;//.DateToString(cxDEOutDate.Date);
+        oInOut.FieldByName('State').AsInteger := cOut;
+      end;
+
+      oInOut.FieldByName('OutTime').AsString := cxTEOutTime.Text;// oGlobal.TimeToString(cxTEOutTime.Time);
+      oInOut.FieldByName('Room').AsString := trim(txtRoom.Text);
+      oInOut.FieldByName('DiagName').AsString := trim(txtDiagName.Text);
+      oInOut.FieldByName('InTypeID').AsInteger := dbMain.GetInTypeID(oConfig.User.HospitalID, cboInType.Text);
+
+      oInOut.FieldByName('BohumID').AsInteger := dbMain.GetBohumID(cboBohum.Text);
+      oInOut.FieldByName('DoctorID').AsString := dbMain.GetDoctorID(oConfig.User.HospitalID, cboDoctor.Text);
+      oInOut.FieldByName('UserID').AsString := dbMain.GetUserID(oConfig.User.HospitalID, cboUser.Text);
+
+      oInOut.Post;
+      oInOut.Close;
+      oInOut.Open;
+
+      showmessage(oInOut.FieldByName('InDate').Asstring);
+      showmessage(oInOut.FieldByName('InOutID').asstring);
+
+      nInOutID := oInOut.FieldByName('InOutID').AsInteger;
+      showmessage(inttostr(ninoutid));
+      if EditMode = emAppend then
+      begin
+        oT.SQL.Text := 'INSERT INTO WardHistory' +
+                       '       (InOutID, WardDate, WardID)' +
+                       'VALUES (' + inttostr(nInOutID) +
+                       '       ,''' + oInOut.FieldByName('InDate').AsString + '''' +
+                       '       ,''' + inttostr(dbMain.GetWardID(oConfig.User.HospitalID, cboWard.Text)) + ''''+
+                       '       )';
+        memo1.lines.Text := ot.SQL.Text;
+        showmessage(ot.SQL.Text);
+        oT.ExecSQL;
+      end;
+
+      oInOut.Connection.CommitTrans;
+
+      oInOut.Close;
+      oInOut.Open;
+      oInOut.Locate('InOutID', nInOutID, [loCaseInsensitive]);
+
+      oInOut.EnableControls;
+      ModalResult := mrOK;
+    except
+      oInOUt.Connection.RollbackTrans;
+      oInOut.EnableControls;
+      oGlobal.Msg('저장에 실패했습니다!');
+    end;
+  end;
+end;
+
+procedure TfrmInOutEdit.cboInTypeKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    if Sender = cboInType then
+      cboBohum.SetFocus
+    else if Sender = cboBohum then
+      cxDEInDate.SetFocus
+    else if Sender = cxDEInDate then
+      cxTEInTime.SetFocus
+    else if Sender = cxTEInTime then
+      cxDEOutDate.SetFocus
+    else if Sender = cxDEOutDate then
+      cxTEOutTime.SetFocus
+    else if Sender = cxTEOutTime then
+      txtRoom.SetFocus
+    else if Sender = txtRoom then
+      txtDiagName.SetFocus
+    else if Sender = txtDiagName then
+      cboDoctor.SetFocus
+    else if Sender = cboDoctor then
+      cboUser.SetFocus
+    else if (Sender = cboUser) and cboWard.Visible then
+      cboWard.SetFocus
+    else if (Sender = cboWard) then
+      cboBohum.SetFocus;
+  end;
+end;
+
+procedure TfrmInOutEdit.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then Close;
+end;
+
+procedure TfrmInOutEdit.FormShow(Sender: TObject);
+begin
+  oGlobal.ClearComponents(self);
+
+  dbMain.GetInTypeList(oConfig.User.HospitalID, cboInType.Properties.Items);
+  dbMain.GetBohumList(cboBohum.Properties.Items);
+  dbMain.GetWardList(oConfig.User.HospitalID, cboWard.Properties.Items);
+  dbMain.GetDoctorList(oConfig.User.HospitalID, cboDoctor.Properties.Items);
+  dbMain.GetUserList(oConfig.User.HospitalID, cboUser.Properties.Items);
+
+  lblWard.Visible := EditMode = emAppend;
+  cboWard.Visible := EditMode = emAppend;
+
+  if (EditMode=emUpdate) and (not oInOut.IsEmpty) then
+  begin
+    cxDEIndate.EditText := oInOut.FieldByName('InDate').AsString;
+    cxTEInTime.Time := oInOut.FieldByName('InTime').AsDateTime;
+    cxDEOutDate.EditText := oInOut.FieldByName('OutDate').AsString;
+    cxTEOutTime.Time := oInOut.FieldByName('OutTime').AsDateTime;
+
+    txtRoom.Text := oInOut.FieldByName('Room').AsString;
+    txtDiagName.Text := oInOut.FieldByName('DiagName').AsString;
+
+    cboInType.Text := oInOut.FieldByName('InTypeName').AsString;
+    cboBohum.Text := oInOut.FieldByName('BohumName').AsString;
+
+    cboDoctor.Text := oInOut.FieldByName('DoctorName').AsString;
+    cboUser.Text := oInOut.FieldByName('WorkerName').AsString;
+  end
+  else if (EditMode=emAppend) and (not oInOut.IsEmpty) then
+  begin
+    cxDEIndate.Date := Now;// .EditText := oInOut.FieldByName('InDate').AsString;
+//    cxTEInTime.Time := oInOut.FieldByName('InTime').AsDateTime;
+//    cxDEOutDate.EditText := oInOut.FieldByName('OutDate').AsString;
+//    cxTEOutTime.Time := oInOut.FieldByName('OutTime').AsDateTime;
+
+//    txtRoom.Text := oInOut.FieldByName('Room').AsString;
+    txtDiagName.Text := oInOut.FieldByName('DiagName').AsString;
+
+    cboInType.Text := oInOut.FieldByName('InTypeName').AsString;
+    cboBohum.Text := oInOut.FieldByName('BohumName').AsString;
+
+    cboDoctor.Text := oInOut.FieldByName('DoctorName').AsString;
+    cboUser.Text := oInOut.FieldByName('WorkerName').AsString;
+  end;
+end;
+
+function TfrmInOutEdit.GetInOutID: integer;
+begin
+  result := oInOut.FieldByName('InOutID').AsInteger;
+end;
+
+function TfrmInOutEdit.GetNewInDate: string;
+begin
+  result := cxDEInDate.Text;
+end;
+
+function TfrmInOutEdit.GetNewOutDate: string;
+begin
+  result := cxDEOutDate.Text;
+end;
+
+function TfrmInOutEdit.GetOldInDate: string;
+begin
+  result := oInOut.FieldByName('InDate').AsString;
+end;
+
+function TfrmInOutEdit.IsValidInput: Boolean;
+begin
+  result := False;
+
+  if cboInType.ItemIndex < 0 then
+  begin
+    oGlobal.Msg('입원형태를 입력하십시오!');
+    cboInType.SetFocus;
+    Exit;
+  end;
+
+  if cboBohum.ItemIndex < 0 then
+  begin
+    oGlobal.Msg('입원종별을 선택하십시오!');
+    cboBohum.SetFocus;
+    Exit;
+  end;
+
+  if oGlobal.isNullStr(cxDEInDate.Text) then
+  begin
+    oGlobal.Msg('입원일자를 입력하십시오!');
+    cxDEInDate.SetFocus;
+    Exit;
+  end;
+
+  if oGlobal.isNotNullStr(cxDEOutDate.Text) and (cxDEInDate.Date > cxDEOutDate.Date) then
+  begin
+    oGlobal.Msg('퇴원일자를 정확히 입력하십시오!');
+    cxDEOutDate.SetFocus;
+    Exit;
+  end;
+
+  if oGlobal.isNullStr(cboDoctor.Text) then
+  begin
+    oGlobal.Msg('담당의사를 선택하십시오!');
+    cboDoctor.SetFocus;
+    Exit;
+  end;
+
+  if oGlobal.isNullStr(cboUser.Text) then
+  begin
+    oGlobal.Msg('담당자를 선택하십시오!');
+    cboUser.SetFocus;
+    Exit;
+  end;
+
+  if (EditMode=emAppend) and (cboWard.ItemIndex < 0) then
+  begin
+    oGlobal.Msg('병동을 선택하십시오!');
+    cboWard.SetFocus;
+    Exit;
+  end;
+
+  if (EditMode=emAppend) and dbMain.isExistWardHistory(InOutID, NewInDate) then
+  begin
+    oGlobal.Msg('중복된 입원일자가 있습니다!');
+    cxDEInDate.SetFocus;
+    Exit;
+  end;
+
+  if (EditMode=emUpdate) and (NewInDate <> OldInDate) then
+  begin
+      if dbMain.isExistWardHistory(InOutID, NewInDate) then
+      begin
+        oGlobal.Msg('변경할 입원일자에 이미 적용된 병동이 있습니다.' + #13 + '병동정보 수정 후 다시 작업해 주십시오!');
+        Exit;
+      end;
+
+      if dbMain.isExistWardHistoryLessThen(InOutID, OldInDate, NewInDate) then
+      begin
+        oGlobal.Msg('변경할 입원일자 이전일자로 적용된 병동이 있습니다.' + #13 + '병동정보 수정 후 다시 작업해 주십시오!');
+        Exit;
+      end;
+  end;
+
+  result := True;
+end;
+
+end.

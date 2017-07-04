@@ -1,0 +1,90 @@
+unit uSetup;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Buttons, ExtCtrls, cxGraphics, cxLookAndFeels,
+  cxLookAndFeelPainters, Menus, cxButtons, cxControls, cxContainer, cxEdit,
+  dxSkinsCore, dxSkinBlack, dxSkinBlue, dxSkinCaramel, dxSkinCoffee,
+  dxSkinDarkRoom, dxSkinDarkSide, dxSkinFoggy, dxSkinGlassOceans,
+  dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky, dxSkinLondonLiquidSky,
+  dxSkinMcSkin, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue,
+  dxSkinOffice2007Green, dxSkinOffice2007Pink, dxSkinOffice2007Silver,
+  dxSkinPumpkin, dxSkinSeven, dxSkinSharp, dxSkinSilver, dxSkinSpringTime,
+  dxSkinStardust, dxSkinSummer2008, dxSkinsDefaultPainters, dxSkinValentine,
+  dxSkinXmas2008Blue, cxGroupBox, cxLabel, cxTextEdit;
+
+type
+  TfrmSetup = class(TForm)
+    btnSave: TcxButton;
+    btnClose: TcxButton;
+    cxGroupBox1: TcxGroupBox;
+    txtSWPassword: TLabeledEdit;
+    txtSWDataSource: TLabeledEdit;
+    txtSWUserID: TLabeledEdit;
+    txtSWDBName: TLabeledEdit;
+    cxGroupBox2: TcxGroupBox;
+    txtUpdateHost: TLabeledEdit;
+    txtUpdateUserName: TLabeledEdit;
+    txtUpdatePassword: TLabeledEdit;
+    procedure FormShow(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);
+  private
+    { Private declarations }
+    function isValidInput: Boolean;
+  public
+    { Public declarations }
+  end;
+
+var
+  frmSetup: TfrmSetup;
+
+implementation
+uses uDB, uGlobal, uConfig;
+{$R *.dfm}
+
+procedure TfrmSetup.btnSaveClick(Sender: TObject);
+begin
+  if not isValidInput then
+  begin
+    oGlobal.Msg('정보를 입력해 주십시오!');
+    Exit;
+  end;
+
+  oConfig.SWServer.DataSource := trim(txtSWDataSource.Text);
+  oConfig.SWServer.DBName := trim(txtSWDBName.Text);
+  oConfig.SWServer.UserID := trim(txtSWUserID.Text);
+  oConfig.SWServer.Password := trim(txtSWPassword.Text);
+
+  oConfig.FTPServer.Host := trim(txtUpdateHost.Text);
+  oConfig.FTPServer.UserName := trim(txtUpdateUserName.Text);
+  oConfig.FTPServer.Password := trim(txtUpdatePassword.Text);
+
+  if oConfig.SaveServerConfiguration(cVersion, oConfig.UpdateServer, oConfig.SWServer) then
+    ModalResult := mrOK
+  else
+    oGlobal.Msg('설정 저장에 실패했습니다!');
+end;
+
+procedure TfrmSetup.FormShow(Sender: TObject);
+begin
+  txtSWDataSource.Text := oConfig.SWServer.DataSource;
+  txtSWDBName.Text := oConfig.SWServer.DBName;
+  txtSWUserID.Text := oConfig.SWServer.UserID;
+  txtSWPassword.Text := oConfig.SWServer.Password;
+
+  txtUpdateHost.Text := oConfig.FTPServer.Host;
+  txtUpdateUserName.Text := oConfig.FTPServer.UserName;
+  txtUpdatePassword.Text := oConfig.FTPServer.Password;
+end;
+
+function TfrmSetup.isValidInput: Boolean;
+begin
+  result := oGlobal.isNotNullStr(txtSWDataSource.Text) and oGlobal.isNotNullStr(txtSWDBName.Text)
+    and oGlobal.isNotNullStr(txtSWUserID.Text) and oGlobal.isNotNullStr(txtSWPassword.Text)
+    and oGlobal.isNotNullStr(txtUpdateHost.Text) and oGlobal.isNotNullStr(txtUpdateUserName.Text)
+    and oGlobal.isNotNullStr(txtUpdatePassword.Text);
+end;
+
+end.

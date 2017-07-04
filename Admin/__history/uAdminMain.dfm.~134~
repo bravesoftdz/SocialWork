@@ -1,0 +1,802 @@
+object frmMain: TfrmMain
+  Left = 0
+  Top = 0
+  Caption = #49324#54924#49324#50629#49892' '#44288#47532#51088#54168#51060#51648
+  ClientHeight = 576
+  ClientWidth = 911
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  OnClose = FormClose
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object cxPageControl1: TcxPageControl
+    Left = 14
+    Top = 131
+    Width = 885
+    Height = 437
+    TabOrder = 0
+    Properties.ActivePage = cxTabSheet4
+    Properties.ShowFrame = True
+    LookAndFeel.Kind = lfUltraFlat
+    LookAndFeel.NativeStyle = False
+    LookAndFeel.SkinName = 'Blue'
+    ClientRectBottom = 432
+    ClientRectLeft = 2
+    ClientRectRight = 880
+    ClientRectTop = 24
+    object cxTabSheet2: TcxTabSheet
+      Caption = 'Hospitals and Users'
+      ImageIndex = 1
+      object cxGroupBox2: TcxGroupBox
+        Left = 8
+        Top = 11
+        Caption = 'Hospitals'
+        Ctl3D = True
+        ParentCtl3D = False
+        Style.LookAndFeel.SkinName = 'Blue'
+        StyleDisabled.LookAndFeel.SkinName = 'Blue'
+        StyleFocused.LookAndFeel.SkinName = 'Blue'
+        StyleHot.LookAndFeel.SkinName = 'Blue'
+        TabOrder = 0
+        Height = 380
+        Width = 343
+        object Label4: TLabel
+          Left = 26
+          Top = 254
+          Width = 68
+          Height = 13
+          Alignment = taRightJustify
+          Caption = 'Hospital Name'
+        end
+        object Label5: TLabel
+          Left = 40
+          Top = 281
+          Width = 54
+          Height = 13
+          Alignment = taRightJustify
+          Caption = 'Hospital No'
+        end
+        object Label12: TLabel
+          Left = 23
+          Top = 305
+          Width = 71
+          Height = 13
+          Alignment = taRightJustify
+          Caption = 'Hospital Image'
+        end
+        object cxGHospital: TcxGrid
+          Left = 10
+          Top = 25
+          Width = 323
+          Height = 218
+          TabOrder = 0
+          LookAndFeel.SkinName = 'Caramel'
+          object cxGHospitalView: TcxGridDBTableView
+            OnCellClick = cxGHospitalViewCellClick
+            OnCustomDrawCell = cxGHospitalViewCustomDrawCell
+            DataController.DataSource = dsHospital
+            DataController.Summary.DefaultGroupSummaryItems = <>
+            DataController.Summary.FooterSummaryItems = <>
+            DataController.Summary.SummaryGroups = <>
+            OptionsData.Deleting = False
+            OptionsData.Editing = False
+            OptionsData.Inserting = False
+            OptionsView.GroupByBox = False
+            OptionsView.Indicator = True
+            object cxGHospitalViewHospitalName: TcxGridDBColumn
+              DataBinding.FieldName = 'HospitalName'
+              HeaderAlignmentHorz = taCenter
+              Options.Editing = False
+              Options.Filtering = False
+              Options.Sorting = False
+              Width = 177
+            end
+            object cxGHospitalViewHospitalNo: TcxGridDBColumn
+              DataBinding.FieldName = 'HospitalNo'
+              HeaderAlignmentHorz = taCenter
+              Options.Editing = False
+              Options.Filtering = False
+              Options.Sorting = False
+            end
+            object cxGHospitalViewUsed: TcxGridDBColumn
+              DataBinding.FieldName = 'Used'
+              HeaderAlignmentHorz = taCenter
+              Options.Editing = False
+              Options.Filtering = False
+              Options.Sorting = False
+              Width = 44
+            end
+          end
+          object cxGHospitalLevel1: TcxGridLevel
+            GridView = cxGHospitalView
+          end
+        end
+        object txtHospitalName: TEdit
+          Left = 100
+          Top = 251
+          Width = 233
+          Height = 21
+          ImeName = 'Microsoft Office IME 2007'
+          MaxLength = 50
+          TabOrder = 1
+          Text = 'rhocs'
+        end
+        object txtHospitalNo: TEdit
+          Left = 100
+          Top = 278
+          Width = 233
+          Height = 21
+          ImeName = 'Microsoft Office IME 2007'
+          MaxLength = 10
+          TabOrder = 2
+          Text = 'rhocs'
+        end
+        object chkHospitalUsed: TCheckBox
+          Left = 102
+          Top = 335
+          Width = 47
+          Height = 17
+          Caption = 'Used'
+          TabOrder = 3
+        end
+        object btnHospitalAppend: TButton
+          Left = 179
+          Top = 331
+          Width = 75
+          Height = 25
+          Caption = 'Append'
+          TabOrder = 4
+          OnClick = btnHospitalAppendClick
+        end
+        object btnHospitalUpdate: TButton
+          Left = 260
+          Top = 331
+          Width = 75
+          Height = 25
+          Caption = 'Update'
+          TabOrder = 5
+          OnClick = btnHospitalUpdateClick
+        end
+        object txtHospitalImage: TEdit
+          Left = 99
+          Top = 302
+          Width = 155
+          Height = 21
+          ImeName = 'Microsoft Office IME 2007'
+          ReadOnly = True
+          TabOrder = 6
+        end
+        object btnBrowseHospitalImage: TButton
+          Left = 258
+          Top = 300
+          Width = 75
+          Height = 25
+          Caption = 'Browse'
+          Enabled = False
+          TabOrder = 7
+          OnClick = btnBrowseHospitalImageClick
+        end
+      end
+      object cxGroupBox3: TcxGroupBox
+        Left = 357
+        Top = 11
+        Caption = 'Users'
+        Ctl3D = True
+        ParentCtl3D = False
+        Style.LookAndFeel.SkinName = 'Blue'
+        StyleDisabled.LookAndFeel.SkinName = 'Blue'
+        StyleFocused.LookAndFeel.SkinName = 'Blue'
+        StyleHot.LookAndFeel.SkinName = 'Blue'
+        TabOrder = 1
+        Height = 380
+        Width = 440
+        object Label6: TLabel
+          Left = 71
+          Top = 276
+          Width = 29
+          Height = 13
+          Alignment = taRightJustify
+          Caption = 'UseID'
+        end
+        object Label7: TLabel
+          Left = 54
+          Top = 304
+          Width = 46
+          Height = 13
+          Alignment = taRightJustify
+          Caption = 'Password'
+        end
+        object Label8: TLabel
+          Left = 213
+          Top = 304
+          Width = 27
+          Height = 13
+          Alignment = taRightJustify
+          Caption = 'Retry'
+        end
+        object Label9: TLabel
+          Left = 51
+          Top = 247
+          Width = 49
+          Height = 13
+          Alignment = taRightJustify
+          Caption = 'UserName'
+        end
+        object cxGUser: TcxGrid
+          Left = 10
+          Top = 21
+          Width = 417
+          Height = 218
+          TabOrder = 0
+          LookAndFeel.SkinName = 'Caramel'
+          object cxGUserView: TcxGridDBTableView
+            OnCellClick = cxGUserViewCellClick
+            OnCustomDrawCell = cxGUserViewCustomDrawCell
+            DataController.DataSource = dsUser
+            DataController.Summary.DefaultGroupSummaryItems = <>
+            DataController.Summary.FooterSummaryItems = <>
+            DataController.Summary.SummaryGroups = <>
+            OptionsData.Deleting = False
+            OptionsData.Editing = False
+            OptionsData.Inserting = False
+            OptionsView.GroupByBox = False
+            OptionsView.Indicator = True
+            object cxGUserViewUserName: TcxGridDBColumn
+              DataBinding.FieldName = 'UserName'
+              HeaderAlignmentHorz = taCenter
+              Options.Editing = False
+              Options.Filtering = False
+              Options.Sorting = False
+            end
+            object cxGUserViewUserID: TcxGridDBColumn
+              DataBinding.FieldName = 'UserID'
+              HeaderAlignmentHorz = taCenter
+              Options.Editing = False
+              Options.Filtering = False
+              Options.Sorting = False
+            end
+            object cxGUserViewWorker: TcxGridDBColumn
+              DataBinding.FieldName = 'Worker'
+              HeaderAlignmentHorz = taCenter
+              Options.Editing = False
+              Options.Filtering = False
+              Options.Sorting = False
+            end
+            object cxGUserViewDoctor: TcxGridDBColumn
+              DataBinding.FieldName = 'Doctor'
+              HeaderAlignmentHorz = taCenter
+              Options.Editing = False
+              Options.Filtering = False
+              Options.Sorting = False
+            end
+            object cxGUserViewAdmin: TcxGridDBColumn
+              DataBinding.FieldName = 'Admin'
+              HeaderAlignmentHorz = taCenter
+              Options.Editing = False
+              Options.Filtering = False
+              Options.Sorting = False
+            end
+            object cxGUserViewUsed: TcxGridDBColumn
+              DataBinding.FieldName = 'Used'
+              HeaderAlignmentHorz = taCenter
+              Options.Editing = False
+              Options.Filtering = False
+              Options.Sorting = False
+            end
+          end
+          object cxGUserLevel1: TcxGridLevel
+            GridView = cxGUserView
+          end
+        end
+        object txtUserID: TEdit
+          Left = 106
+          Top = 273
+          Width = 233
+          Height = 21
+          ImeName = 'Microsoft Office IME 2007'
+          MaxLength = 50
+          TabOrder = 2
+          Text = 'rhocs'
+        end
+        object txtPassword: TEdit
+          Left = 106
+          Top = 300
+          Width = 93
+          Height = 21
+          ImeName = 'Microsoft Office IME 2007'
+          MaxLength = 10
+          TabOrder = 3
+          Text = 'rhocs'
+        end
+        object txtPassword2: TEdit
+          Left = 246
+          Top = 300
+          Width = 93
+          Height = 21
+          ImeName = 'Microsoft Office IME 2007'
+          MaxLength = 10
+          TabOrder = 4
+          Text = 'rhocs'
+        end
+        object chkWorker: TCheckBox
+          Left = 106
+          Top = 324
+          Width = 55
+          Height = 17
+          Caption = 'Worker'
+          TabOrder = 5
+        end
+        object chkDoctor: TCheckBox
+          Left = 167
+          Top = 324
+          Width = 55
+          Height = 17
+          Caption = 'Doctor'
+          TabOrder = 6
+        end
+        object chkAdmin: TCheckBox
+          Left = 223
+          Top = 324
+          Width = 55
+          Height = 17
+          Caption = 'Admin'
+          TabOrder = 7
+        end
+        object chkUserUsed: TCheckBox
+          Left = 354
+          Top = 303
+          Width = 55
+          Height = 17
+          Caption = 'Used'
+          TabOrder = 8
+        end
+        object txtUserName: TEdit
+          Left = 106
+          Top = 245
+          Width = 233
+          Height = 21
+          ImeName = 'Microsoft Office IME 2007'
+          MaxLength = 50
+          TabOrder = 1
+          Text = 'rhocs'
+        end
+        object btnUserAppend: TButton
+          Left = 352
+          Top = 245
+          Width = 75
+          Height = 25
+          Caption = 'Append'
+          TabOrder = 9
+          OnClick = btnUserAppendClick
+        end
+        object btnUserUpdate: TButton
+          Left = 352
+          Top = 272
+          Width = 75
+          Height = 25
+          Caption = 'Update'
+          TabOrder = 10
+          OnClick = btnUserUpdateClick
+        end
+      end
+    end
+    object cxTabSheet3: TcxTabSheet
+      Caption = 'Program Types'
+      ImageIndex = 2
+      object Label10: TLabel
+        Left = 12
+        Top = 242
+        Width = 72
+        Height = 13
+        Alignment = taRightJustify
+        Caption = #54532#47196#44536#47016#44396#48516
+      end
+      object lblSeq: TLabel
+        Left = 191
+        Top = 269
+        Width = 48
+        Height = 13
+        Caption = #51221#47148#49692#49436
+      end
+      object cxGrid1: TcxGrid
+        Left = 12
+        Top = 15
+        Width = 363
+        Height = 218
+        TabOrder = 0
+        LookAndFeel.SkinName = 'Caramel'
+        object cxGPType: TcxGridDBTableView
+          OnCellClick = cxGPTypeCellClick
+          OnCustomDrawCell = cxGPTypeCustomDrawCell
+          DataController.DataSource = dsPType
+          DataController.Summary.DefaultGroupSummaryItems = <>
+          DataController.Summary.FooterSummaryItems = <>
+          DataController.Summary.SummaryGroups = <>
+          OptionsData.Deleting = False
+          OptionsData.Editing = False
+          OptionsData.Inserting = False
+          OptionsView.GroupByBox = False
+          object cxGPTypeProgramTypeName: TcxGridDBColumn
+            Caption = #54532#47196#44536#47016#44396#48516
+            DataBinding.FieldName = 'ProgramTypeName'
+            HeaderAlignmentHorz = taCenter
+            Options.Editing = False
+            Options.Filtering = False
+            Options.Sorting = False
+            Width = 195
+          end
+          object cxGPTypeUsed: TcxGridDBColumn
+            DataBinding.FieldName = 'Used'
+            HeaderAlignmentHorz = taCenter
+            Options.Editing = False
+            Options.Filtering = False
+            Options.Sorting = False
+            Width = 55
+          end
+          object cxGPTypeSeq: TcxGridDBColumn
+            DataBinding.FieldName = 'Seq'
+            HeaderAlignmentHorz = taCenter
+            Options.Editing = False
+            Options.Filtering = False
+            Options.Sorting = False
+          end
+          object cxGPTypeLinkRecord: TcxGridDBColumn
+            DataBinding.FieldName = 'LinkRecord'
+          end
+        end
+        object cxGridLevel1: TcxGridLevel
+          GridView = cxGPType
+        end
+      end
+      object txtPTypeName: TEdit
+        Left = 86
+        Top = 239
+        Width = 195
+        Height = 21
+        ImeName = 'Microsoft Office IME 2007'
+        MaxLength = 50
+        TabOrder = 1
+        Text = 'rhocs'
+      end
+      object btnPTypeAppend: TButton
+        Left = 123
+        Top = 325
+        Width = 75
+        Height = 25
+        Caption = 'Append'
+        TabOrder = 2
+        OnClick = btnPTypeAppendClick
+      end
+      object btnPTypeUpdate: TButton
+        Left = 200
+        Top = 322
+        Width = 75
+        Height = 25
+        Caption = 'Update'
+        TabOrder = 3
+        OnClick = btnPTypeUpdateClick
+      end
+      object chkPTypeUsed: TCheckBox
+        Left = 86
+        Top = 266
+        Width = 55
+        Height = 17
+        Caption = 'Used'
+        TabOrder = 4
+      end
+      object spinSeq: TcxSpinEdit
+        Left = 240
+        Top = 266
+        TabOrder = 5
+        Width = 41
+      end
+      object chkLinkRecord: TCheckBox
+        Left = 86
+        Top = 289
+        Width = 85
+        Height = 17
+        Caption = #44592#47197#51648#50672#46041
+        TabOrder = 6
+      end
+    end
+    object cxTabSheet1: TcxTabSheet
+      Caption = 'Relationships'
+      ImageIndex = 2
+      object Label11: TLabel
+        Left = 13
+        Top = 242
+        Width = 87
+        Height = 13
+        Alignment = taRightJustify
+        Caption = #44032#44396#51452#50752#51032' '#44288#44228
+      end
+      object cxGrid2: TcxGrid
+        Left = 12
+        Top = 15
+        Width = 269
+        Height = 218
+        TabOrder = 0
+        LookAndFeel.SkinName = 'Caramel'
+        object cxGRelationship: TcxGridDBTableView
+          OnCellClick = cxGRelationshipCellClick
+          OnCustomDrawCell = cxGRelationshipCustomDrawCell
+          DataController.DataSource = dsRelationship
+          DataController.Summary.DefaultGroupSummaryItems = <>
+          DataController.Summary.FooterSummaryItems = <>
+          DataController.Summary.SummaryGroups = <>
+          OptionsData.Deleting = False
+          OptionsData.Editing = False
+          OptionsData.Inserting = False
+          OptionsView.GroupByBox = False
+          object cxGRelationshipRelationshipName: TcxGridDBColumn
+            Caption = #44032#44396#51452#50752#51032' '#44288#44228
+            DataBinding.FieldName = 'RelationshipName'
+            HeaderAlignmentHorz = taCenter
+            Options.Editing = False
+            Options.Filtering = False
+            Options.Sorting = False
+            Width = 201
+          end
+          object cxGRelationshipUsed: TcxGridDBColumn
+            DataBinding.FieldName = 'Used'
+            HeaderAlignmentHorz = taCenter
+            Options.Editing = False
+            Options.Filtering = False
+            Options.Sorting = False
+            Width = 38
+          end
+        end
+        object cxGridLevel2: TcxGridLevel
+          GridView = cxGRelationship
+        end
+      end
+      object txtRelationship: TEdit
+        Left = 102
+        Top = 239
+        Width = 179
+        Height = 21
+        ImeName = 'Microsoft Office IME 2007'
+        MaxLength = 50
+        TabOrder = 1
+        Text = 'rhocs'
+      end
+      object btnRelationshipAppend: TButton
+        Left = 129
+        Top = 293
+        Width = 75
+        Height = 25
+        Caption = 'Append'
+        TabOrder = 2
+        OnClick = btnRelationshipAppendClick
+      end
+      object btnRelationshipUpdate: TButton
+        Left = 206
+        Top = 292
+        Width = 75
+        Height = 25
+        Caption = 'Update'
+        TabOrder = 3
+        OnClick = btnRelationshipUpdateClick
+      end
+      object chkRelationshipUsed: TCheckBox
+        Left = 102
+        Top = 266
+        Width = 55
+        Height = 17
+        Caption = 'Used'
+        TabOrder = 4
+      end
+    end
+    object cxTabSheet4: TcxTabSheet
+      Caption = #44592#47197#51648' '#44288#47532
+      ImageIndex = 3
+    end
+  end
+  object cxGroupBox1: TcxGroupBox
+    Left = 14
+    Top = 8
+    Caption = #49436#48260#51221#48372
+    Ctl3D = True
+    ParentCtl3D = False
+    Style.LookAndFeel.SkinName = 'Blue'
+    StyleDisabled.LookAndFeel.SkinName = 'Blue'
+    StyleFocused.LookAndFeel.SkinName = 'Blue'
+    StyleHot.LookAndFeel.SkinName = 'Blue'
+    TabOrder = 1
+    Height = 117
+    Width = 438
+    object Label1: TLabel
+      Left = 20
+      Top = 22
+      Width = 62
+      Height = 13
+      Caption = 'Server Name'
+    end
+    object Label2: TLabel
+      Left = 46
+      Top = 51
+      Width = 36
+      Height = 13
+      Caption = 'User ID'
+    end
+    object Label3: TLabel
+      Left = 36
+      Top = 76
+      Width = 46
+      Height = 13
+      Caption = 'Password'
+    end
+    object txtServerName: TEdit
+      Left = 88
+      Top = 19
+      Width = 215
+      Height = 21
+      ImeName = 'Microsoft Office IME 2007'
+      TabOrder = 0
+      Text = 'erp.ambu.or.kr'
+    end
+    object txtDBUserID: TEdit
+      Left = 88
+      Top = 46
+      Width = 215
+      Height = 21
+      ImeName = 'Microsoft Office IME 2007'
+      TabOrder = 1
+      Text = 'socialworker'
+    end
+    object txtDBPassword: TEdit
+      Left = 88
+      Top = 73
+      Width = 215
+      Height = 21
+      ImeName = 'Microsoft Office IME 2007'
+      PasswordChar = '*'
+      TabOrder = 2
+      Text = 'socialworker'
+    end
+    object btnConnect: TButton
+      Left = 314
+      Top = 19
+      Width = 75
+      Height = 48
+      Caption = 'Connect'
+      TabOrder = 3
+      OnClick = btnConnectClick
+    end
+    object btnDisconnect: TButton
+      Left = 314
+      Top = 69
+      Width = 75
+      Height = 25
+      Caption = 'Disconnect'
+      Enabled = False
+      TabOrder = 4
+      OnClick = btnDisconnectClick
+    end
+  end
+  object ADOConnection: TADOConnection
+    ConnectionString = 
+      'Provider=SQLOLEDB.1;Password=socialworker;Persist Security Info=' +
+      'True;User ID=socialworker;Initial Catalog=SocialWorkDB;Data Sour' +
+      'ce=rhocs'
+    LoginPrompt = False
+    Provider = 'SQLOLEDB.1'
+    AfterConnect = ADOConnectionAfterConnect
+    AfterDisconnect = ADOConnectionAfterDisconnect
+    Left = 474
+    Top = 68
+  end
+  object adoRecordNameDefault: TADOQuery
+    Connection = ADOConnection
+    CursorType = ctStatic
+    AfterOpen = adoRecordNameAfterOpen
+    AfterClose = adoRecordNameAfterOpen
+    Parameters = <>
+    SQL.Strings = (
+      'select * from hospitals')
+    Left = 626
+    Top = 284
+  end
+  object adoRecordName: TADOQuery
+    Connection = ADOConnection
+    CursorType = ctStatic
+    AfterOpen = adoRecordNameAfterOpen
+    AfterClose = adoRecordNameAfterOpen
+    Parameters = <>
+    SQL.Strings = (
+      'select * from users')
+    Left = 626
+    Top = 230
+  end
+  object dsHospital: TDataSource
+    DataSet = adoRecordNameDefault
+    OnDataChange = dsHospitalDataChange
+    Left = 606
+    Top = 72
+  end
+  object dsUser: TDataSource
+    DataSet = adoRecordName
+    OnDataChange = dsUserDataChange
+    Left = 602
+    Top = 16
+  end
+  object adoPType: TADOQuery
+    Connection = ADOConnection
+    CursorType = ctStatic
+    AfterOpen = adoRecordNameAfterOpen
+    AfterClose = adoRecordNameAfterOpen
+    Parameters = <>
+    SQL.Strings = (
+      'select * from ProgramTypes order by sEq')
+    Left = 666
+    Top = 16
+  end
+  object dsPType: TDataSource
+    DataSet = adoPType
+    OnDataChange = dsPTypeDataChange
+    Left = 740
+    Top = 20
+  end
+  object adoRelationship: TADOQuery
+    Connection = ADOConnection
+    CursorType = ctStatic
+    AfterOpen = adoRecordNameAfterOpen
+    AfterClose = adoRecordNameAfterOpen
+    Parameters = <>
+    SQL.Strings = (
+      'select * from relationships')
+    Left = 672
+    Top = 72
+  end
+  object dsRelationship: TDataSource
+    DataSet = adoRelationship
+    OnDataChange = dsRelationshipDataChange
+    Left = 764
+    Top = 76
+  end
+  object OpenDialog: TOpenDialog
+    Left = 832
+    Top = 28
+  end
+  object ADOQuery1: TADOQuery
+    Connection = ADOConnection
+    CursorType = ctStatic
+    AfterOpen = adoRecordNameAfterOpen
+    AfterClose = adoRecordNameAfterOpen
+    Parameters = <>
+    SQL.Strings = (
+      'select * from users')
+    Left = 542
+    Top = 16
+  end
+  object dsRecordName: TDataSource
+    DataSet = ADOQuery1
+    OnDataChange = dsUserDataChange
+    Left = 704
+    Top = 230
+  end
+  object ADOQuery2: TADOQuery
+    Connection = ADOConnection
+    CursorType = ctStatic
+    AfterOpen = adoRecordNameAfterOpen
+    AfterClose = adoRecordNameAfterOpen
+    Parameters = <>
+    SQL.Strings = (
+      'select * from hospitals')
+    Left = 542
+    Top = 70
+  end
+  object dsRecordNameDefault: TDataSource
+    DataSet = ADOQuery2
+    OnDataChange = dsHospitalDataChange
+    Left = 710
+    Top = 282
+  end
+end

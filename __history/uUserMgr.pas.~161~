@@ -1,0 +1,236 @@
+unit uUserMgr;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, DB, ADODB, cxGraphics, cxControls, cxLookAndFeels,
+  cxLookAndFeelPainters, cxStyles, dxSkinsCore, dxSkinBlack, dxSkinBlue,
+  dxSkinCaramel, dxSkinCoffee, dxSkinDarkRoom, dxSkinDarkSide, dxSkinFoggy,
+  dxSkinGlassOceans, dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky,
+  dxSkinLondonLiquidSky, dxSkinMcSkin, dxSkinMoneyTwins, dxSkinOffice2007Black,
+  dxSkinOffice2007Blue, dxSkinOffice2007Green, dxSkinOffice2007Pink,
+  dxSkinOffice2007Silver, dxSkinPumpkin, dxSkinSeven, dxSkinSharp, dxSkinSilver,
+  dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinsDefaultPainters,
+  dxSkinValentine, dxSkinXmas2008Blue, dxSkinscxPC3Painter, cxCustomData,
+  cxFilter, cxData, cxDataStorage, cxEdit, cxDBData, cxGridCustomTableView,
+  cxGridTableView, cxGridDBTableView, cxGridLevel, cxClasses, cxGridCustomView,
+  cxGrid, StdCtrls, Menus, cxButtons, cxContainer, cxCheckBox;
+
+type
+  TfrmUserMgr = class(TForm)
+    adoUser: TADOQuery;
+    dsUser: TDataSource;
+    cxGUser: TcxGridDBTableView;
+    cxGLevel1: TcxGridLevel;
+    cxG: TcxGrid;
+    cxGUserUserID: TcxGridDBColumn;
+    cxGUserUserName: TcxGridDBColumn;
+    cxGUserWorker: TcxGridDBColumn;
+    cxGUserDoctor: TcxGridDBColumn;
+    cxGUserAdmin: TcxGridDBColumn;
+    cxGUserUsed: TcxGridDBColumn;
+    btnUserAppend: TcxButton;
+    btnUserUpdate: TcxButton;
+    chkUsed: TcxCheckBox;
+    procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure adoUserAfterOpen(DataSet: TDataSet);
+    procedure adoUserAfterClose(DataSet: TDataSet);
+    procedure dsUserDataChange(Sender: TObject; Field: TField);
+    procedure cxGUserCustomDrawCell(Sender: TcxCustomGridTableView;
+      ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo;
+      var ADone: Boolean);
+    procedure btnUserAppendClick(Sender: TObject);
+    procedure btnUserUpdateClick(Sender: TObject);
+    procedure chkUsedClick(Sender: TObject);
+  private
+    { Private declarations }
+    procedure SetControls;
+    function LoadUser: Boolean;
+  public
+    { Public declarations }
+  end;
+
+var
+  frmUserMgr: TfrmUserMgr;
+
+implementation
+uses uDB, uGlobal, uConfig, uEncryption, uInputUserInfo, uQuery;
+{$R *.dfm}
+
+procedure TfrmUserMgr.adoUserAfterClose(DataSet: TDataSet);
+begin
+  SetControls;
+end;
+
+procedure TfrmUserMgr.adoUserAfterOpen(DataSet: TDataSet);
+begin
+  SetControls;
+end;
+
+procedure TfrmUserMgr.btnUserAppendClick(Sender: TObject);
+var
+  oInput: TfrmInputUserInfo;
+begin
+  if not adoUser.Active then
+  begin
+    oGlobal.Msg('사용자정보에 연결되지 못했습니다!');
+    Exit;
+  end;
+
+  Application.CreateForm(TfrmInputUserInfo, oInput);
+
+  oInput.Mode := emAppend;
+  oInput.UserInfo.Clear;
+  oInput.UserInfo.HospitalID := oConfig.User.HospitalID;
+  if oInput.ShowModal = mrOK then
+  begin
+    adoUser.DisableControls;
+    try
+      dbMain.adoSocialWorkDB.BeginTrans;
+      adoUser.Append;
+      adoUser.FieldByName('HospitalID').AsInteger := oInput.UserInfo.HospitalID;
+      adoUser.FieldByName('UserID').AsString := oInput.UserInfo.UserID;
+      adoUser.FieldByName('UserName').AsString := oInput.UserInfo.UserName;
+      adoUser.FieldByName('Password').AsString := Encoding(oInput.UserInfo.Password);
+      adoUser.FieldByName('Worker').AsBoolean := oInput.UserInfo.Worker;
+      adoUser.FieldByName('Doctor').AsBoolean := oInput.UserInfo.Doctor;
+      adoUser.FieldByName('Admin').AsBoolean := oInput.UserInfo.Admin;
+      adoUser.FieldByName('Used').AsBoolean := oINput.UserInfo.Used;
+      adoUser.Post;
+      dbMain.adoSocialWorkDB.CommitTrans;
+
+      screen.Cursor := crDefault;
+      oGlobal.Msg('추가하였습니다!');
+    except
+      adoUser.Cancel;
+      dbMain.adoSocialWorkDB.RollbackTrans;
+      screen.Cursor := crDefault;
+      oGlobal.Msg('추가하지 못했습니다!');
+    end;
+    adoUser.EnableControls;
+  end;
+
+  oInput.Free;
+end;
+
+procedure TfrmUserMgr.btnUserUpdateClick(Sender: TObject);
+var
+  oInput: TfrmInputUserInfo;
+begin
+  if adoUser.IsEmpty then
+  begin
+    oGlobal.Msg('수정할 정보가 없습니다!');
+    Exit;
+  end;
+
+  Application.CreateForm(TfrmInputUserInfo, oInput);
+
+  oInput.Mode := emUpdate;
+  oInput.UserInfo.Clear;
+  oInput.UserInfo.HospitalID := oConfig.User.HospitalID;
+  oInput.UserInfo.UserID := adoUser.FieldByName('UserID').AsString;
+  oInput.UserInfo.UserName := adoUser.FieldByName('UserName').AsString;
+  oInput.UserInfo.Worker := adoUser.FieldByName('Worker').AsBoolean;
+  oInput.UserInfo.Doctor := adoUser.FieldByName('Doctor').AsBoolean;
+  oInput.UserInfo.Admin := adoUser.FieldByName('Admin').AsBoolean;
+  oInput.UserInfo.Used := adoUser.FieldByName('Used').AsBoolean;
+
+  if oInput.ShowModal = mrOK then
+  begin
+    adoUser.DisableControls;
+    try
+      dbMain.adoSocialWorkDB.BeginTrans;
+      adoUser.Edit;
+      adoUser.FieldByName('UserName').AsString := oInput.UserInfo.UserName;
+      if oGlobal.isNotNullStr(oInput.UserInfo.Password) then
+        adoUser.FieldByName('Password').AsString := Encoding(oInput.UserInfo.Password);
+      adoUser.FieldByName('Worker').AsBoolean := oInput.UserInfo.Worker;
+      adoUser.FieldByName('Doctor').AsBoolean := oInput.UserInfo.Doctor;
+      adoUser.FieldByName('Admin').AsBoolean := oInput.UserInfo.Admin;
+      adoUser.FieldByName('Used').AsBoolean := oINput.UserInfo.Used;
+      adoUser.Post;
+      dbMain.adoSocialWorkDB.CommitTrans;
+
+      screen.Cursor := crDefault;
+      oGlobal.Msg('수정하였습니다!');
+    except
+      adoUser.Cancel;
+      dbMain.adoSocialWorkDB.RollbackTrans;
+      screen.Cursor := crDefault;
+      oGlobal.Msg('수정하지 못했습니다!');
+    end;
+    adoUser.EnableControls;
+  end;
+
+  oInput.Free;
+end;
+
+procedure TfrmUserMgr.chkUsedClick(Sender: TObject);
+begin
+  LoadUser;
+end;
+
+procedure TfrmUserMgr.cxGUserCustomDrawCell(Sender: TcxCustomGridTableView;
+  ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo;
+  var ADone: Boolean);
+var
+  iIndex: integer;
+begin
+  iIndex := AViewInfo.RecordViewInfo.GridRecord.Index;
+
+  if Sender.DataController.GetValue(iIndex, cxGUserUsed.Index) = False then
+    ACanvas.Font.Color := clSilver;
+end;
+
+procedure TfrmUserMgr.dsUserDataChange(Sender: TObject; Field: TField);
+begin
+  SetControls;
+
+  if adoUser.IsEmpty then Exit;
+
+  btnUserUpdate.Enabled := (adoUser.FieldByName('UserID').AsString <> oConfig.User.UserID);
+end;
+
+procedure TfrmUserMgr.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  adoUser.Close;
+end;
+
+procedure TfrmUserMgr.FormShow(Sender: TObject);
+begin
+  chkViewUnUsedUser.Checked := False;
+
+  if not LoadUser then
+    Close;
+end;
+
+function TfrmUserMgr.LoadUser: Boolean;
+var
+  nUsed: integer;
+begin
+  if chkViewUnUsedUser.Checked then
+    nUsed := cUnUsed
+  else
+    nUsed := cUsed;
+
+  adoUser.SQL.Text := QueryUser(oConfig.User.HospitalID, nUsed);
+  adoUser.DisableControls;
+  try
+    adoUser.Open;
+    result := True;
+  except
+    oGlobal.Msg('사용자 정보에 접근하지 못했습니다!');
+    result := False;
+  end;
+  adoUser.EnableControls;
+end;
+
+procedure TfrmUserMgr.SetControls;
+begin
+  btnUserAppend.Enabled := adoUser.Active;
+  btnUSerUpdate.Enabled := not adoUser.IsEmpty;
+end;
+
+end.

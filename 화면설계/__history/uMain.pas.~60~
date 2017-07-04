@@ -1,0 +1,162 @@
+unit uMain;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, Menus, ExtCtrls, StdCtrls, Buttons, cxGraphics, cxControls,
+  cxLookAndFeels, cxLookAndFeelPainters, cxStyles, cxEdit, cxScheduler,
+  cxSchedulerStorage, cxSchedulerCustomControls, cxSchedulerCustomResourceView,
+  cxSchedulerDayView, cxSchedulerDateNavigator, cxSchedulerHolidays,
+  cxSchedulerTimeGridView, cxSchedulerUtils, cxSchedulerWeekView,
+  cxSchedulerYearView, cxSchedulerGanttView, cxSSheet, cxSchedulerDBStorage, DB,
+  ADODB, dxSkinsCore, dxSkinBlack, dxSkinBlue, dxSkinCaramel, dxSkinCoffee,
+  dxSkinDarkRoom, dxSkinDarkSide, dxSkinFoggy, dxSkinGlassOceans,
+  dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky, dxSkinLondonLiquidSky,
+  dxSkinMcSkin, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue,
+  dxSkinOffice2007Green, dxSkinOffice2007Pink, dxSkinOffice2007Silver,
+  dxSkinPumpkin, dxSkinSeven, dxSkinSharp, dxSkinSilver, dxSkinSpringTime,
+  dxSkinStardust, dxSkinSummer2008, dxSkinsDefaultPainters, dxSkinValentine,
+  dxSkinXmas2008Blue, dxSkinscxScheduler3Painter, ComCtrls, ToolWin,
+  dxSkinscxPC3Painter, cxCustomData, cxFilter, cxData, cxDataStorage, cxDBData,
+  cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGridLevel,
+  cxClasses, cxGridCustomView, cxGrid;
+
+type
+  TfrmMain = class(TForm)
+    MainMenu1: TMainMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N4: TMenuItem;
+    N5: TMenuItem;
+    N6: TMenuItem;
+    N7: TMenuItem;
+    N8: TMenuItem;
+    N9: TMenuItem;
+    N10: TMenuItem;
+    N11: TMenuItem;
+    Intake1: TMenuItem;
+    I1: TMenuItem;
+    II1: TMenuItem;
+    N12: TMenuItem;
+    N13: TMenuItem;
+    N14: TMenuItem;
+    N16: TMenuItem;
+    N17: TMenuItem;
+    N18: TMenuItem;
+    N15: TMenuItem;
+    N19: TMenuItem;
+    Timer1: TTimer;
+    Panel1: TPanel;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
+    BitBtn11: TBitBtn;
+    cxS: TcxScheduler;
+    cxSchedulerDBStorage: TcxSchedulerDBStorage;
+    cxSchedulerHolidays1: TcxSchedulerHolidays;
+    ADOConnection1: TADOConnection;
+    ADOTable1: TADOTable;
+    DataSource1: TDataSource;
+    PopupMenu1: TPopupMenu;
+    N21: TMenuItem;
+    oday1: TMenuItem;
+    Button1: TButton;
+    Supervisor1: TMenuItem;
+    N22: TMenuItem;
+    N23: TMenuItem;
+    N24: TMenuItem;
+    N3: TMenuItem;
+    N20: TMenuItem;
+    N26: TMenuItem;
+    N27: TMenuItem;
+    N28: TMenuItem;
+    PopupMenu2: TPopupMenu;
+    MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
+    cxGrid1DBTableView1: TcxGridDBTableView;
+    cxGrid1Level1: TcxGridLevel;
+    cxGrid1: TcxGrid;
+    cxGrid1DBTableView1ID: TcxGridDBColumn;
+    cxGrid1DBTableView1Caption: TcxGridDBColumn;
+    cxGrid1DBTableView1StartTime: TcxGridDBColumn;
+    cxGrid1DBTableView1EndTime: TcxGridDBColumn;
+    cxGrid1DBTableView1Test: TcxGridDBColumn;
+    cxGrid1DBTableView1EventType: TcxGridDBColumn;
+    cxGrid1DBTableView1Options: TcxGridDBColumn;
+    cxGrid1DBTableView1Message: TcxGridDBColumn;
+    cxGrid1DBTableView1LabelColor: TcxGridDBColumn;
+    cxGrid1DBTableView1State: TcxGridDBColumn;
+    Button2: TButton;
+    procedure FormShow(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure cxSBeforeEditing(Sender: TcxCustomScheduler;
+      AEvent: TcxSchedulerControlEvent; AInplace: Boolean; var Allow: Boolean);
+    procedure Button2Click(Sender: TObject);
+    procedure MenuItem1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmMain: TfrmMain;
+
+implementation
+uses uLogin;
+{$R *.dfm}
+
+procedure TfrmMain.Button1Click(Sender: TObject);
+begin
+  adoTable1.Append;
+  adoTable1.FieldByName('Caption').AsString := 'Test Caption';
+  adoTable1.FieldByName('StartTime').AsString := DateTimeToStr(now);
+  adoTable1.FieldByName('EndTime').AsString := DateTimeToStr(now);
+  adoTable1.FieldByName('Test').AsString := 'aafdaasd';
+  adoTable1.FieldByName('TaskStatusField').AsInteger := 100;
+  adoTable1.Post;
+end;
+
+procedure TfrmMain.Button2Click(Sender: TObject);
+var
+  AEvent: TcxSchedulerControlEvent;
+begin
+  showmessage(datetostr(cxS.SelStart));
+  cxS.SelectEvent(AEvent, []);
+
+  showmesssage(AEvent.Caption);
+//  showmessage(cxSchedulerDBStorage.Events[0].Caption);
+//  showmessage(adoTable1.FieldByName('ID').AsString);
+end;
+
+procedure TfrmMain.cxSBeforeEditing(Sender: TcxCustomScheduler;
+  AEvent: TcxSchedulerControlEvent; AInplace: Boolean; var Allow: Boolean);
+begin
+
+  if VarisNull(AEVent.ID) then
+    showmessage('append' + DateToSTr(AEvent.Start))
+  else
+    showmessage(AEvent.ID);
+
+end;
+
+procedure TfrmMain.FormShow(Sender: TObject);
+begin
+  Timer1.Enabled := True;
+end;
+
+procedure TfrmMain.MenuItem1Click(Sender: TObject);
+begin
+  showmessage( datetostr(cxS.DateNavigator.HitTest.HitDate) );
+//  showmessage(datetostr(cxS.DateNavigator.date));
+end;
+
+procedure TfrmMain.Timer1Timer(Sender: TObject);
+begin
+  Timer1.Enabled := False;
+
+  frmLogin.ShowModal;
+end;
+
+end.

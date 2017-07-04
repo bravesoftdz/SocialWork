@@ -1,0 +1,103 @@
+unit uFamilyInput;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters, Menus, cxControls,
+  cxContainer, cxEdit, dxSkinsCore, dxSkinCaramel, cxCheckBox, cxTextEdit,
+  StdCtrls, ExtCtrls, cxButtons, cxMaskEdit, cxDropDownEdit, cxCalendar,
+  uGlobal;
+
+type
+  TfrmFamilyInput = class(TForm)
+    btnOK: TcxButton;
+    btnClose: TcxButton;
+    Panel1: TPanel;
+    Label6: TLabel;
+    Label9: TLabel;
+    txtFamilyName: TcxTextEdit;
+    chkInMate: TcxCheckBox;
+    chkPay: TcxCheckBox;
+    txtHealth: TcxTextEdit;
+    Label1: TLabel;
+    cboRelationship: TcxComboBox;
+    procedure FormShow(Sender: TObject);
+  private
+    { Private declarations }
+    procedure ClearControls;
+    procedure SetControls;
+    function isValidInput: Boolean;
+  public
+    { Public declarations }
+    Relation: TRelationshipInfo;
+  end;
+
+var
+  frmFamilyInput: TfrmFamilyInput;
+
+implementation
+uses uConfig, uDB;
+{$R *.dfm}
+
+{ TfrmFamilyInput }
+
+procedure TfrmFamilyInput.ClearControls;
+begin
+  cboRelationship.ItemIndex := -1;
+  txtFamilyName.Clear;
+  txtHealth.Clear;
+  chkInMate.Checked := True;
+  chkPay.Checked := True;
+end;
+
+procedure TfrmFamilyInput.FormShow(Sender: TObject);
+begin
+  ClearControls;
+
+  if dbMain.GetRelationshipList(oConfig.User.HospitalID, cboRelationship.Properties.Items) then
+    cboRelationship.ItemIndex := 0;
+
+  SetControls;
+
+  cboRelationship.SetFocus;
+end;
+
+function TfrmFamilyInput.isValidInput: Boolean;
+begin
+  result := false;
+
+  if cboRelationship.ItemIndex < 0 then
+  begin
+    oGlobal.Msg('가구주와의 관계를 선택하십시오!');
+    cboRelationship.SetFocus;
+    Exit;
+  end;
+
+  if oGlobal.isNullStr(txtFamilyName.Text) then
+  begin
+    oGlobal.Msg('성명을 입력하십시오!');
+    txtFamilyName.SetFocus;
+    Exit;
+  end;
+
+  if oGlobal.isNullStr(txtHealth.Text) then
+  begin
+    oGlobal.Msg('건강상태를 입력하십시오!');
+    txtHealth.SetFocus;
+    Exit;
+  end;
+
+  result := True;
+end;
+
+procedure TfrmFamilyInput.SetControls;
+begin
+  cboRelationship.ItemIndex := cboRelationship.Properties.Items.IndexOf(Relation.RelationshipName);
+  txtFamilyName.Text := Relation.FamilyName;
+  txtHealth.Text := Relation.Health;
+  chkInMate.Checked := Relation.InMate;
+  chkPay.Checked := Relation.Pay;
+end;
+
+end.

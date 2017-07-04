@@ -1,0 +1,30 @@
+unit uRecordReport;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, QRCtrls, QuickRpt, ExtCtrls, ComCtrls, QRPrntr;
+
+type
+  TfrmRecordReport = class(TForm)
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    QuickRep1: TQuickRep;
+    QRBand1: TQRBand;
+    QRLabel1: TQRLabel;
+    QRDBText1: TQRDBText;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmRecordReport: TfrmRecordReport;
+
+implementation
+uses uRecord;
+{$R *.dfm}
+
+end.

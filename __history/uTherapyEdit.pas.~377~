@@ -1,0 +1,489 @@
+unit uTherapyEdit;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters, Menus, StdCtrls,
+  cxButtons, uGlobal, ADODB, DB, cxControls, cxContainer, cxEdit, dxSkinsCore,
+  dxSkinCaramel, dxSkinOffice2007Blue, cxTextEdit, cxGroupBox, cxMaskEdit,
+  cxDropDownEdit, cxSpinEdit, cxTimeEdit, cxCalendar, cxButtonEdit, cxLabel,
+  cxCheckBox, cxListBox, dxSkinBlack, dxSkinBlue, dxSkinCoffee, dxSkinDarkRoom,
+  dxSkinDarkSide, dxSkinFoggy, dxSkinGlassOceans, dxSkiniMaginary, dxSkinLilian,
+  dxSkinLiquidSky, dxSkinLondonLiquidSky, dxSkinMcSkin, dxSkinMoneyTwins,
+  dxSkinOffice2007Black, dxSkinOffice2007Green, dxSkinOffice2007Pink,
+  dxSkinOffice2007Silver, dxSkinPumpkin, dxSkinSeven, dxSkinSharp, dxSkinSilver,
+  dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinsDefaultPainters,
+  dxSkinValentine, dxSkinXmas2008Blue, ExtCtrls;
+
+type
+  TfrmTherapyEdit = class(TForm)
+    cxGroupBox8: TcxGroupBox;
+    txtContent: TcxTextEdit;
+    cxGroupBox4: TcxGroupBox;
+    cboProgram: TcxComboBox;
+    cxGroupBox5: TcxGroupBox;
+    cxDateStart: TcxDateEdit;
+    cxGroupBox1: TcxGroupBox;
+    cxBELocation: TcxButtonEdit;
+    cxGroupBox3: TcxGroupBox;
+    cxBEChairman: TcxButtonEdit;
+    cxGroupBox2: TcxGroupBox;
+    cboWorker: TcxComboBox;
+    cxGroupBox6: TcxGroupBox;
+    cboDoctor: TcxComboBox;
+    cxGroupBox22: TcxGroupBox;
+    memoChairmanOpinion: TMemo;
+    cxGroupBox10: TcxGroupBox;
+    memoWorkerOpinion: TMemo;
+    cxGroupBox11: TcxGroupBox;
+    memoDoctorOpinion: TMemo;
+    cxGroupBox7: TcxGroupBox;
+    cxTimeStart: TcxTimeEdit;
+    cxTimeFinish: TcxTimeEdit;
+    cxLabel6: TcxLabel;
+    chkNotFixed: TcxCheckBox;
+    btnSave: TcxButton;
+    btnClose: TcxButton;
+    btnDelete: TcxButton;
+    btnDoJob: TcxButton;
+    chkDone: TcxCheckBox;
+    btnShortKey: TcxButton;
+    btnPrint: TcxButton;
+    cxGroupBox12: TcxGroupBox;
+    cxListProgramPatient: TcxListBox;
+    btnTherapyHisotyr: TcxButton;
+    Panel5: TPanel;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormShow(Sender: TObject);
+    procedure chkNotFixedPropertiesChange(Sender: TObject);
+    procedure cboProgramKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure cxBELocationPropertiesButtonClick(Sender: TObject;
+      AButtonIndex: Integer);
+    procedure cxBEChairmanPropertiesButtonClick(Sender: TObject;
+      AButtonIndex: Integer);
+    procedure btnSaveClick(Sender: TObject);
+    procedure btnDeleteClick(Sender: TObject);
+    procedure btnDoJobClick(Sender: TObject);
+    procedure btnShortKeyClick(Sender: TObject);
+    procedure btnPrintClick(Sender: TObject);
+    procedure btnTherapyHisotyrClick(Sender: TObject);
+  private
+    { Private declarations }
+    function isValidInput: Boolean;
+  public
+    { Public declarations }
+    adoSchedule: TADOQuery;
+    FNotFixed: Boolean;
+    FSelStart: TDateTime;
+    FSelFinish: TDateTime;
+    FEditMode: TEditMode;
+    FWardID: Integer;
+    FProgramName: string;
+  end;
+
+var
+  frmTherapyEdit: TfrmTherapyEdit;
+
+implementation
+
+uses uConfig, uSelectList, uDB, uDoJob, uShortKeyMgr, uTherapyPrint,
+  uTherapyHistory;
+{$R *.dfm}
+
+procedure TfrmTherapyEdit.btnDoJobClick(Sender: TObject);
+begin
+  frmDoJob.FScheduleID := adoSchedule.FieldByName('ScheduleID').AsInteger;
+  frmDoJob.FWardID := FWardID;
+  frmDoJob.FSDate := adoSchedule.FieldByName('sDate').AsString;
+  frmDoJob.ShowModal;
+
+  dbMain.GetProgramPatientList(adoSchedule.FieldByName('ScheduleID').AsInteger,
+    cxListProgramPatient.Items);
+end;
+
+procedure TfrmTherapyEdit.btnPrintClick(Sender: TObject);
+begin
+  frmTherapyPrint.FScheduleID := adoSchedule.FieldByName('ScheduleID')
+    .AsInteger;
+  frmTherapyPrint.ShowModal;
+end;
+
+procedure TfrmTherapyEdit.btnSaveClick(Sender: TObject);
+var
+  nScheduleID: Integer;
+begin
+  if not isValidInput then
+    Exit;
+
+  if oGlobal.YesNo('저장하시겠습니까?') <> mrYes then
+    Exit;
+
+  adoSchedule.DisableControls;
+  try
+    adoSchedule.Connection.BeginTrans;
+    if FEditMode = emAppend then
+    begin
+      adoSchedule.Append;
+      adoSchedule.FieldByName('HospitalID').AsInteger :=
+        oConfig.User.HospitalID;
+      adoSchedule.FieldByName('WardID').AsInteger := FWardID;
+    end
+    else
+      adoSchedule.Edit;
+
+    adoSchedule.FieldByName('ProgramID').AsInteger := dbMain.GetProgramID
+      (oConfig.User.HospitalID, cboProgram.Text);
+    adoSchedule.FieldByName('Content').AsString := trim(txtContent.Text);
+
+    if chkNotFixed.Checked then
+    begin
+      adoSchedule.FieldByName('Options').AsInteger := cAllDayEvent;
+      adoSchedule.FieldByName('State').AsInteger := cJobFree;
+    end
+    else
+    begin
+      adoSchedule.FieldByName('Options').AsInteger := cNotAllDayEvent;
+      if chkDone.Checked then
+        adoSchedule.FieldByName('State').AsInteger := cJobDone
+      else
+        adoSchedule.FieldByName('State').AsInteger := cJobFree;
+    end;
+
+    adoSchedule.FieldByName('StartTime').AsDateTime :=
+      oGlobal.DateAndTimeToDateTime(cxDateStart.date, cxTimeStart.Time);
+    adoSchedule.FieldByName('FinishTime').AsDateTime :=
+      oGlobal.DateAndTimeToDateTime(cxDateStart.date, cxTimeFinish.Time);
+
+    adoSchedule.FieldByName('SDate').AsString := oGlobal.DateToString
+      (cxDateStart.date);
+    adoSchedule.FieldByName('FDate').AsString := oGlobal.DateToString
+      (cxDateStart.date);
+    adoSchedule.FieldByName('STime').AsString := oGlobal.TimeToStringHN
+      (cxTimeStart.Time);
+    adoSchedule.FieldByName('FTime').AsString := oGlobal.TimeToStringHN
+      (cxTimeFinish.Time);
+
+    adoSchedule.FieldByName('ChairmanIDs').AsString := dbMain.GetChairmanIDs
+      (oConfig.User.HospitalID, cxBEChairman.Text);
+    adoSchedule.FieldByName('ChairmanNames').AsString := cxBEChairman.Text;
+    adoSchedule.FieldByName('LocationIDs').AsString := dbMain.GetLocationIDs
+      (oConfig.User.HospitalID, cxBELocation.Text);
+
+    adoSchedule.FieldByName('ChairmanOpinion').AsString := trim
+      (memoChairmanOpinion.Text);
+    adoSchedule.FieldByName('WorkerID').AsString := dbMain.GetUserID
+      (oConfig.User.HospitalID, cboWorker.Text);
+    adoSchedule.FieldByName('WorkerOpinion').AsString := trim
+      (memoWorkerOpinion.Text);
+    adoSchedule.FieldByName('DoctorID').AsString := dbMain.GetDoctorID
+      (oConfig.User.HospitalID, cboDoctor.Text);
+    adoSchedule.FieldByName('DoctorOpinion').AsString := trim
+      (memoDoctorOpinion.Text);
+
+    adoSchedule.FieldByName('Writer').AsString := oConfig.User.UserID;
+    adoSchedule.FieldByName('WriteDate').AsString := oGlobal.DateToString(now);
+
+    adoSchedule.Post;
+
+    adoSchedule.Connection.CommitTrans;
+
+    btnDelete.Enabled := True;
+    btnDoJob.Enabled := True;
+    btnPrint.Enabled := True;
+
+    if FEditMode = emAppend then
+      FEditMode := emUpdate;
+
+    oGlobal.Msg('저장되었습니다!');
+
+    nScheduleID := adoSchedule.FieldByName('ScheduleID').AsInteger;
+
+    adoSchedule.Close;
+    adoSchedule.Open;
+    adoSchedule.locate('ScheduleID', nScheduleID, [loCaseInsensitive]);
+
+    // ModalResult := mrOK;
+  except
+    adoSchedule.Connection.RollbackTrans;
+    oGlobal.Msg('저장 중 문제가 발생했습니다!');
+  end;
+  adoSchedule.EnableControls;
+end;
+
+procedure TfrmTherapyEdit.btnShortKeyClick(Sender: TObject);
+begin
+  frmShortKeyMgr.ShowModal;
+end;
+
+procedure TfrmTherapyEdit.btnTherapyHisotyrClick(Sender: TObject);
+begin
+  if cboProgram.ItemIndex < 0 then
+  begin
+    oGlobal.Msg('프로그램이 선택되지 않았습니다!');
+    Exit;
+  end;
+
+  frmTherapyHistory.HospitalID := inttostr(oConfig.User.HospitalID);
+  frmTherapyHistory.ProgramID := inttostr
+    (dbMain.GetProgramID(oConfig.User.HospitalID, cboProgram.Text));
+
+  if frmTherapyHistory.ShowModal = mrOK then
+  begin
+    if frmTherapyHistory.chkContent.Checked then
+      txtContent.Text := frmTherapyHistory.adoSchedule.FieldByName('Content')
+        .AsString;
+    if frmTherapyHistory.chkChairmanOpinion.Checked then
+      memoChairmanOpinion.Lines.Text :=
+        frmTherapyHistory.adoSchedule.FieldByName('ChairmanOpinion').AsString;
+    if frmTherapyHistory.chkWorkerOpinion.Checked then
+      memoWorkerOpinion.Lines.Text := frmTherapyHistory.adoSchedule.FieldByName
+        ('WorkerOpinion').AsString;
+    if frmTherapyHistory.chkDoctorOpinion.Checked then
+      memoDoctorOpinion.Lines.Text := frmTherapyHistory.adoSchedule.FieldByName
+        ('DoctorOpinion').AsString;
+  end;
+
+  frmTherapyHistory.CloseAll;
+end;
+
+procedure TfrmTherapyEdit.cboProgramKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Sender is TMemo) then
+  begin
+    if Key = VK_RETURN then
+      dbMain.SetCurrentKeyword(TMemo(Sender))
+    else if Key = VK_F1 then
+      oGlobal.GetShortKeyContent(Tmemo(Sender));
+  end;
+
+  if (Key = VK_RETURN) and (Sender is TWinControl) then
+  begin
+    if Sender = cboProgram then
+      cxDateStart.SetFocus
+    else if Sender = cxDateStart then
+    begin
+      if cxTimeStart.Enabled then
+        cxTimeStart.SetFocus
+      else
+        chkNotFixed.SetFocus
+    end
+    else if Sender = cxTimeStart then
+      cxTimeFinish.SetFocus
+    else if Sender = cxTimeFinish then
+      chkNotFixed.SetFocus
+    else if Sender = chkNotFixed then
+      cboWorker.SetFocus
+    else if Sender = cboWorker then
+      cboDoctor.SetFocus
+    else if Sender = cboDoctor then
+      txtContent.SetFocus
+    else if Sender = txtContent then
+      memoChairmanOpinion.SetFocus
+  end;
+
+end;
+
+procedure TfrmTherapyEdit.chkNotFixedPropertiesChange(Sender: TObject);
+begin
+  if chkNotFixed.Checked then
+  begin
+    cxTimeStart.Clear;
+    cxTimeFinish.Clear;
+    chkDone.Clear;
+  end;
+
+  cxTimeStart.Enabled := not chkNotFixed.Checked;
+  cxTimeFinish.Enabled := not chkNotFixed.Checked;
+  chkDone.Enabled := not chkDone.Checked;
+
+  if not chkNotFixed.Checked then
+    cxTimeStart.SetFocus;
+end;
+
+procedure TfrmTherapyEdit.cxBEChairmanPropertiesButtonClick(Sender: TObject;
+  AButtonIndex: Integer);
+var
+  sTemp: string;
+begin
+  frmSelectList.ListBoxAll.Items.Clear;
+  frmSelectList.ListBoxSelected.Items.Clear;
+  oGlobal.SetListFromText(cxBEChairman.Text, cDelimeter,
+    frmSelectList.ListBoxSelected.Items);
+  dbMain.GetUserList(oConfig.User.HospitalID, frmSelectList.ListBoxAll.Items,
+    False);
+
+  if frmSelectList.ShowModal = mrOK then
+  begin
+    oGlobal.SetTextFromList(frmSelectList.ListBoxSelected.Items, cDelimeter,
+      sTemp);
+    cxBEChairman.Text := sTemp;
+  end;
+end;
+
+procedure TfrmTherapyEdit.cxBELocationPropertiesButtonClick(Sender: TObject;
+  AButtonIndex: Integer);
+var
+  sTemp: string;
+begin
+  frmSelectList.ListBoxAll.Items.Clear;
+  frmSelectList.ListBoxSelected.Items.Clear;
+  oGlobal.SetListFromText(cxBELocation.Text, cDelimeter,
+    frmSelectList.ListBoxSelected.Items);
+  dbMain.GetLocationList(oConfig.User.HospitalID,
+    frmSelectList.ListBoxAll.Items);
+
+  if frmSelectList.ShowModal = mrOK then
+  begin
+    oGlobal.SetTextFromList(frmSelectList.ListBoxSelected.Items, cDelimeter,
+      sTemp);
+    cxBELocation.Text := sTemp;
+  end;
+end;
+
+procedure TfrmTherapyEdit.btnDeleteClick(Sender: TObject);
+begin
+  if adoSchedule.IsEmpty then
+    Exit;
+
+  if dbMain.isExistScheduleInProgramPatient
+    (adoSchedule.FieldByName('ScheduleID').AsInteger) then
+  begin
+    oGlobal.Msg('해당 일정에 입력된 내용이 있습니다!' + #13 + '해당 내용을 삭제한 후 다시 실행해 주십시오!');
+    Exit;
+  end;
+
+  if oGlobal.YesNo('삭제하시겠습니까?') <> mrYes then
+    Exit;
+
+  adoSchedule.DisableControls;
+  try
+    adoSchedule.Connection.BeginTrans;
+    adoSchedule.Delete;
+    adoSchedule.Connection.CommitTrans;
+
+    Close;
+  except
+    adoSchedule.Connection.RollbackTrans;
+    oGlobal.Msg('삭제하지 못했습니다!');
+  end;
+  adoSchedule.EnableControls;
+end;
+
+procedure TfrmTherapyEdit.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
+end;
+
+procedure TfrmTherapyEdit.FormShow(Sender: TObject);
+begin
+  oGlobal.ClearComponents(self);
+
+  if dbMain.getProgramList(oConfig.User.HospitalID, FWardID,
+    cboProgram.Properties.Items, False) then
+  begin
+    if oGlobal.isNullStr(FProgramName) then
+      cboProgram.ItemIndex := -1
+    else
+      cboProgram.ItemIndex := cboProgram.Properties.Items.IndexOf(FProgramName);
+  end;
+
+  dbMain.GetUserList(oConfig.User.HospitalID, cboWorker.Properties.Items,
+    False);
+  dbMain.GetDoctorList(oConfig.User.HospitalID, cboDoctor.Properties.Items);
+
+  btnDelete.Enabled := FEditMode = emUpdate;
+  btnDoJob.Enabled := FEditMode = emUpdate;
+  btnPrint.Enabled := FEditMode = emUpdate;
+
+  if FEditMode = emAppend then
+  begin
+    chkNotFixed.Checked := FNotFixed;
+    cxDateStart.EditText := oGlobal.DateToString(FSelStart);
+    cxTimeStart.Time := FSelStart;
+    cxTimeFinish.Time := FSelFinish;
+
+    if oGlobal.TimeToString(FSelStart) = oGlobal.TimeToString(FSelFinish) then
+      chkNotFixed.Checked := True;
+  end
+  else
+  begin
+    dbMain.GetProgramPatientList(adoSchedule.FieldByName('ScheduleID')
+        .AsInteger, cxListProgramPatient.Items);
+
+    cxDateStart.EditText := oGlobal.DateToString
+      (adoSchedule.FieldByName('StartTime').AsDateTime);
+    cxTimeStart.Time := adoSchedule.FieldByName('StartTime').AsDateTime;
+    cxTimeFinish.Time := adoSchedule.FieldByName('FinishTime').AsDateTime;
+    chkNotFixed.Checked := adoSchedule.FieldByName('Options')
+      .AsInteger = cAllDayEvent;
+    chkDone.Checked := adoSchedule.FieldByName('State').AsInteger = cJobDone;
+    cboWorker.ItemIndex := cboWorker.Properties.Items.IndexOf
+      (adoSchedule.FieldByName('WorkerName').AsString);
+    cboDoctor.ItemIndex := cboDoctor.Properties.Items.IndexOf
+      (adoSchedule.FieldByName('DoctorName').AsString);
+    cxBELocation.Text := dbMain.GetLocationNames
+      (oConfig.User.HospitalID, adoSchedule.FieldByName('LocationIDs')
+        .AsString);
+    cxBEChairman.Text := dbMain.GetChairmanNames
+      (oConfig.User.HospitalID, adoSchedule.FieldByName('ChairmanIDs')
+        .AsString);
+    txtContent.Text := adoSchedule.FieldByName('Content').AsString;
+    memoChairmanOpinion.Lines.Text := adoSchedule.FieldByName('ChairmanOpinion')
+      .AsString;
+    memoWorkerOpinion.Lines.Text := adoSchedule.FieldByName('WorkerOpinion')
+      .AsString;
+    memoDoctorOpinion.Lines.Text := adoSchedule.FieldByName('DoctorOpinion')
+      .AsString;
+  end;
+end;
+
+function TfrmTherapyEdit.isValidInput: Boolean;
+begin
+  result := False;
+
+  if cboProgram.ItemIndex < 0 then
+  begin
+    oGlobal.Msg('프로그램을 선택하십시오!');
+    cboProgram.SetFocus;
+    Exit;
+  end;
+
+  if oGlobal.isNullStr(cxDateStart.Text) then
+  begin
+    oGlobal.Msg('일자를 선택하십시오!');
+    cxDateStart.SetFocus;
+    Exit;
+  end;
+
+  if cboWorker.ItemIndex < 0 then
+  begin
+    oGlobal.Msg('사회복지사를 선택하십시오!');
+    cboWorker.SetFocus;
+    Exit;
+  end;
+
+  if oGlobal.isNullStr(txtContent.Text) then
+  begin
+    oGlobal.Msg('내용을 입력하십시오!');
+    txtContent.SetFocus;
+    Exit;
+  end;
+
+  if cxTimeStart.Time > cxTimeFinish.Time then
+  begin
+    oGlobal.Msg('시작시간이 종료시간보다 늦습니다!');
+    cxTimeStart.SetFocus;
+    Exit;
+  end;
+
+  result := True;
+end;
+
+end.

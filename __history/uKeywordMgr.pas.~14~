@@ -1,0 +1,46 @@
+unit uKeywordMgr;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, uFrameKeyword, cxGraphics, cxLookAndFeels,
+  cxLookAndFeelPainters, Menus, StdCtrls, cxButtons;
+
+type
+  TfrmKeywordMgr = class(TForm)
+    frameKeyword: TframeKeyword;
+    btnClose: TcxButton;
+    procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure frameKeywordcxKeywordTreeDblClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmKeywordMgr: TfrmKeywordMgr;
+
+implementation
+uses uGlobal, uConfig;
+{$R *.dfm}
+
+procedure TfrmKeywordMgr.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  frameKeyword.Close;
+end;
+
+procedure TfrmKeywordMgr.FormShow(Sender: TObject);
+begin
+  frameKeyword.Open;
+end;
+
+procedure TfrmKeywordMgr.frameKeywordcxKeywordTreeDblClick(Sender: TObject);
+begin
+  if not frameKeyword.adoKeyword.isEmpty then
+    ModalResult := mrOK;
+end;
+
+end.

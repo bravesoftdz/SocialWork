@@ -1,0 +1,93 @@
+object frmNewPatient: TfrmNewPatient
+  Left = 0
+  Top = 0
+  BorderStyle = bsDialog
+  Caption = #54872#51088#44288#47532
+  ClientHeight = 465
+  ClientWidth = 622
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object GroupBox1: TGroupBox
+    Left = 18
+    Top = 14
+    Width = 367
+    Height = 193
+    Caption = #54872#51088#51221#48372
+    TabOrder = 0
+    object Label1: TLabel
+      Left = 22
+      Top = 28
+      Width = 48
+      Height = 13
+      Alignment = taRightJustify
+      Caption = #54872#51088#48264#54840
+    end
+    object Label2: TLabel
+      Left = 46
+      Top = 52
+      Width = 24
+      Height = 13
+      Alignment = taRightJustify
+      Caption = #49457#47749
+    end
+    object Label3: TLabel
+      Left = 22
+      Top = 74
+      Width = 48
+      Height = 13
+      Alignment = taRightJustify
+      Caption = #49373#45380#50900#51068
+    end
+    object Label4: TLabel
+      Left = 46
+      Top = 100
+      Width = 24
+      Height = 13
+      Alignment = taRightJustify
+      Caption = #49457#48324
+    end
+    object CheckBox1: TCheckBox
+      Left = 158
+      Top = 146
+      Width = 97
+      Height = 17
+      Caption = 'Used'
+      TabOrder = 0
+    end
+    object cxDateEdit1: TcxDateEdit
+      Left = 76
+      Top = 69
+      TabOrder = 1
+      Width = 121
+    end
+    object cxTextEdit1: TcxTextEdit
+      Left = 76
+      Top = 25
+      TabOrder = 2
+      Text = 'cxTextEdit1'
+      Width = 121
+    end
+    object cxTextEdit2: TcxTextEdit
+      Left = 76
+      Top = 47
+      TabOrder = 3
+      Text = 'cxTextEdit1'
+      Width = 121
+    end
+  end
+  object GroupBox2: TGroupBox
+    Left = 20
+    Top = 218
+    Width = 367
+    Height = 227
+    Caption = #51077'/'#53748#50896' '#51221#48372
+    TabOrder = 1
+  end
+end

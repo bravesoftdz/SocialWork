@@ -1,0 +1,12 @@
+unit uConst;
+
+interface
+const
+  cIniFileName = 'SocialWork.ini';
+  cUpdaterName = 'RHnCoUpdater.exe';
+  cAppName = 'SocialWork';
+  cVersion = '1.0';
+
+implementation
+
+end.

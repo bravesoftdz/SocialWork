@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2011-07-04 11:18:29.250.pas,C:\Documents and Settings\Administrator\My Documents\RAD Studio\Projects\Unit6.pas=C:\Dev\Program\사회사업실\화면설계\uMain.pas</Transaction>
+    <Transaction>2011-07-04 11:18:29.250.dfm,C:\Documents and Settings\Administrator\My Documents\RAD Studio\Projects\Unit6.dfm=C:\Dev\Program\사회사업실\화면설계\uMain.dfm</Transaction>
+    <Transaction>2011-07-04 11:18:41.187.dproj,C:\Documents and Settings\Administrator\My Documents\RAD Studio\Projects\Project4.dproj=C:\Dev\Program\사회사업실\화면설계\사회사업실화면설계.dproj</Transaction>
+    <Transaction>2011-07-04 11:24:04.656.pas,C:\Dev\Program\사회사업실\화면설계\Unit1.pas=C:\Dev\Program\사회사업실\화면설계\uLogin.pas</Transaction>
+    <Transaction>2011-07-04 11:24:04.656.dfm,C:\Dev\Program\사회사업실\화면설계\Unit1.dfm=C:\Dev\Program\사회사업실\화면설계\uLogin.dfm</Transaction>
+    <Transaction>2011-11-08 11:41:19.740.pas,C:\Component2010\DE654\ExpressScheduler 3\Sources\cxSchedulerEventEditor.pas=</Transaction>
+    <Transaction>2011-11-08 11:41:19.740.dfm,C:\Component2010\DE654\ExpressScheduler 3\Sources\cxSchedulerEventEditor.dfm=</Transaction>
+  </Transactions>
+</BorlandProject>

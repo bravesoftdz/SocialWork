@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2011-08-19 16:42:40.296.pas,C:\Documents and Settings\Administrator\My Documents\RAD Studio\Projects\Unit16.pas=C:\Dev\Program\사회사업실\Admin\uMain.pas</Transaction>
+    <Transaction>2011-08-19 16:42:40.296.dfm,C:\Documents and Settings\Administrator\My Documents\RAD Studio\Projects\Unit16.dfm=C:\Dev\Program\사회사업실\Admin\uMain.dfm</Transaction>
+    <Transaction>2011-08-19 16:43:29.468.dproj,C:\Documents and Settings\Administrator\My Documents\RAD Studio\Projects\Project14.dproj=C:\Dev\Program\사회사업실\Admin\SocialWorkAdmin.dproj</Transaction>
+    <Transaction>2011-08-20 09:09:37.281.pas,C:\Dev\Program\사회사업실\Admin\uMain.pas=C:\Dev\Program\사회사업실\Admin\uAdminMain.pas</Transaction>
+    <Transaction>2011-08-20 09:09:37.281.dfm,C:\Dev\Program\사회사업실\Admin\uMain.dfm=C:\Dev\Program\사회사업실\Admin\uAdminMain.dfm</Transaction>
+    <Transaction>2011-09-16 11:37:34.924.pas,C:\Dev\Program\사회사업실\Admin\Unit1.pas=C:\Dev\Program\사회사업실\uPassword.pas</Transaction>
+    <Transaction>2011-09-16 11:37:34.924.dfm,C:\Dev\Program\사회사업실\Admin\Unit1.dfm=C:\Dev\Program\사회사업실\uPassword.dfm</Transaction>
+    <Transaction>2011-09-16 11:59:58.268.pas,C:\Dev\Program\사회사업실\uPassword.pas=</Transaction>
+    <Transaction>2011-09-16 11:59:58.268.dfm,C:\Dev\Program\사회사업실\uPassword.dfm=</Transaction>
+  </Transactions>
+</BorlandProject>

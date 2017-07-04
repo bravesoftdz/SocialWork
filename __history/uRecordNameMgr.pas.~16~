@@ -1,0 +1,83 @@
+unit uRecordNameMgr;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters, Menus, StdCtrls,
+  cxButtons, uGlobal, uConfig, uDB, cxControls, cxStyles, dxSkinsCore,
+  dxSkinCaramel, dxSkinscxPC3Painter, cxCustomData, cxFilter, cxData,
+  cxDataStorage, cxEdit, DB, cxDBData, cxLabel, ADODB, cxGridLevel,
+  cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxClasses,
+  cxGridCustomView, cxGrid;
+
+type
+  TfrmRecordNameMgr = class(TForm)
+    btnWardUpdate: TcxButton;
+    cxGrid1: TcxGrid;
+    cxGRecordType: TcxGridDBTableView;
+    cxGrid1Level1: TcxGridLevel;
+    dsRecordType: TDataSource;
+    adoRecordType: TADOQuery;
+    cxGRecordTypeName: TcxGridDBColumn;
+    cxGRecordTypeCustomName: TcxGridDBColumn;
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure btnWardUpdateClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmRecordNameMgr: TfrmRecordNameMgr;
+
+implementation
+uses uInputName;
+{$R *.dfm}
+
+procedure TfrmRecordNameMgr.btnWardUpdateClick(Sender: TObject);
+var
+  oInputForm: TfrmInputName;
+begin
+  Application.CreateForm(TfrmInputName, oInputForm);
+
+  oInputForm.lblInputTitle.Caption := '사용할 기록지명을 입력하십시오!';
+  oInputForm.txtInput.Text := adoRecordType.FieldByName('CustomName').AsString;
+  oInPutForm.txtInput.Properties.MaxLength := adoRecordType.FieldByName('CustomName').Size;
+  oInPutForm.lblSeq.Visible := False;
+  oInputForm.spinSeq.Visible := False;
+  oInputForm.chkUsed.Visible := False;
+
+  if oInputForm.ShowModal = mrOK then
+  begin
+    adoRecordType.DisableControls;
+    try
+      adoRecordType.Connection.BeginTrans;
+
+      adoRecordType.Edit;
+      adoRecordType.FieldByName('CustomName').AsString := trim(oInPutForm.txtInput.Text);
+      adoRecordType.Post;
+
+      adoRecordType.Connection.CommitTrans;
+    except
+      adoRecordType.Connection.RollbackTrans;
+
+      oGlobal.Msg('수정하지 못했습니다!');
+    end;
+  end;
+
+  oInPutForm.lblSeq.Visible := True;
+  oInputForm.spinSeq.Visible := True;
+  oInputForm.chkUsed.Visible := True;
+
+  oInputForm.Free;
+end;
+
+procedure TfrmRecordNameMgr.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then Close;
+end;
+
+end.

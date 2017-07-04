@@ -1,0 +1,267 @@
+unit uProgramMgr;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters,
+  cxStyles, dxSkinsCore, dxSkinCaramel, dxSkinscxPC3Painter, cxCustomData,
+  cxFilter, cxData, cxDataStorage, cxEdit, DB, cxDBData, Menus, StdCtrls,
+  cxButtons, ADODB, cxGridLevel, cxGridCustomTableView, cxGridTableView,
+  cxGridDBTableView, cxClasses, cxGridCustomView, cxGrid, uGlobal, cxContainer,
+  cxLabel, cxTextEdit, cxMaskEdit, cxDropDownEdit, ExtCtrls, ActnList,
+  dxSkinOffice2007Blue, dxSkinBlack, dxSkinBlue, dxSkinCoffee, dxSkinDarkRoom,
+  dxSkinDarkSide, dxSkinFoggy, dxSkinGlassOceans, dxSkiniMaginary, dxSkinLilian,
+  dxSkinLiquidSky, dxSkinLondonLiquidSky, dxSkinMcSkin, dxSkinMoneyTwins,
+  dxSkinOffice2007Black, dxSkinOffice2007Green, dxSkinOffice2007Pink,
+  dxSkinOffice2007Silver, dxSkinPumpkin, dxSkinSeven, dxSkinSharp, dxSkinSilver,
+  dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinsDefaultPainters,
+  dxSkinValentine, dxSkinXmas2008Blue, cxColorComboBox;
+
+type
+  TfrmProgramMgr = class(TForm)
+    adoProgram: TADOQuery;
+    dsProgram: TDataSource;
+    btnUserAppend: TcxButton;
+    btnUserUpdate: TcxButton;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    cxLabel1: TcxLabel;
+    cboProgram: TcxComboBox;
+    cxLabel2: TcxLabel;
+    cboWard: TcxComboBox;
+    cxG: TcxGrid;
+    cxGProgram: TcxGridDBTableView;
+    cxGLevel1: TcxGridLevel;
+    cxGProgramProgramName: TcxGridDBColumn;
+    cxGProgramRegDate: TcxGridDBColumn;
+    cxGProgramUseAll: TcxGridDBColumn;
+    cxGProgramUsed: TcxGridDBColumn;
+    cxGProgramProgramTypeName: TcxGridDBColumn;
+    cxGProgramWardName: TcxGridDBColumn;
+    ActionList1: TActionList;
+    actSelect: TAction;
+    cxGProgramColor: TcxGridDBColumn;
+    procedure FormShow(Sender: TObject);
+    procedure actSelectExecute(Sender: TObject);
+    procedure btnUserAppendClick(Sender: TObject);
+    procedure btnUserUpdateClick(Sender: TObject);
+    procedure cxGProgramCustomDrawCell(Sender: TcxCustomGridTableView;
+      ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo;
+      var ADone: Boolean);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmProgramMgr: TfrmProgramMgr;
+
+implementation
+uses uDB, uConfig, uProgramInput;
+{$R *.dfm}
+
+procedure TfrmProgramMgr.actSelectExecute(Sender: TObject);
+var
+  nHospitalID, nWardID, nGubun: integer;
+  sHospitalID, str: string;
+begin
+  nHospitalID := oConfig.User.HospitalID;
+  sHospitalID := inttostr(nHospitalID);
+  nWardID := dbMain.GetWardID(nHospitalID, cboWard.Text);
+  nGubun := dbMain.GetProgramTypeID(cboProgram.Text);
+
+  str := 'select *' +
+         '       ,(select ProgramTypeName from ProgramTypes where ProgramTypes.ProgramTypeID=Programs.ProgramTypeID) as ProgramTypeName' +
+         '       ,(select WardName from Wards where Wards.WardID=Programs.WardID) as WardName' +
+         '  from programs' +
+         ' where hospitalid=' + sHospitalID;
+
+  if nWardID <> -1  then
+    str := str +
+         '   and WardID=' + inttostr(nWardID);
+  if nGubun <> -1 then
+    str := str +
+         '   and ProgramTypeID=' + inttostr(nGubun);
+
+  str := str +
+         '  order by ProgramTypeName, ProgramName';
+
+  adoProgram.SQL.Text := str;
+
+  try
+    screen.Cursor := crHourGlass;
+    adoProgram.Open;
+    screen.Cursor := crDefault;
+  except
+    screen.Cursor := crDefault;
+    oGlobal.Msg('프로그램정보를 가져올 수 없습니다!');
+  end;
+end;
+
+procedure TfrmProgramMgr.btnUserAppendClick(Sender: TObject);
+var
+  oInput: TfrmProgramInput;
+  nProgramID: integer;
+begin
+  if not adoProgram.Active then
+  begin
+    oGlobal.Msg('프로그램정보에 연결되지 못했습니다!');
+    Exit;
+  end;
+
+  Application.CreateForm(TfrmProgramInput, oInput);
+
+  oInput.ProgramInfo.Clear;
+  oInput.ProgramInfo.Mode := emAppend;
+  oInput.ProgramInfo.Color := clWhite;
+  oInput.ProgramInfo.HospitalID := oConfig.User.HospitalID;
+
+  if cboProgram.ItemIndex > 0 then
+  begin
+    oInput.ProgramInfo.ProgramTypeID := dbMain.GetProgramTypeID(cboProgram.Text);
+    oInput.ProgramInfo.ProgramTypeName := cboProgram.Text;
+  end;
+
+  if cboWard.ItemIndex > 0 then
+  begin
+    oInput.ProgramInfo.WardID := dbMain.GetWardID(oConfig.User.HospitalID, cboWard.Text);
+    oInput.ProgramInfo.WardName := cboWard.Text;
+    oInput.ProgramInfo.UseAll := False;
+  end
+  else
+    oInput.ProgramInfo.WardName := cboWard.Text;
+
+  if oInput.ShowModal = mrOK then
+  begin
+    adoProgram.DisableControls;
+    try
+      adoProgram.Connection.BeginTrans;
+      adoProgram.Append;
+      adoProgram.FieldByName('ProgramTypeID').AsInteger := oInput.ProgramInfo.ProgramTypeID;
+      adoProgram.FieldByName('HospitalID').AsInteger := oInput.ProgramInfo.HospitalID;
+      adoProgram.FieldByName('ProgramName').AsString := oInput.ProgramInfo.ProgramName;
+      adoProgram.FieldByName('Color').AsInteger := oInput.ProgramInfo.Color;
+      if oInput.ProgramInfo.WardID > -1 then
+        adoProgram.FieldByName('WardID').AsInteger := oInput.ProgramInfo.WardID;
+      adoProgram.FieldByName('UseAll').AsBoolean := oInput.ProgramInfo.UseAll;
+      adoProgram.FieldByName('Used').AsBoolean := oInput.ProgramInfo.Used;
+      adoProgram.FieldByName('RegDate').AsString := oGlobal.DateToString(now);
+      adoProgram.Post;
+      adoProgram.Connection.CommitTrans;
+
+      nProgramID := adoProgram.FieldByName('ProgramID').AsInteger;
+
+      screen.Cursor := crDefault;
+
+      adoProgram.Close;
+      adoProgram.Open;
+      adoProgram.Locate('ProgramID', nProgramID, [loCaseInsensitive]);
+
+      oGlobal.Msg('추가하였습니다!');
+    except
+      adoProgram.Connection.RollbackTrans;
+      screen.Cursor := crDefault;
+      oGlobal.Msg('추가하지 못했습니다!');
+    end;
+    adoProgram.EnableControls;
+  end;
+
+  oInput.Free;
+end;
+
+procedure TfrmProgramMgr.btnUserUpdateClick(Sender: TObject);
+var
+  oInput: TfrmProgramInput;
+  nProgramID: integer;
+begin
+  if adoProgram.IsEmpty then Exit;
+
+  Application.CreateForm(TfrmProgramInput, oInput);
+
+  oInput.ProgramInfo.Clear;
+  oInput.ProgramInfo.Mode := emUpdate;
+  oInput.ProgramInfo.ProgramTypeID := adoProgram.FieldByName('ProgramTypeID').AsInteger;
+  oInput.ProgramInfo.ProgramTypeName := adoProgram.FieldByName('ProgramTypeName').AsString;
+  oInput.ProgramInfo.HospitalID := adoProgram.FieldByName('HospitalID').AsInteger;
+  oInput.ProgramInfo.ProgramID := adoProgram.FieldByName('ProgramID').AsInteger;
+  oInput.ProgramInfo.ProgramName := adoProgram.FieldByName('ProgramName').AsString;
+  oInput.ProgramInfo.Color := adoProgram.FieldByName('Color').AsInteger;
+
+  if adoProgram.FieldByName('UseAll').AsBoolean then
+  begin
+    oInput.ProgramInfo.WardID := -1;
+    oInput.ProgramInfo.WardName := '전체병동';
+  end
+  else
+  begin
+    oInput.ProgramInfo.WardID := adoProgram.FieldByName('WardID').AsInteger;
+    oInput.ProgramInfo.WardName := adoProgram.FieldByName('WardName').AsString;
+  end;
+
+  oInput.ProgramInfo.UseAll := adoProgram.FieldByName('UseAll').AsBoolean;
+  oInput.ProgramInfo.Used := adoProgram.FieldByName('Used').AsBoolean;
+
+  if oInput.ShowModal = mrOK then
+  begin
+    adoProgram.DisableControls;
+    try
+      adoProgram.Connection.BeginTrans;
+      adoProgram.Edit;
+      adoProgram.FieldByName('ProgramName').AsString := oInput.ProgramInfo.ProgramName;
+      adoProgram.FieldByName('Color').AsInteger := oInput.ProgramInfo.Color;
+
+      if oInput.ProgramInfo.WardID > -1 then
+        adoProgram.FieldByName('WardID').AsInteger := oInput.ProgramInfo.WardID
+      else
+        adoProgram.FieldByName('WardID').AsString := '';
+      adoProgram.FieldByName('UseAll').AsBoolean := oInput.ProgramInfo.UseAll;
+      adoProgram.FieldByName('Used').AsBoolean := oInput.ProgramInfo.Used;
+      adoProgram.Post;
+      adoProgram.Connection.CommitTrans;
+
+      nProgramID := adoProgram.FieldByName('ProgramID').AsInteger;
+
+      screen.Cursor := crDefault;
+
+      adoProgram.Close;
+      adoProgram.Open;
+      adoProgram.Locate('ProgramID', nProgramID, [loCaseInsensitive]);
+
+      oGlobal.Msg('수정하였습니다!');
+    except
+      adoProgram.Connection.RollbackTrans;
+      screen.Cursor := crDefault;
+      oGlobal.Msg('수정하지 못했습니다!');
+    end;
+    adoProgram.EnableControls;
+  end;
+
+  oInput.Free;
+end;
+
+procedure TfrmProgramMgr.cxGProgramCustomDrawCell(
+  Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+  AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+var
+  iIndex: integer;
+begin
+  iIndex := AViewInfo.RecordViewInfo.GridRecord.Index;
+
+  if Sender.DataController.GetValue(iIndex, cxGProgramUsed.Index) = False then
+    ACanvas.Font.Color := clSilver;
+end;
+
+procedure TfrmProgramMgr.FormShow(Sender: TObject);
+begin
+  if dbMain.GetWardListAll(oConfig.User.HospitalID, cboWard.Properties.Items) then
+    cboWard.ItemIndex := 0;
+
+  if dbMain.GetProgramTypeAll(cboProgram.Properties.Items) then
+    cboProgram.ItemIndex := 0;
+
+  actSelect.Execute;
+end;
+
+end.

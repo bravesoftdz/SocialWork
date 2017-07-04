@@ -1,0 +1,57 @@
+unit uKeywordMove;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters, Menus, StdCtrls,
+  cxButtons, cxControls, dxSkinsCore, dxSkinCaramel, cxCustomData, cxStyles,
+  cxTL, cxMaskEdit, cxTLdxBarBuiltInMenu, ExtCtrls, cxInplaceContainer, cxDBTL,
+  cxTLData, DB, ADODB;
+
+type
+  TfrmKeywordMove = class(TForm)
+    btnOK: TcxButton;
+    btnClose: TcxButton;
+    adoKeyword: TADOQuery;
+    dsKeyword: TDataSource;
+    cxKeywordTree: TcxDBTreeList;
+    cxDBTreeList1cxDBTreeListColumn2: TcxDBTreeListColumn;
+    cxDBTreeList1cxDBTreeListColumn1: TcxDBTreeListColumn;
+    pnlExp: TPanel;
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormShow(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    ID: integer;
+  end;
+
+var
+  frmKeywordMove: TfrmKeywordMove;
+
+implementation
+uses uConfig;
+{$R *.dfm}
+
+procedure TfrmKeywordMove.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then Close;
+end;
+
+procedure TfrmKeywordMove.FormShow(Sender: TObject);
+begin
+  try
+    adoKeyword.SQL.Text := 'SELECT *' +
+                           '  FROM Keyword' +
+                           ' WHERE HospitalID=' + inttostr(oConfig.User.HospitalID);
+                           '   AND ID<>' + inttostr(ID);
+    adoKeyword.Open;
+  except
+
+  end;
+end;
+
+end.

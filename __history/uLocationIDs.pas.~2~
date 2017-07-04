@@ -1,0 +1,34 @@
+unit uLocationIDs;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters, Menus, StdCtrls,
+  cxButtons, uGlobal;
+
+type
+  TfrmLocationIDs = class(TForm)
+    btnOK: TcxButton;
+    btnClose: TcxButton;
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmLocationIDs: TfrmLocationIDs;
+
+implementation
+uses dbMain, uConfig;
+{$R *.dfm}
+
+procedure TfrmLocationIDs.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then Close;
+end;
+
+end.

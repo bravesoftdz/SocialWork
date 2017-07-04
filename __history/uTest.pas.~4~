@@ -1,0 +1,43 @@
+unit uTest;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls;
+
+type
+  TfrmTest = class(TForm)
+    Label1: TLabel;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormDestroy(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmTest: TfrmTest;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmTest.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  showmessage('close');
+end;
+
+procedure TfrmTest.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  showmessage('close query!');
+end;
+
+procedure TfrmTest.FormDestroy(Sender: TObject);
+begin
+  showmessage('destroy');
+end;
+
+end.

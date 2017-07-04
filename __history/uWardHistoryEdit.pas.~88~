@@ -1,0 +1,185 @@
+unit uWardHistoryEdit;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters, Menus, StdCtrls,
+  cxButtons, DB, ADODB, uGlobal, uDB, uConfig, cxControls, cxContainer, cxEdit,
+  dxSkinsCore, dxSkinCaramel, cxDropDownEdit, cxTextEdit, cxMaskEdit, cxCalendar,
+  cxGroupBox;
+
+type
+  TfrmWardHistoryEdit = class(TForm)
+    cxGroupBox1: TcxGroupBox;
+    cxDEWardDate: TcxDateEdit;
+    cboWard: TcxComboBox;
+    Label5: TLabel;
+    lblWard: TLabel;
+    btnSave: TcxButton;
+    cxButton1: TcxButton;
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormShow(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);
+  private
+    { Private declarations }
+    function isValidInput: Boolean;
+  public
+    { Public declarations }
+    EditMode: TEditMode;
+    InOut: TID;
+    InDate: string;
+    oWardHistory: TADOQuery;
+  end;
+
+var
+  frmWardHistoryEdit: TfrmWardHistoryEdit;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmWardHistoryEdit.btnSaveClick(Sender: TObject);
+var
+  oT: TADOQuery;
+  sWardDate: string;
+  nWardID: Integer;
+begin
+  if not isValidInput then
+    Exit;
+
+  oT := TADOQuery.Create(self);
+  oT.Connection := oWardHistory.Connection;
+
+  sWardDate := oGlobal.DateToString(cxDEWardDate.Date);
+  nWardID := dbMain.GetWardID(oConfig.User.HospitalID, cboWard.Text);
+
+  if oGlobal.YesNo('저장하시겠습니까?') <> mrYes then
+    Exit;
+
+  try
+    oWardHistory.DisableControls;
+    oWardHistory.Connection.BeginTrans;
+
+    if EditMode = emAppend then
+    begin
+      oWardHistory.Append;
+      oWardHistory.FieldByName('InOutID').AsInteger := InOut.ID;
+    end
+    else
+    begin
+      oT.SQL.Text := 'UPDATE ProgramPatients' +
+                     '   SET WardID=' + inttostr(nWardID) +
+                     '       ,WardDate=''' + sWardDate + '''' +
+                     ' WHERE InOutID=' + oWardHistory.FieldByName('InOutID').AsString +
+                     '   AND WardDate=''' + oWardHistory.FieldByName('WardDate').AsString + '''';
+      oT.ExecSQL;
+    
+      oWardHistory.Edit;
+    end;
+
+    oWardHistory.FieldByName('WardDate').AsString := sWardDate;
+    oWardHistory.FieldByName('WardID').AsInteger := nWardID;
+
+    oWardHistory.Post;
+
+    oWardHistory.Connection.CommitTrans;
+
+    oWardHistory.Close;
+    oWardHistory.Open;
+    oWardHistory.Locate('InOutID;WardDate', VarArrayOf([InOut.ID, sWardDate]), [loCaseInsensitive]);    
+
+    oWardHistory.EnableControls;
+
+    ModalResult := mrOK;
+  except
+    oWardHistory.Connection.RollbackTrans;
+    oWardHistory.EnableControls;
+    oGlobal.Msg('저장에 실패하였습니다!');
+  end;
+end;
+
+procedure TfrmWardHistoryEdit.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then Close;
+end;
+
+procedure TfrmWardHistoryEdit.FormShow(Sender: TObject);
+begin
+  cxDEWardDate.Clear;
+  cboWard.Properties.Items.Clear;
+  dbMain.GetWardList(oConfig.User.HospitalID, cboWard.Properties.Items);
+
+  if EditMode = emUpdate then
+  begin
+    cxDEWardDate.EditText := oWardHistory.FieldByName('WardDate').AsString;
+    cboWard.Text := oWardHistory.FieldByName('WardName').AsString;
+
+    cxDEWardDate.Enabled := oWardHistory.FieldByName('WardDate').AsString <> InDate;   
+  end;
+
+  if cxDEWardDate.Enabled then  
+    cxDEWardDate.SetFocus
+  else
+    cboWard.SetFocus;
+end;
+
+function TfrmWardHistoryEdit.isValidInput: Boolean;
+var
+  sWardDate: string;
+begin
+  result := False;
+
+  sWardDate := oGlobal.DateToString(cxDEWardDate.Date);
+
+  if oGlobal.isNullStr(cxDEWardDate.EditText) then
+  begin
+    oGlobal.Msg('적용일자를 선택하십시오!');
+    cxDEWardDate.SetFocus;
+    Exit;
+  end;
+
+  if cboWard.ItemIndex < 0 then
+  begin
+    oGlobal.Msg('병동을 선택하십시오!');
+    cboWard.SetFocus;
+    Exit;
+  end;
+
+  if sWardDate < InDate then
+  begin
+    oGlobal.Msg('적용일자가 입원일 보다 이전일자입니다!');
+    cxDEWardDate.SetFocus;
+    Exit;
+  end;
+  
+  if EditMode=emUpdate then
+  begin
+    if sWardDate <> oWardHistory.FieldByName('WardDate').AsString then
+    begin
+      if oWardHistory.FieldByName('WardDate').AsString = InDate then
+      begin
+        oGlobal.Msg('입원시작일에 발생된 적용일자는 수정할 수 없습니다!');
+        Exit;
+      end;
+
+      if dbMain.isDuplicatedWardHistory(InOut.ID, sWardDate) then
+      begin
+        oGlobal.Msg('해당 적용일자에 기존 병동내역이 있습니다!');
+        Exit;
+      end;
+    end;     
+  end;
+
+  
+  if (EditMode=emAppend) and dbMain.isDuplicatedWardHistory(InOut.ID, sWardDate) then
+  begin
+    oGlobal.Msg('해당 적용일자에 기존 병동내역이 있습니다!');
+    Exit;
+  end;
+
+  result := True;    
+end;
+
+end.

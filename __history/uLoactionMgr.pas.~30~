@@ -1,0 +1,168 @@
+unit uLoactionMgr;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, DB, ADODB, cxGraphics, cxControls, cxLookAndFeels,
+  cxLookAndFeelPainters, cxStyles, dxSkinsCore, dxSkinBlack, dxSkinBlue,
+  dxSkinCaramel, dxSkinCoffee, dxSkinDarkRoom, dxSkinDarkSide, dxSkinFoggy,
+  dxSkinGlassOceans, dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky,
+  dxSkinLondonLiquidSky, dxSkinMcSkin, dxSkinMoneyTwins, dxSkinOffice2007Black,
+  dxSkinOffice2007Blue, dxSkinOffice2007Green, dxSkinOffice2007Pink,
+  dxSkinOffice2007Silver, dxSkinPumpkin, dxSkinSeven, dxSkinSharp, dxSkinSilver,
+  dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinsDefaultPainters,
+  dxSkinValentine, dxSkinXmas2008Blue, dxSkinscxPC3Painter, cxCustomData,
+  cxFilter, cxData, cxDataStorage, cxEdit, cxDBData, cxGridCustomTableView,
+  cxGridTableView, cxGridDBTableView, cxGridLevel, cxClasses, cxGridCustomView,
+  cxGrid, cxContainer, StdCtrls, cxTextEdit;
+
+type
+  TfrmLocationMgr = class(TForm)
+    dsLocation: TDataSource;
+    adoLocation: TADOQuery;
+    cxGrid1: TcxGrid;
+    cxGLocation: TcxGridDBTableView;
+    cxGrid1Level1: TcxGridLevel;
+    cxGLocationLocationName: TcxGridDBColumn;
+    cxGLocationUsed: TcxGridDBColumn;
+    Label2: TLabel;
+    txtLocation: TcxTextEdit;
+    chkUsed: TCheckBox;
+    btnNew: TButton;
+    btnEdit: TButton;
+    btnClose: TButton;
+    procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure cxGLocationCustomDrawCell(Sender: TcxCustomGridTableView;
+      ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo;
+      var ADone: Boolean);
+    procedure btnNewClick(Sender: TObject);
+    procedure btnEditClick(Sender: TObject);
+    procedure dsLocationDataChange(Sender: TObject; Field: TField);
+  private
+    { Private declarations }
+    function isValidInput: Boolean;
+    procedure ClearControls;
+  public
+    { Public declarations }
+  end;
+
+var
+  frmLocationMgr: TfrmLocationMgr;
+
+implementation
+uses uDB, uConfig, uGlobal, uConst;
+{$R *.dfm}
+
+procedure TfrmLocationMgr.btnEditClick(Sender: TObject);
+var
+  sLocationName: string;
+begin
+  if adoLocation.IsEmpty then Exit;
+
+  if not isValidInput then Exit;
+
+  sLocationName := trim(txtLocation.Text);
+
+  if (sLocationName = adoLocation.FieldByName('LocationName').AsString) then
+  begin
+    if chkUsed.Checked = adoLocation.FieldByName('Used').AsBoolean then Exit;
+
+    if dbMain.isDuplicatedLocationName(oConfig.User.HospitalID, sLocationName) then
+    begin
+      ShowMessage('중복된 장소명이 있습니다!');
+      Exit;
+    end;
+  end;
+
+  adoLocation.DisableControls;
+  try
+    adoLocation.Connection.BeginTrans;
+    adoLocation.Edit;
+    adoLocation.FieldByName('LocationName').AsString := sLocationName;
+    adoLocation.FieldByName('Used').AsBoolean := chkUsed.Checked;
+    adoLocation.Post;
+    adoLocation.Connection.CommitTrans;
+    ShowMessage('수정했습니다!');
+  except
+    adoLocation.Connection.RollbackTrans;
+    adoLocation.Cancel;
+    ShowMessage('장소명 수정에 실패했습니다!');
+  end;
+  adoLocation.EnableControls;
+end;
+
+procedure TfrmLocationMgr.btnNewClick(Sender: TObject);
+var
+  sLocationName: string;
+begin
+  if not isValidInput then Exit;
+
+  sLocationName := trim(txtLocation.Text);
+
+  if dbMain.isDuplicatedLocationName(oConfig.User.HospitalID, sLocationName) then
+  begin
+    ShowMessage('중복된 장소명이 있습니다!');
+    Exit;
+  end;
+
+  adoLocation.DisableControls;
+  try
+    adoLocation.Connection.BeginTrans;
+    adoLocation.Append;
+    adoLocation.FieldByName('LocationName').AsString := sLocationName;
+    adoLocation.FieldByName('Used').AsBoolean := True;
+    adoLocation.Post;
+    adoLocation.Connection.CommitTrans;
+    ShowMessage('등록했습니다!');
+  except
+    adoLocation.Connection.RollbackTrans;
+    adoLocation.Cancel;
+    ShowMessage('신규등록에 실패했습니다!');
+  end;
+  adoLocation.EnableControls;
+end;
+
+procedure TfrmLocationMgr.cxGLocationCustomDrawCell(Sender: TcxCustomGridTableView;
+  ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo;
+  var ADone: Boolean);
+var
+  iIndex: integer;
+begin
+  iIndex := AViewInfo.RecordViewInfo.GridRecord.Index;
+
+  if Sender.DataController.GetValue(iIndex, cxGLocationUsed.Index) = False then
+    ACanvas.Font.Color := clSilver;
+end;
+
+procedure TfrmLocationMgr.dsLocationDataChange(Sender: TObject; Field: TField);
+begin
+  btnEdit.Enabled := not adoLocation.IsEmpty;
+end;
+
+procedure TfrmLocationMgr.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  adoLocation.Close;
+end;
+
+procedure TfrmLocationMgr.FormShow(Sender: TObject);
+begin
+  adoLocation.Close;
+  adoLocation.Parameters.ParamByName('HospitalID').Value := oConfig.User.HospitalID;
+  adoLocation.Open;
+end;
+
+function TfrmLocationMgr.isValidInput: Boolean;
+begin
+  if isNullStr(txtLocation.Text) then
+  begin
+    ShowMessage('장소명을 입력하십시오!');
+    txtLocation.SetFocus;
+    result := false;
+  end
+  else
+    result := true;
+end;
+
+end.

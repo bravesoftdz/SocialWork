@@ -1,0 +1,152 @@
+unit uConfig;
+
+interface
+uses uGlobal, IniFiles, Windows, sysUtils, StrUtils, Registry,
+  Forms;
+
+type
+  TOption = record
+    bViewAll: Boolean;
+    bViewWeekSum: Boolean;
+    bBohoOneforDay: Boolean;
+  end;
+
+  TConfiguration = class
+    CurDir: string;
+    AppFileName: string;
+    FTPServer: TFTPServerConfig;
+    SWServer: TDBServerConfig;
+    User: TUserInfo;
+    Option: TOption;
+  private
+    procedure LoadServerConfiguration;
+  public
+    constructor create;
+    function SaveServerConfiguration(oSWServer: TDBServerConfig;
+      oFTPServer: TFTPServerConfig): Boolean;
+  end;
+
+var
+  oConfig: TConfiguration;
+
+implementation
+uses uEncryption;
+
+{ TConfiguration }
+constructor TConfiguration.create;
+begin
+  inherited;
+
+  User.Clear;
+
+  Option.bViewAll := True;
+  Option.bViewWeekSum := True;
+  Option.bBohoOneforDay := False;
+
+  CurDir := GetCurrentDir;
+  if RightStr(CurDir, 1) <> '\'  then
+    CurDir := CurDir + '\';
+
+  LoadServerConfiguration;
+end;
+
+procedure TConfiguration.LoadServerConfiguration;
+var
+  r: TRegistry;
+begin
+  r := TRegistry.Create;
+  r.RootKey := HKEY_CURRENT_USER;
+
+  AppFileName := oGlobal.GetLastWord(Application.ExeName, '\');
+
+  user.HospitalName := '';
+  user.UserID := '';
+
+  if r.OpenKey(cRegKey, False) then
+  begin
+    FTPServer.Host := r.ReadString('UpdateURL');
+    FTPServer.UserName := Decoding(r.ReadString('UpdateUsername'));
+    FTPServer.Password := Decoding(r.ReadString('UpdatePassword'));
+
+    SWServer.DataSource := r.ReadString('SWServer_DataSource');
+    SWServer.DBName := r.ReadString('SWServer_DBName');
+    SWServer.UserID := r.ReadString('SWServer_UserID');
+    SWServer.Password := Decoding(r.ReadString('SWServer_Password'));
+
+    user.HospitalName := r.ReadString('HospitalName');
+    user.UserID := r.ReadString('UserID');
+
+    if not r.ValueExists('ViewAll') then
+      r.WriteBool('ViewAll', True);
+    if not r.ValueExists('ViewWeekSum') then
+      r.WriteBool('ViewWeekSum', True);
+    if not r.ValueExists('BohoOneforDay') then
+      r.WriteBool('BohoOneforDay', False);
+
+    Option.bViewAll := r.ReadBool('ViewAll');
+    Option.bViewWeekSum := r.ReadBool('ViewWeekSum');
+    Option.bBohoOneforDay := r.ReadBool('BohoOneforDay');
+  end;
+
+  if oGlobal.isNullStr(FTPServer.Host) then
+    FTPServer.Host := 'erp.ambu.or.kr';
+  if oGlobal.isNullStr(FTPServer.UserName) then
+    FTPServer.UserName := 'socialuser';
+  if oGlobal.isNullStr(FTPServer.Password) then
+    FTPServer.Password := 'socialpwd';
+
+  if oGlobal.isNullStr(SWServer.DataSource) then
+    SWServer.DataSource := 'erp.ambu.or.kr';
+  if oGlobal.isNullStr(SWServer.DBName) then
+    SWServer.DBName := 'SocialWorkDB';
+  if oGlobal.isNullStr(SWServer.UserID) then
+    SWServer.UserID := 'socialworker';
+  if oGlobal.isNullStr(SWServer.Password) then
+    SWServer.Password :='socialworker';
+
+  r.CloseKey;
+  r.Free;
+end;
+
+function TConfiguration.SaveServerConfiguration(oSWServer: TDBServerConfig;
+  oFTPServer: TFTPServerConfig): Boolean;
+var
+  r: TRegistry;
+begin
+  try
+    r := TRegistry.Create;
+    r.RootKey := HKEY_CURRENT_USER;
+    r.OpenKey(cRegKey, True);
+
+    r.WriteString('UpdateURL', FTPServer.Host);
+    r.WriteString('UpdateUsername', Encoding(FTPServer.UserName));
+    r.WriteString('UpdatePassword', Encoding(FTPServer.Password));
+
+    r.WriteString('SWServer_DataSource', oSWServer.DataSource);
+    r.WriteString('SWServer_DBName', oSWServer.DBName);
+    r.WriteString('SWServer_UserID', oSWServer.UserID);
+    r.WriteString('SWServer_Password', Encoding(oSWServer.Password));
+
+    r.WriteString('HospitalName', User.HospitalName);
+    r.WriteString('UserID', User.UserID);
+
+    r.WriteBool('ViewAll', Option.bViewAll);
+    r.WriteBool('ViewWeekSum', Option.bViewWeekSum);
+    r.WriteBool('BohoOneforDay', Option.bBohoOneforDay);
+
+    FTPServer.Copy(oFTPServer);
+    SWServer.Copy(oSWServer);
+
+    result := True;
+  except
+    result := False;
+  end;
+end;
+
+initialization
+  oConfig := TConfiguration.Create;
+
+finalization
+  oConfig.Free;
+
+end.

@@ -1,0 +1,72 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{51AE33F2-FFF7-4DB9-8E7A-C80B946F299F}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="SocialWork.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Admin\SocialWorkAdmin.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\관리자프로그램\RhnCoUpdateManager.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\Downloader\RhnCoUpdater.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="SocialWork">
+			<MSBuild Projects="SocialWork.dproj"/>
+		</Target>
+		<Target Name="SocialWork:Clean">
+			<MSBuild Targets="Clean" Projects="SocialWork.dproj"/>
+		</Target>
+		<Target Name="SocialWork:Make">
+			<MSBuild Targets="Make" Projects="SocialWork.dproj"/>
+		</Target>
+		<Target Name="SocialWorkAdmin">
+			<MSBuild Projects="Admin\SocialWorkAdmin.dproj"/>
+		</Target>
+		<Target Name="SocialWorkAdmin:Clean">
+			<MSBuild Targets="Clean" Projects="Admin\SocialWorkAdmin.dproj"/>
+		</Target>
+		<Target Name="SocialWorkAdmin:Make">
+			<MSBuild Targets="Make" Projects="Admin\SocialWorkAdmin.dproj"/>
+		</Target>
+		<Target Name="RhnCoUpdateManager">
+			<MSBuild Projects="..\관리자프로그램\RhnCoUpdateManager.dproj"/>
+		</Target>
+		<Target Name="RhnCoUpdateManager:Clean">
+			<MSBuild Targets="Clean" Projects="..\관리자프로그램\RhnCoUpdateManager.dproj"/>
+		</Target>
+		<Target Name="RhnCoUpdateManager:Make">
+			<MSBuild Targets="Make" Projects="..\관리자프로그램\RhnCoUpdateManager.dproj"/>
+		</Target>
+		<Target Name="RhnCoUpdater">
+			<MSBuild Projects="..\Downloader\RhnCoUpdater.dproj"/>
+		</Target>
+		<Target Name="RhnCoUpdater:Clean">
+			<MSBuild Targets="Clean" Projects="..\Downloader\RhnCoUpdater.dproj"/>
+		</Target>
+		<Target Name="RhnCoUpdater:Make">
+			<MSBuild Targets="Make" Projects="..\Downloader\RhnCoUpdater.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="SocialWork;SocialWorkAdmin;RhnCoUpdateManager;RhnCoUpdater"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="SocialWork:Clean;SocialWorkAdmin:Clean;RhnCoUpdateManager:Clean;RhnCoUpdater:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="SocialWork:Make;SocialWorkAdmin:Make;RhnCoUpdateManager:Make;RhnCoUpdater:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

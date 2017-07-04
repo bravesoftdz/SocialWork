@@ -1,0 +1,142 @@
+unit uPatientEdit;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters,
+  cxContainer, cxEdit, dxSkinsCore, dxSkinBlack, dxSkinBlue, dxSkinCaramel,
+  dxSkinCoffee, dxSkinDarkRoom, dxSkinDarkSide, dxSkinFoggy, dxSkinGlassOceans,
+  dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky, dxSkinLondonLiquidSky,
+  dxSkinMcSkin, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue,
+  dxSkinOffice2007Green, dxSkinOffice2007Pink, dxSkinOffice2007Silver,
+  dxSkinPumpkin, dxSkinSeven, dxSkinSharp, dxSkinSilver, dxSkinSpringTime,
+  dxSkinStardust, dxSkinSummer2008, dxSkinsDefaultPainters, dxSkinValentine,
+  dxSkinXmas2008Blue, cxDropDownEdit, StdCtrls, cxTextEdit, cxMaskEdit,
+  cxCalendar, ExtCtrls, uGlobal, uConfig;
+
+type
+  TfrmPatientEdit = class(TForm)
+    Panel1: TPanel;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    cxDEBirthday: TcxDateEdit;
+    txtPatientName: TcxTextEdit;
+    rMale: TRadioButton;
+    rFeMale: TRadioButton;
+    btnOK: TButton;
+    btnCancel: TButton;
+    pnlPatientID: TPanel;
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure btnOKClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+  private
+    { Private declarations }
+    procedure ClearControls;
+    procedure SetDataFromoP;
+    procedure SetDateTooP;
+    function isValidInput: Boolean;
+    function isModified: Boolean;
+  public
+    oP: TPatientInfo;
+    { Public declarations }
+  end;
+
+var
+  frmPatientEdit: TfrmPatientEdit;
+
+implementation
+
+{$R *.dfm}
+
+{ TfrmPatientEdit }
+
+procedure TfrmPatientEdit.btnOKClick(Sender: TObject);
+begin
+  if isValidInput and isModified and (oGlobal.YesNo('저장하시겠습니까?')=mrYES) then
+  begin
+    SetDateTooP;
+    ModalResult := mrOK;
+  end;
+end;
+
+procedure TfrmPatientEdit.ClearControls;
+begin
+  pnlPatientID.Caption := NullString;
+  txtPatientName.Clear;
+  cxDEBirthday.Clear;
+  rMale.Checked := True;
+end;
+
+procedure TfrmPatientEdit.FormCreate(Sender: TObject);
+begin
+  oP.Clear;
+end;
+
+procedure TfrmPatientEdit.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then Close;  
+end;
+
+procedure TfrmPatientEdit.FormShow(Sender: TObject);
+begin
+  ClearControls;
+  SetDataFromoP;
+end;
+
+function TfrmPatientEdit.isModified: Boolean;
+begin
+  result := not((trim(txtPatientName.Text)=oP.sPatientName) and
+    (oGlobal.DateToString(cxDEBirthday.Date)=oP.sBirthday) and
+    (rMale.Checked = oP.bMale));
+end;
+
+function TfrmPatientEdit.isValidInput: Boolean;
+begin
+  result := false;
+
+  if oGlobal.isNullStr(txtPatientName.Text) then
+  begin
+    oGlobal.Msg('환자성명을 입력하십시오!');
+    txtPatientName.SetFocus;
+    Exit;
+  end;
+
+  if oGlobal.isNullStr(cxDEBirthday.Text) then
+  begin
+    oGlobal.Msg('생년월일을 입력하십시오!');
+    cxDEBirthday.SetFocus;
+    Exit;
+  end;
+
+  result := true;
+end;
+
+procedure TfrmPatientEdit.SetDataFromoP;
+var
+  oD: TDateTime;
+begin
+  pnlPatientID.Caption := oP.sPatientID;
+  txtPatientName.Text := oP.sPatientName;
+
+  if oGlobal.StringToDate(oP.sBirthday, oD) then
+    cxDEBirthday.Date := oD
+  else
+    cxDEBirthday.Clear;
+
+  rMale.Checked := oP.bMale;
+  rFeMale.Checked := not oP.bMale;
+end;
+
+procedure TfrmPatientEdit.SetDateTooP;
+begin
+  oP.sPatientName := trim(txtPatientName.Text);
+  oP.sBirthday := oGlobal.DateToString(cxDEBirthday.Date);
+  oP.bMale := rMale.Checked;
+end;
+
+end.

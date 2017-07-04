@@ -1,0 +1,16 @@
+unit uConst;
+
+interface
+const
+  cIniFileName = 'SocialWork.ini';
+  cUpdaterName = 'RHnCoUpdater.exe';
+  cAppName = 'SocialWork';
+  cVersion = '1.0';
+  cIn = 0;
+  cOut = 1;
+type
+  TSex = (tMale, tFeMale);
+
+implementation
+
+end.

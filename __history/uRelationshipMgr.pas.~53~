@@ -1,0 +1,229 @@
+unit uRelationshipMgr;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters,
+  cxStyles, dxSkinsCore, dxSkinCaramel, dxSkinscxPC3Painter, cxCustomData,
+  cxFilter, cxData, cxDataStorage, cxEdit, DB, cxDBData, Menus, StdCtrls,
+  cxButtons, ADODB, cxGridLevel, cxGridCustomTableView, cxGridTableView,
+  cxGridDBTableView, cxClasses, cxGridCustomView, cxGrid, uGlobal;
+
+type
+  TfrmRelationshipMgr = class(TForm)
+    adoRelationship: TADOQuery;
+    dsRelationship: TDataSource;
+    cxGrid1: TcxGrid;
+    cxGRelationship: TcxGridDBTableView;
+    cxGrid1Level1: TcxGridLevel;
+    btnInTypeAppend: TcxButton;
+    btnInTypeUpdate: TcxButton;
+    cxGRelationshipRelationshipName: TcxGridDBColumn;
+    cxGRelationshipUsed: TcxGridDBColumn;
+    btnUp: TcxButton;
+    btnDown: TcxButton;
+    procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure cxGRelationshipCustomDrawCell(Sender: TcxCustomGridTableView;
+      ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo;
+      var ADone: Boolean);
+    procedure btnInTypeAppendClick(Sender: TObject);
+    procedure btnInTypeUpdateClick(Sender: TObject);
+    procedure btnUpClick(Sender: TObject);
+    procedure btnDownClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmRelationshipMgr: TfrmRelationshipMgr;
+
+implementation
+uses uConfig, uDB;
+{$R *.dfm}
+
+procedure TfrmRelationshipMgr.btnDownClick(Sender: TObject);
+var
+  nRelationshipID, nSeq: integer;
+begin
+  if adoRelationship.IsEmpty then Exit;
+  if adoRelationship.FieldByName('Seq').AsInteger =
+    dbMain.GetLastRelationshipSeq(oConfig.User.HospitalID) then Exit;
+
+  nRelationshipID := adoRelationship.FieldByName('RelationshipID').AsInteger;
+  nSeq := adoRelationship.FieldByName('Seq').AsInteger;
+
+  adoRelationship.DisableControls;
+  try
+    adoRelationship.Connection.BeginTrans;
+
+    adoRelationship.Edit;
+    adoRelationship.FieldByName('Seq').AsInteger := nSeq - 1;
+    adoRelationship.Post;
+
+    adoRelationship.Prior;
+    adoRelationship.Edit;
+    adoRelationship.FieldByName('Seq').AsInteger := nSeq;
+    adoRelationship.Post;
+
+    adoRelationship.Connection.CommitTrans;
+
+    adoRelationship.Close;
+    adoRelationship.Parameters.ParamByName('HospitalID').Value := oConfig.User.HospitalID;
+    adoRelationship.Open;
+    adoRelationship.Locate('RelationshipID', nRelationshipID, [loCaseInsensitive]);
+  except
+    adoRelationship.Connection.RollbackTrans;
+  end;
+  adoRelationship.EnableControls;
+end;
+
+procedure TfrmRelationshipMgr.btnInTypeAppendClick(Sender: TObject);
+var
+  oInput: TInputResult;
+begin
+  if not adoRelationship.active then Exit;
+
+  oInput := oGlobal.InputMsg('가족관계명', '', 20, True);
+
+  while  oInput.Result = mrOK do
+  begin
+    if dbMain.isDuplicatedRelationshipName(oConfig.User.HospitalID, oInput.Text) then
+    begin
+      oGlobal.Msg('같은 가족관계명이 있습니다!');
+      oInput := oGlobal.InputMsg('가족관계명', oInput.Text, 20, True);
+    end
+    else
+      break;
+  end;
+
+  if oInput.Result <> mrOK then Exit;
+
+  adoRelationship.DisableControls;
+  try
+    adoRelationship.Connection.BeginTrans;
+    adoRelationship.Append;
+    adoRelationship.FieldByName('HospitalID').AsInteger := oConfig.User.HospitalID;
+    adoRelationship.FieldByName('RelationshipName').AsString := oInput.Text;
+    adoRelationship.FieldByName('Seq').AsInteger
+      := dbMain.GetLastRelationshipSeq(oConfig.User.HospitalID) + 1;
+    adoRelationship.FieldByName('Used').AsBoolean := oInput.Used;
+    adoRelationship.Post;
+    adoRelationship.Connection.CommitTrans;
+    oGlobal.Msg('등록했습니다!');
+  except
+    adoRelationship.Connection.RollbackTrans;
+    adoRelationship.Cancel;
+    oGlobal.Msg('신규등록에 실패했습니다!');
+  end;
+  adoRelationship.EnableControls;
+end;
+
+procedure TfrmRelationshipMgr.btnInTypeUpdateClick(Sender: TObject);
+var
+  sRelationshipName: string;
+  bUsed: Boolean;
+  oInput: TInputResult;
+begin
+  if adoRelationship.IsEmpty then Exit;
+
+  sRelationshipName := adoRelationship.FieldByName('RelationshipName').AsString;
+  bUsed := adoRelationship.FieldByName('Used').AsBoolean;
+
+  oInput := oGlobal.InputMsg('가족관계명', sRelationshipName, 20, bUsed);
+
+  while oInput.Result = mrOK do
+  begin
+    if (sRelationshipName <> oInput.Text) and
+      dbMain.isDuplicatedInTypeName(oConfig.User.HospitalID, sRelationshipName) then
+    begin
+      oGlobal.Msg('같은 가족관계명이 있습니다!');
+      oInput := oGlobal.InputMsg('가족관계명', oInput.Text, 20, oInput.Used);
+    end
+    else
+      break;
+  end;
+
+  if oInput.Result <> mrOK then Exit;
+
+  adoRelationship.DisableControls;
+  try
+    adoRelationship.Connection.BeginTrans;
+    adoRelationship.Edit;
+    adoRelationship.FieldByName('RelationshipName').AsString := oInput.Text;
+    adoRelationship.FieldByName('Used').AsBoolean := oInput.Used;
+    adoRelationship.Post;
+    adoRelationship.Connection.CommitTrans;
+    oGlobal.Msg('수정했습니다!');
+  except
+    adoRelationship.Connection.RollbackTrans;
+    adoRelationship.Cancel;
+    oGlobal.Msg('수정에 실패했습니다!');
+  end;
+  adoRelationship.EnableControls;
+end;
+
+procedure TfrmRelationshipMgr.btnUpClick(Sender: TObject);
+var
+  nRelationshipID, nSeq: integer;
+begin
+  if adoRelationship.IsEmpty then Exit;
+  if adoRelationship.FieldByName('Seq').AsInteger = 1 then Exit;
+
+  nRelationshipID := adoRelationship.FieldByName('RelationshipID').AsInteger;
+  nSeq := adoRelationship.FieldByName('Seq').AsInteger;
+
+  adoRelationship.DisableControls;
+  try
+    adoRelationship.Connection.BeginTrans;
+
+    adoRelationship.Edit;
+    adoRelationship.FieldByName('Seq').AsInteger := nSeq - 1;
+    adoRelationship.Post;
+
+    adoRelationship.Prior;
+    adoRelationship.Edit;
+    adoRelationship.FieldByName('Seq').AsInteger := nSeq;
+    adoRelationship.Post;
+
+    adoRelationship.Connection.CommitTrans;
+
+    adoRelationship.Close;
+    adoRelationship.Parameters.ParamByName('HospitalID').Value := oConfig.User.HospitalID;
+    adoRelationship.Open;
+    adoRelationship.Locate('RelationshipID', nRelationshipID, [loCaseInsensitive]);
+  except
+    adoRelationship.Connection.RollbackTrans;
+  end;
+  adoRelationship.EnableControls;
+end;
+
+procedure TfrmRelationshipMgr.cxGRelationshipCustomDrawCell(
+  Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+  AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+var
+  iIndex: integer;
+begin
+  iIndex := AViewInfo.RecordViewInfo.GridRecord.Index;
+
+  if Sender.DataController.GetValue(iIndex, cxGRelationshipUsed.Index) = False then
+    ACanvas.Font.Color := clSilver;
+end;
+
+procedure TfrmRelationshipMgr.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+  adoRelationship.Close;
+end;
+
+procedure TfrmRelationshipMgr.FormShow(Sender: TObject);
+begin
+  adoRelationship.Close;
+  adoRelationship.Parameters.ParamByName('HospitalID').Value := oConfig.User.HospitalID;
+  adoRelationship.Open;
+end;
+
+end.

@@ -1,0 +1,265 @@
+unit uIntake;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, uConfig, uGlobal, cxGraphics, cxControls, cxLookAndFeels,
+  cxLookAndFeelPainters, dxSkinsCore, dxSkinBlack, dxSkinBlue, dxSkinCaramel,
+  dxSkinCoffee, dxSkinDarkRoom, dxSkinDarkSide, dxSkinFoggy, dxSkinGlassOceans,
+  dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky, dxSkinLondonLiquidSky,
+  dxSkinMcSkin, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue,
+  dxSkinOffice2007Green, dxSkinOffice2007Pink, dxSkinOffice2007Silver,
+  dxSkinPumpkin, dxSkinSeven, dxSkinSharp, dxSkinSilver, dxSkinSpringTime,
+  dxSkinStardust, dxSkinSummer2008, dxSkinsDefaultPainters, dxSkinValentine,
+  dxSkinXmas2008Blue, dxSkinscxPC3Painter, cxContainer, cxEdit,
+  dxLayoutcxEditAdapters, cxMaskEdit, cxDropDownEdit, cxCalendar,
+  dxLayoutContainer, cxTextEdit, dxLayoutControl, dxLayoutLookAndFeels, cxMemo,
+  cxRichEdit, cxStyles, cxCustomData, cxFilter, cxData, cxDataStorage, DB,
+  cxDBData, cxGridLevel, cxClasses, cxGridCustomView, cxGridCustomTableView,
+  cxGridTableView, cxGridDBTableView, cxGrid, StdCtrls, Menus, cxButtons,
+  cxLabel, ADODB, cxGroupBox, ExtCtrls;
+
+type
+  TfrmIntake = class(TForm)
+    btnShortKey: TcxButton;
+    btnSave: TcxButton;
+    btnFamilyMgr: TcxButton;
+    btnClose: TcxButton;
+    adoFamily: TADOQuery;
+    dsFamily: TDataSource;
+    cxGroupBox4: TcxGroupBox;
+    txtPatientName: TcxTextEdit;
+    cxGroupBox6: TcxGroupBox;
+    txtSexAge: TcxTextEdit;
+    cxGroupBox1: TcxGroupBox;
+    cxGroupBox2: TcxGroupBox;
+    txtDiag: TcxTextEdit;
+    txtDoctor: TcxTextEdit;
+    cxGroupBox3: TcxGroupBox;
+    txtInType: TcxTextEdit;
+    cxGroupBox5: TcxGroupBox;
+    cxGroupBox7: TcxGroupBox;
+    txtWorker: TcxTextEdit;
+    cxDateInDate: TcxDateEdit;
+    cxGroupBox8: TcxGroupBox;
+    cxGroupBox9: TcxGroupBox;
+    txtInfoDonor: TcxTextEdit;
+    cxDateMeetingDate: TcxDateEdit;
+    cxGroupBox22: TcxGroupBox;
+    memoInMotivation: TMemo;
+    cxGroupBox10: TcxGroupBox;
+    memoMajorProblem: TMemo;
+    cxGroupBox11: TcxGroupBox;
+    memoInHistory: TMemo;
+    cxGroupBox12: TcxGroupBox;
+    memoPersonHistory: TMemo;
+    cxGroupBox13: TcxGroupBox;
+    memoWorkerOpinion: TMemo;
+    cxGroupBox14: TcxGroupBox;
+    cxGrid1: TcxGrid;
+    cxGFamily: TcxGridDBTableView;
+    cxGFamilyRelationshipName: TcxGridDBColumn;
+    cxGFamilyFamilyName: TcxGridDBColumn;
+    cxGFamilyInMate: TcxGridDBColumn;
+    cxGFamilyHealth: TcxGridDBColumn;
+    cxGFamilyETC: TcxGridDBColumn;
+    cxGrid1Level1: TcxGridLevel;
+    Panel5: TPanel;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    Panel3: TPanel;
+    Panel4: TPanel;
+    procedure memoInMotivationKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormShow(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);
+    procedure btnFamilyMgrClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+  private
+    { Private declarations }
+    procedure ClearControls;
+    procedure SetControls;
+  public
+    { Public declarations }
+    ModifiedFamily: Boolean;
+    adoInOut: TAdoQuery;
+    adoIntake: TAdoQuery;
+  end;
+
+var
+  frmIntake: TfrmIntake;
+
+implementation
+
+uses uMain, uDB, uFamilyMgr;
+{$R *.dfm}
+
+procedure TfrmIntake.ClearControls;
+begin
+  txtSexAge.Clear;
+  txtPatientName.Clear;
+  txtDiag.Clear;
+  txtInType.Clear;
+  txtDoctor.Clear;
+  txtInfoDonor.Clear;
+  cxDateInDate.Clear;
+  cxDateMeetingDate.Clear;
+  txtWorker.Clear;
+  memoInMotivation.Lines.Clear;
+  memoMajorProblem.Lines.Clear;
+  memoInHistory.Lines.Clear;
+  memoPersonHistory.Lines.Clear;
+  memoWorkerOpinion.Lines.Clear;
+end;
+
+procedure TfrmIntake.btnFamilyMgrClick(Sender: TObject);
+var
+  oFamilyMgr: TfrmFamilyMgr;
+begin
+  Application.CreateForm(TfrmFamilyMgr, oFamilyMgr);
+
+  oFamilyMgr.adoInOut := adoInOut;
+
+  oFamilyMgr.ShowModal;
+
+  if oFamilyMgr.Modified then
+  begin
+    ModifiedFamily := True;
+    adoFamily.Close;
+    adoFamily.Open;
+  end;
+
+  oFamilyMgr.Free;  
+end;
+
+procedure TfrmIntake.btnSaveClick(Sender: TObject);
+begin
+  if not adoIntake.Active then Exit;
+
+  if trim(cxDateMeetingDate.EditText) = NULLString then
+  begin
+    oGlobal.Msg('면담일시를 기록하십시오!');
+    Exit;
+  end;
+
+  if oGlobal.YesNo('저장하시겠습니까?') <> mrYes then
+    Exit;
+
+  adoIntake.DisableControls;
+  adoIntake.Connection.BeginTrans;
+  try
+    if adoIntake.IsEmpty then
+    begin
+      adoIntake.Append;
+      adoIntake.FieldByName('InOutID').AsInteger := adoInOut.FieldByName('InOutID').AsInteger;
+    end
+    else
+      adoIntake.Edit;
+
+    adoIntake.FieldByName('InfoDonor').AsString := trim(txtInfoDonor.Text);
+    adoIntake.FieldByName('InMotivation').AsString := trim(memoInMotivation.Lines.Text);
+    adoIntake.FieldByName('MajorProblem').AsString := trim(memoMajorProblem.Lines.Text);
+    adoIntake.FieldByName('InHistory').AsString := trim(memoInHistory.Lines.Text);
+    adoIntake.FieldByName('PersonHistory').AsString := trim(memoPersonHistory.Lines.Text);
+    adoIntake.FieldByName('WorkerOpinion').AsString := trim(memoWorkerOpinion.Lines.Text);
+    adoIntake.FieldByName('MeetingDate').AsString := oGlobal.DateToString(cxDateMeetingDate.Date);
+    adoIntake.FieldByName('WriteDate').AsString := oGlobal.DateToString(now);
+    adoIntake.FieldByName('Writer').AsString := oConfig.User.UserID;
+
+    adoIntake.Post;
+    adoIntake.Connection.CommitTrans;
+
+    oGlobal.Msg('저장하였습니다!');
+
+    ModalResult := mrOK;
+  except
+    adoIntake.Connection.RollbackTrans;
+    oGlobal.Msg('저장에 실패했습니다!');
+  end;
+  adoIntake.EnableControls;
+end;
+
+procedure TfrmIntake.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  adoInOut := nil;
+  adoIntake := nil;
+end;
+
+procedure TfrmIntake.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then Close;
+end;
+
+procedure TfrmIntake.FormShow(Sender: TObject);
+begin
+  ModifiedFamily := False;
+
+  ClearControls;
+  SetControls;
+
+  txtInfoDonor.SetFocus;
+  txtInfoDonor.SelStart := 0;
+
+  try
+    adoFamily.SQL.Text := 'SELECT FAMILIES.*' +
+                          '       ,SEQ' +
+                          '       ,RELATIONSHIPNAME' +
+                          '  FROM FAMILIES LEFT JOIN RELATIONSHIPS ON RELATIONSHIPS.RELATIONSHIPID=FAMILIES.RELATIONSHIPID' +
+                          ' WHERE InOutID=' + adoInOut.FieldByName('InOutID').AsString +
+                          ' ORDER BY SEQ, FAMILYNAME';
+     adoFamily.Open;
+  except
+    oGlobal.Msg('가족관계정보에 접근할 수 없습니다!');
+    Close;
+  end;
+end;
+
+procedure TfrmIntake.memoInMotivationKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Sender is TMemo) then
+  begin
+    if (Key = VK_RETURN) then
+      dbMain.SetCurrentKeyword(TMemo(Sender))
+    else if Key = VK_F1 then
+      oGlobal.GetKeywordContent(TMemo(Sender));
+  end;
+end;
+
+procedure TfrmIntake.SetControls;
+var
+  sAge: string;
+begin
+  sAge := oGlobal.GetAge(adoInOut.FieldByName('Birthday').AsString, adoInOut.FieldByName('InDate').AsString);
+
+  if adoInOut.FieldByName('Sex').AsString = cMale then
+    txtSexAge.Text := '남 (만' + sAge + '세)'
+  else
+    txtSexAge.Text := '여 (만' + sAge + '세)';
+
+  txtPatientName.Text := adoInOut.FieldByName('PatientName').AsString;
+  txtDiag.Text := adoInOut.FieldByName('DiagName').AsString;
+  txtInType.Text := adoInOut.FieldByName('InTypeName').AsString;
+  txtDoctor.Text := adoInOut.FieldByName('DoctorName').AsString;
+
+  txtWorker.Text := adoInOut.FieldByName('UserName').AsString;
+  cxDateInDate.EditText := adoInOut.FieldByName('InDate').AsString;
+
+  if not adoIntake.IsEmpty then
+  begin
+    txtInfoDonor.Text := adoIntake.FieldByName('InfoDonor').AsString;
+    cxDateMeetingDate.EditText := adoIntake.FieldByName('MeetingDate').AsString;
+    memoInMotivation.Text := adoIntake.FieldByName('InMotivation').AsString;
+    memoMajorProblem.Text := adoIntake.FieldByName('MajorProblem').AsString;
+    memoInHistory.Text := adoIntake.FieldByName('InHistory').AsString;
+    memoPersonHistory.Text := adoIntake.FieldByName('PersonHistory').AsString;
+    memoWorkerOpinion.Text := adoIntake.FieldByName('WorkerOpinion').AsString;
+  end
+  else
+    cxDateMeetingDate.EditText := oGlobal.DateToString(Now);
+end;
+
+end.

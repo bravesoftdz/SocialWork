@@ -1,0 +1,24 @@
+unit uRecordMove;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, uGlobal, uConfig, uDB;
+
+type
+  TfrmRecordMove = class(TForm)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmRecordMove: TfrmRecordMove;
+
+implementation
+
+{$R *.dfm}
+
+end.

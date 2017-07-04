@@ -1,0 +1,243 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{E7F3377B-1FE8-40A4-829B-F5BF1984028A}</ProjectGuid>
+			<ProjectVersion>12.0</ProjectVersion>
+			<MainSource>SocialWork.dpr</MainSource>
+			<Config Condition="'$(Config)'==''">Debug</Config>
+			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_1)'!=''">
+			<Cfg_1>true</Cfg_1>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_2)'!=''">
+			<Cfg_2>true</Cfg_2>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_UsePackage>vclx;vcl;vclimg;dbrtl;Rave77VCL;bdertl;rtl;vclactnband;vcldb;vcldbx;vcltouch;xmlrtl;dsnap;dsnapcon;TeeUI;TeeDB;Tee;vclib;ibxpress;adortl;IndyCore;IndySystem;IndyProtocols;inet;intrawebdb_100_140;Intraweb_100_140;VclSmp;vclie;webdsnap;inetdb;inetdbbde;inetdbxpress;soaprtl;vclribbon;dbexpress;DbxCommonDriver;DataSnapIndy10ServerTransport;DataSnapProviderClient;DbxClientDriver;DataSnapServer;DBXInterBaseDriver;DBXMySQLDriver;dbxcds;DBXFirebirdDriver;DBXSybaseASEDriver;DBXSybaseASADriver;DBXOracleDriver;DBXMSSQLDriver;DBXInformixDriver;DBXDb2Driver;GR32_DSGN_RS2010;GR32_RS2010;dxCoreD14;cxLibraryD14;cxEditorsD14;cxExtEditorsD14;dxmdsD14;dxBarD14;dxBarDBNavD14;dxBarExtDBItemsD14;dxBarExtItemsD14;dxRibbonD14;cxBarEditItemD14;dxdbtrD14;dxtrmdD14;dxDockingD14;dxThemeD14;dxGDIPlusD14;dxFlowChartD14;cxPageControlD14;dxComnD14;cxPageControldxBarPopupMenuD14;dxLayoutControlD14;dxNavBarD14;dxorgcD14;dxdborD14;cxGridD14;cxGridLayoutViewD14;cxPivotGridD14;cxPivotGridChartD14;cxPivotGridOLAPD14;cxTreeListD14;cxTreeListdxBarPopupMenuD14;cxSchedulerD14;cxSchedulerGridD14;dxsbD14;dxSpellCheckerD14;cxSpreadSheetD14;cxVerticalGridD14;dxPScxPCProdD14;dxPSCoreD14;dxPSLnksD14;dxPScxCommonD14;dxPScxExtCommonD14;dxPScxGrid7LnkD14;dxPScxPivotGrid2LnkD14;dxPScxScheduler3LnkD14;dxPScxSSLnkD14;dxPScxTL5LnkD14;dxPScxVGridLnkD14;dxPSdxOCLnkD14;dxPSdxDBOCLnkD14;dxPSdxDBTVLnkD14;dxPSdxFCLnkD14;dxPSdxLC3LnkD14;dxPsPrVwAdvD14;dxPSPrVwRibbonD14;dxTabbedMDID14;QR5RunD2010;vclSQLMemTabled14;dxSkinBlackD14;dxSkinsCoreD14;dxSkinBlueD14;dxSkinCaramelD14;dxSkinCoffeeD14;dxSkinDarkRoomD14;dxSkinDarkSideD14;dxSkinFoggyD14;dxSkinGlassOceansD14;dxSkiniMaginaryD14;dxSkinLilianD14;dxSkinLiquidSkyD14;dxSkinLondonLiquidSkyD14;dxSkinMcSkinD14;dxSkinMoneyTwinsD14;dxSkinOffice2007BlackD14;dxSkinOffice2007BlueD14;dxSkinOffice2007GreenD14;dxSkinOffice2007PinkD14;dxSkinOffice2007SilverD14;dxSkinPumpkinD14;dxSkinscxPC3PainterD14;dxSkinscxScheduler3PainterD14;dxSkinsdxBarPainterD14;dxSkinsdxDLPainterD14;dxSkinsdxNavBar2PainterD14;dxSkinsdxRibbonPainterD14;dxSkinSevenD14;dxSkinSharpD14;dxSkinSilverD14;dxSkinSpringTimeD14;dxSkinStardustD14;dxSkinSummer2008D14;dxSkinValentineD14;dxSkinXmas2008BlueD14;dcldxSkinsCoreD14;TVidGrab;RHComponents</DCC_UsePackage>
+			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
+			<DCC_DependencyCheckOutputName>SocialWork.exe</DCC_DependencyCheckOutputName>
+			<DCC_ImageBase>00400000</DCC_ImageBase>
+			<DCC_Platform>x86</DCC_Platform>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
+			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
+			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+			<DCC_DebugInformation>false</DCC_DebugInformation>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+		</PropertyGroup>
+		<ItemGroup>
+			<DelphiCompile Include="SocialWork.dpr">
+				<MainSource>MainSource</MainSource>
+			</DelphiCompile>
+			<DCCReference Include="uMain.pas">
+				<Form>frmMain</Form>
+			</DCCReference>
+			<DCCReference Include="uDB.pas">
+				<Form>dbMain</Form>
+				<DesignClass>TDataModule</DesignClass>
+			</DCCReference>
+			<DCCReference Include="uLogin.pas">
+				<Form>frmLogin</Form>
+			</DCCReference>
+			<DCCReference Include="uSetup.pas">
+				<Form>frmSetup</Form>
+			</DCCReference>
+			<DCCReference Include="uConfig.pas"/>
+			<DCCReference Include="..\LIB\uGlobal.pas"/>
+			<DCCReference Include="..\LIB\uEncryption.pas"/>
+			<DCCReference Include="uTest.pas">
+				<Form>frmTest</Form>
+			</DCCReference>
+			<DCCReference Include="uUserMgr.pas">
+				<Form>frmUserMgr</Form>
+			</DCCReference>
+			<DCCReference Include="uWardMgr.pas">
+				<Form>frmWardMgr</Form>
+			</DCCReference>
+			<DCCReference Include="uPatientMgr.pas">
+				<Form>frmPatientMgr</Form>
+			</DCCReference>
+			<DCCReference Include="uPatientNew.pas">
+				<Form>frmPatientNew</Form>
+			</DCCReference>
+			<DCCReference Include="uPatientEdit.pas">
+				<Form>frmPatientEdit</Form>
+			</DCCReference>
+			<DCCReference Include="uInOutMgr.pas">
+				<Form>frmInOutMgr</Form>
+			</DCCReference>
+			<DCCReference Include="uLocationMgr.pas">
+				<Form>frmLocationMgr</Form>
+			</DCCReference>
+			<DCCReference Include="uPassword.pas">
+				<Form>frmPassword</Form>
+			</DCCReference>
+			<DCCReference Include="uRecord.pas">
+				<Form>frmRecord</Form>
+			</DCCReference>
+			<DCCReference Include="uIntake.pas">
+				<Form>frmIntake</Form>
+			</DCCReference>
+			<DCCReference Include="uRecordReport.pas">
+				<Form>frmRecordReport</Form>
+			</DCCReference>
+			<DCCReference Include="uRatingMgr.pas">
+				<Form>frmRatingMgr</Form>
+			</DCCReference>
+			<DCCReference Include="uTherapyMgr.pas">
+				<Form>frmTherapyMgr</Form>
+			</DCCReference>
+			<DCCReference Include="uSetting.pas">
+				<Form>frmSetting</Form>
+			</DCCReference>
+			<DCCReference Include="..\LIB\uInputName.pas">
+				<Form>frmInputName</Form>
+			</DCCReference>
+			<DCCReference Include="..\LIB\uMsg.pas">
+				<Form>frmMsg</Form>
+			</DCCReference>
+			<DCCReference Include="..\LIB\uYesNo.pas">
+				<Form>frmYesNo</Form>
+			</DCCReference>
+			<DCCReference Include="uInputUserInfo.pas">
+				<Form>frmInputUserInfo</Form>
+			</DCCReference>
+			<DCCReference Include="uInTypeMgr.pas">
+				<Form>frmInTypeMgr</Form>
+			</DCCReference>
+			<DCCReference Include="uRelationshipMgr.pas">
+				<Form>frmRelationshipMgr</Form>
+			</DCCReference>
+			<DCCReference Include="uProgramMgr.pas">
+				<Form>frmProgramMgr</Form>
+			</DCCReference>
+			<DCCReference Include="uProgramInput.pas">
+				<Form>frmProgramInput</Form>
+			</DCCReference>
+			<DCCReference Include="uShortKeyMgr.pas">
+				<Form>frmShortKeyMgr</Form>
+			</DCCReference>
+			<DCCReference Include="uShortKeyInput.pas">
+				<Form>frmShortKeyInput</Form>
+			</DCCReference>
+			<DCCReference Include="uFamilyInput.pas">
+				<Form>frmFamilyInput</Form>
+			</DCCReference>
+			<DCCReference Include="uFamilyMgr.pas">
+				<Form>frmFamilyMgr</Form>
+			</DCCReference>
+			<DCCReference Include="uSurvey1.pas">
+				<Form>frmSurvey1</Form>
+			</DCCReference>
+			<DCCReference Include="uSurvey2.pas">
+				<Form>frmSurvey2</Form>
+			</DCCReference>
+			<DCCReference Include="uCounseling.pas">
+				<Form>frmCounseling</Form>
+			</DCCReference>
+			<DCCReference Include="uTraining.pas">
+				<Form>frmTraining</Form>
+			</DCCReference>
+			<DCCReference Include="uTherapyEdit.pas">
+				<Form>frmTherapyEdit</Form>
+			</DCCReference>
+			<DCCReference Include="uSelectList.pas">
+				<Form>frmSelectList</Form>
+			</DCCReference>
+			<DCCReference Include="uDoJob.pas">
+				<Form>frmDoJob</Form>
+			</DCCReference>
+			<DCCReference Include="uTherapyPrint.pas">
+				<Form>frmTherapyPrint</Form>
+			</DCCReference>
+			<DCCReference Include="uQuery.pas"/>
+			<DCCReference Include="uDoJobAll.pas">
+				<Form>frmDoJobAll</Form>
+			</DCCReference>
+			<DCCReference Include="uOverNightMgr.pas">
+				<Form>frmOverNightMgr</Form>
+			</DCCReference>
+			<DCCReference Include="uOverNightMgrEdit.pas">
+				<Form>frmOverNightMgrEdit</Form>
+			</DCCReference>
+			<DCCReference Include="uStatistics.pas">
+				<Form>frmStatistics</Form>
+			</DCCReference>
+			<DCCReference Include="uPrintAll.pas">
+				<Form>frmPrintAll</Form>
+			</DCCReference>
+			<DCCReference Include="uVisit.pas">
+				<Form>frmVisit</Form>
+			</DCCReference>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Debug">
+				<Key>Cfg_2</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Release">
+				<Key>Cfg_1</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+		</ItemGroup>
+		<Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
+		<ProjectExtensions>
+			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Delphi.Personality>
+					<Source>
+						<Source Name="MainSource">SocialWork.dpr</Source>
+					</Source>
+					<Parameters>
+						<Parameters Name="UseLauncher">False</Parameters>
+						<Parameters Name="LoadAllSymbols">True</Parameters>
+						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+					</Parameters>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
+						<VersionInfo Name="MajorVer">1</VersionInfo>
+						<VersionInfo Name="MinorVer">0</VersionInfo>
+						<VersionInfo Name="Release">0</VersionInfo>
+						<VersionInfo Name="Build">0</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">False</VersionInfo>
+						<VersionInfo Name="Special">False</VersionInfo>
+						<VersionInfo Name="Private">False</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">1042</VersionInfo>
+						<VersionInfo Name="CodePage">949</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName"/>
+						<VersionInfoKeys Name="FileDescription"/>
+						<VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright"/>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename"/>
+						<VersionInfoKeys Name="ProductName"/>
+						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
+					</VersionInfoKeys>
+					<Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dcloffice2k140.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclofficexp140.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+					</Excluded_Packages>
+				</Delphi.Personality>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
+	</Project>

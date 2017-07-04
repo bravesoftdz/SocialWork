@@ -1,0 +1,37 @@
+unit uFrameShortKey;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, 
+  Dialogs, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters,
+  cxStyles, dxSkinsCore, dxSkinCaramel, dxSkinscxPC3Painter, cxCustomData,
+  cxFilter, cxData, cxDataStorage, cxEdit, DB, cxDBData, Menus, cxContainer,
+  ADODB, cxTextEdit, cxMemo, cxDBEdit, StdCtrls, cxButtons, cxGridLevel,
+  cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxClasses,
+  cxGridCustomView, cxGrid;
+
+type
+  TFrame1 = class(TFrame)
+    cxG: TcxGrid;
+    cxGShortKey: TcxGridDBTableView;
+    cxGShortKeyKeyword: TcxGridDBColumn;
+    cxGLevel1: TcxGridLevel;
+    btnShortKeyAppend: TcxButton;
+    btnShortKeyUpdate: TcxButton;
+    cxDBMemo1: TcxDBMemo;
+    btnShortKeyDelete: TcxButton;
+    btnClose: TcxButton;
+    adoShortKey: TADOQuery;
+    dsShortKey: TDataSource;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+implementation
+
+{$R *.dfm}
+
+end.

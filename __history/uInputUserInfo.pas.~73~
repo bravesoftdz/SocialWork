@@ -1,0 +1,222 @@
+unit uInputUserInfo;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters, Menus,
+  cxButtons, ExtCtrls, uGlobal, cxControls, cxContainer, cxEdit, dxSkinsCore,
+  dxSkinCaramel, cxTextEdit, cxCheckBox, ADODB, dxSkinOffice2007Blue;
+
+type
+  TfrmInputUserInfo = class(TForm)
+    btnOK: TcxButton;
+    btnClose: TcxButton;
+    Panel1: TPanel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    txtUserID: TcxTextEdit;
+    txtPassword: TcxTextEdit;
+    txtPassword2: TcxTextEdit;
+    chkWorker: TcxCheckBox;
+    chkDoctor: TcxCheckBox;
+    chkAdmin: TcxCheckBox;
+    chkUsed: TcxCheckBox;
+    txtUserName: TcxTextEdit;
+    procedure FormShow(Sender: TObject);
+    procedure btnOKClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+  private
+    { Private declarations }
+    procedure ClearControls;
+    procedure SetControls;
+    function isValidInput: Boolean;
+    function isDuplicatedUserID(nHospitalID: integer; sUserID: string): Boolean;
+    function isDuplicatedUserName(nHospitalID: integer; sUserName: string): Boolean;
+  public
+    Mode: TEditMode;
+    UserInfo: TUserInfo;
+    { Public declarations }
+  end;
+
+var
+  frmInputUserInfo: TfrmInputUserInfo;
+
+implementation
+
+uses uDB;
+
+{$R *.dfm}
+
+{ TfrmInputUserInfo }
+
+procedure TfrmInputUserInfo.btnOKClick(Sender: TObject);
+begin
+  if isValidInput then
+  begin
+    UserInfo.UserID := trim(txtUserID.Text);
+    UserInfo.UserName := trim(txtUserName.Text);
+    UserInfo.Password := trim(txtPassword.Text);
+    UserInfo.Worker := chkWorker.Checked;
+    UserInfo.Doctor := chkDoctor.Checked;
+    UserInfo.Admin := chkAdmin.Checked;
+    UserInfo.Used := chkUsed.Checked;
+
+    ModalResult := mrOK;
+  end;
+end;
+
+procedure TfrmInputUserInfo.ClearControls;
+begin
+  txtUserID.Clear;
+  txtUserName.Clear;
+  txtPassword.Clear;
+  txtPassword2.Clear;
+  chkWorker.Checked := False;
+  chkDoctor.Checked := False;
+  chkAdmin.Checked := False;
+  chkUsed.Checked := True;
+end;
+
+procedure TfrmInputUserInfo.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
+end;
+
+procedure TfrmInputUserInfo.FormShow(Sender: TObject);
+begin
+  ClearControls;
+  SetControls;
+
+  if Mode = emAppend then
+    txtUserID.SetFocus
+  else
+    txtUserName.SetFocus;
+end;
+
+function TfrmInputUserInfo.isDuplicatedUserID(nHospitalID: integer;
+  sUserID: string): Boolean;
+var
+  adoT: TAdoQuery;
+begin
+  adoT := TAdoQuery.Create(self);
+  adoT.Connection := dbMain.adoSocialWorkDB;
+
+  try
+    adoT.SQL.Text := 'SELECT * FROM USERS' +
+                     ' WHERE HOSPITALID=' + inttostr(nHospitalID) +
+                     '   AND USERID=''' + sUserID + '''';
+    adoT.Open;
+  finally
+    result := not adoT.IsEmpty;
+  end;
+
+  adoT.Close;
+  adoT.Free;
+end;
+
+function TfrmInputUserInfo.isDuplicatedUserName(nHospitalID: integer;
+  sUserName: string): Boolean;
+var
+  adoT: TAdoQuery;
+begin
+  adoT := TAdoQuery.Create(self);
+  adoT.Connection := dbMain.adoSocialWorkDB;
+
+  try
+    adoT.SQL.Text := 'SELECT * FROM USERS' +
+                     ' WHERE HOSPITALID=' + inttostr(nHospitalID) +
+                     '   AND USERNAME=''' + sUserName + '''';
+    adoT.Open;
+  finally
+    result := not adoT.IsEmpty;
+  end;
+
+  adoT.Close;
+  adoT.Free;
+end;
+
+function TfrmInputUserInfo.isValidInput: Boolean;
+begin
+  result := false;
+
+  if Mode = emAppend then
+  begin
+    if oGlobal.isNullStr(txtUserID.Text) then
+    begin
+      oGlobal.Msg('사용자번호를 입력하십시오!');
+      txtUserID.SetFocus;
+      Exit;
+    end;
+
+  if oGlobal.isNullStr(txtUserName.Text) then
+  begin
+    oGlobal.Msg('사용자이름을 입력하십시오!');
+    txtUserName.SetFocus;
+    Exit;
+  end;
+
+    if oGlobal.isNullStr(txtPassword.Text) and oGlobal.isNullStr(txtPassword2.Text) then
+    begin
+      oGlobal.Msg('암호를 입력하십시오!');
+      txtPassword.Text;
+      Exit;
+    end;
+  end;
+
+  if (pos('[', trim(txtUserName.Text)) > 0) or (pos(']', trim(txtUserName.Text)) > 0)  then
+  begin
+    oGlobal.Msg('사용자이름에는 ''['','']'', '';'' 문자를 사용할 수 없습니다!');
+    Exit;
+  end;
+
+  if trim(txtPassword.Text) <> trim(txtPassword2.Text) then
+  begin
+    oGlobal.Msg('암호를 정확히 입력해 주십시오!');
+    txtPassword.SetFocus;
+    Exit;
+  end;
+
+  if (Mode=emAppend) or ((Mode=emUpdate) and (UserInfo.UserID <> trim(txtUserID.Text))) then
+  begin
+    if isDuplicatedUserID(UserInfo.HospitalID, trim(txtUserID.Text)) then
+    begin
+      oGlobal.Msg('중복된 User ID 가 있습니다!');
+      Exit;
+    end;
+  end;
+
+  if (Mode=emAppend) or ((Mode=emUpdate) and (UserInfo.UserName <> trim(txtUserName.Text))) then
+  begin
+    if isDuplicatedUserName(UserInfo.HospitalID, trim(txtUserName.Text)) then
+    begin
+      oGlobal.Msg('중복된 사용자이름이 있습니다!');
+      Exit;
+    end;
+  end;
+
+  result := True;
+end;
+
+procedure TfrmInputUserInfo.SetControls;
+begin
+  txtUserID.Enabled := (Mode = emAppend);
+
+  if not UserInfo.isEmpty then
+  begin
+    txtUserID.Text := UserInfo.UserID;
+    txtUserName.Text := UserInfo.UserName;
+    txtPassword.Clear;
+    txtPassword2.Clear;
+    chkWorker.Checked := UserInfo.Worker;
+    chkDoctor.Checked := UserInfo.Doctor;
+    chkAdmin.Checked := UserInfo.Admin;
+    chkUsed.Checked := UserInfo.Used;
+  end;
+end;
+
+end.

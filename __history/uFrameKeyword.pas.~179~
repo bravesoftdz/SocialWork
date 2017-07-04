@@ -1,0 +1,144 @@
+unit uFrameKeyword;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, 
+  Dialogs, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters,
+  cxStyles, dxSkinsCore, dxSkinCaramel, dxSkinscxPC3Painter, cxCustomData,
+  cxFilter, cxData, cxDataStorage, cxEdit, DB, cxDBData, Menus, cxContainer,
+  ADODB, cxTextEdit, cxMemo, cxDBEdit, StdCtrls, cxButtons, cxGridLevel,
+  cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxClasses,
+  cxGridCustomView, cxGrid, cxTL, cxMaskEdit, cxTLdxBarBuiltInMenu,
+  cxInplaceContainer, cxDBTL, cxTLData, dxmdaset, cxGroupBox, cxRadioGroup,
+  ExtCtrls, ComCtrls, dxtree, dxdbtree;
+
+type
+  TframeKeyword = class(TFrame)
+    cxKeywordTree: TcxDBTreeList;
+    cxDBTreeList1cxDBTreeListColumn1: TcxDBTreeListColumn;
+    cxDBTreeList1cxDBTreeListColumn2: TcxDBTreeListColumn;
+    Panel1: TPanel;
+    adoKeyword: TADOQuery;
+    dsKeyword: TDataSource;
+    pnlExp: TPanel;
+    pnlSelect: TPanel;
+    btnFullExpand: TcxButton;
+    btnFullCollapse: TcxButton;
+    cxDBMemo1: TcxDBMemo;
+    btnAppend: TcxButton;
+    btnUpdate: TcxButton;
+    btnDelete: TcxButton;
+    procedure dsKeywordDataChange(Sender: TObject; Field: TField);
+    procedure btnAppendClick(Sender: TObject);
+    procedure btnUpdateClick(Sender: TObject);
+    procedure btnDeleteClick(Sender: TObject);
+    procedure cxKeywordTreeDragOver(Sender, Source: TObject; X, Y: Integer;
+      State: TDragState; var Accept: Boolean);
+    procedure btnFullExpandClick(Sender: TObject);
+    procedure btnFullCollapseClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    procedure Open(bSetting: Boolean = False);
+    procedure Close;
+  end;
+
+implementation
+uses uDB, uGlobal, uConfig, uKeywordEdit;
+{$R *.dfm}
+
+procedure TframeKeyword.btnAppendClick(Sender: TObject);
+begin
+  frmKeywordEdit.EditMode := emAppend;
+  frmKeywordEdit.adoKeyword := adoKeyword;
+  frmKeywordEdit.ShowModal;
+end;
+
+procedure TframeKeyword.btnDeleteClick(Sender: TObject);
+begin
+  if cxKeywordTree.FocusedNode = nil then
+  begin
+    oGlobal.Msg('선택된 내용이 없습니다!');
+    Exit;
+  end;
+
+  if cxKeywordTree.FocusedNode.HasChildren then
+  begin
+    oGlobal.Msg('다른 내용들을 포함하고 있습니다!' + #13 + '포함된 내용들을 삭제한 후 다시 시도해 주십시오!');
+    Exit;
+  end;
+
+  if oGlobal.YesNo('삭제하시겠습니까?') <> mrYes then
+    Exit;
+
+  adoKeyword.DisableControls;
+  try
+    adoKeyword.Connection.BeginTrans;
+
+    adoKeyword.Delete;
+
+    adoKeyword.Connection.CommitTrans;
+  except
+    adoKeyword.Connection.RollbackTrans;
+
+    oGlobal.Msg('삭제하지 못하였습니다!');
+  end;
+  adoKeyword.EnableControls;
+end;
+
+procedure TframeKeyword.btnUpdateClick(Sender: TObject);
+begin
+  frmKeywordEdit.EditMode := emUpdate;
+  frmKeywordEdit.adoKeyword := adoKeyword;
+  frmKeywordEdit.ShowModal;
+end;
+
+procedure TframeKeyword.Close;
+begin
+  adoKeyword.Close;
+end;
+
+procedure TframeKeyword.btnFullCollapseClick(Sender: TObject);
+begin
+  cxKeywordTree.FullCollapse;
+end;
+
+procedure TframeKeyword.btnFullExpandClick(Sender: TObject);
+begin
+  cxKeywordTree.FullExpand;
+end;
+
+procedure TframeKeyword.cxKeywordTreeDragOver(Sender, Source: TObject; X,
+  Y: Integer; State: TDragState; var Accept: Boolean);
+begin
+  if cxKeywordTree.GetNodeAt(X,Y) = nil then
+    Accept := False
+  else if State <> dsDragLeave then
+    Accept := not cxKeywordTree.GetNodeAt(X,Y).HasAsParent(cxKeywordTree.FocusedNode);
+end;
+
+procedure TframeKeyword.dsKeywordDataChange(Sender: TObject; Field: TField);
+begin
+  btnAppend.Enabled := adoKeyword.Active;
+  btnDelete.Enabled := not adoKeyword.IsEmpty;
+  btnUpdate.Enabled := not adoKeyword.IsEmpty;
+end;
+
+procedure TframeKeyword.Open(bSetting: Boolean);
+begin
+  pnlSelect.Visible := not bSetting;
+
+  adoKeyword.SQL.Text := 'SELECT *' +
+                         '  FROM Keyword' +
+                         ' WHERE HospitalID=' + inttostr(oConfig.User.HospitalID);
+                         ' ORDER BY Title';
+  try
+    adoKeyword.Open;
+  except
+    oGlobal.msg('Keyword 정보에 접근하지 못하였습니다!');
+  end;
+end;
+
+end.

@@ -1,0 +1,70 @@
+unit uInputName;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, uGlobal, cxGraphics, cxControls, cxLookAndFeels,
+  cxLookAndFeelPainters, cxContainer, cxEdit, dxSkinsCore, dxSkinCaramel,
+  StdCtrls, cxTextEdit, Menus, cxButtons, cxCheckBox, ExtCtrls;
+
+type
+  TfrmInputName = class(TForm)
+    btnOK: TcxButton;
+    btnClose: TcxButton;
+    Panel1: TPanel;
+    txtInput: TcxTextEdit;
+    lblInputTitle: TLabel;
+    chkUsed: TcxCheckBox;
+    procedure FormShow(Sender: TObject);
+    procedure btnOKClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    oInput: TInputInfo;
+  end;
+
+var
+  frmInputName: TfrmInputName;
+
+implementation
+{$R *.dfm}
+
+procedure TfrmInputName.btnOKClick(Sender: TObject);
+begin
+  if length(trim(txtInput.text)) = 0 then
+  begin
+    oGlobal.Msg('내용(' + oInput.InputTitle + ')을 입력하십시오!');
+    txtInput.SetFocus;
+    Exit;
+  end;
+
+  if oGlobal.YesNo('적용하시겠습니까?') = mrYes then
+  begin
+    oInput.InputField.Name := trim(txtInput.Text);
+    oInput.Used := chkUsed.Checked;
+
+    ModalResult := mrOK;
+  end;
+end;
+
+procedure TfrmInputName.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then close;
+end;
+
+procedure TfrmInputName.FormShow(Sender: TObject);
+begin
+  lblInputTitle.Caption := oInput.InputTitle;
+  txtInput.Text := oInput.InputField.Name;
+  txtInput.Properties.MaxLength := oInput.InputField.Size;
+  chkUsed.Checked := oInput.Used;
+
+  txtInput.SetFocus;
+  txtInput.SelStart := 0
+end;
+
+end.

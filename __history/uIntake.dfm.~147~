@@ -1,0 +1,622 @@
+object frmIntake: TfrmIntake
+  Left = 0
+  Top = 0
+  BorderStyle = bsDialog
+  Caption = 'Intake'
+  ClientHeight = 633
+  ClientWidth = 1018
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  KeyPreview = True
+  OldCreateOrder = False
+  Position = poOwnerFormCenter
+  OnClose = FormClose
+  OnKeyDown = FormKeyDown
+  OnShow = FormShow
+  PixelsPerInch = 96
+  TextHeight = 13
+  object btnSave: TcxButton
+    Left = 901
+    Top = 27
+    Width = 100
+    Height = 50
+    Caption = #51200#51109
+    Glyph.Data = {
+      36040000424D3604000000000000360000002800000010000000100000000100
+      2000000000000004000000000000000000000000000000000000000000000000
+      00006A5347FF6A5347FF6A5347FF6A5347FF6A5347FF6A5347FF6A5347FF6A53
+      47FF6A5347FF6A5347FF6A5347FF6A5347FF6A5347FF00000000000000006D56
+      4AFF9C7D6EFF856A5CFFD9D9D9FFD4D4D4FFD1D1D1FFCECECEFFC6C6C6FFC3C3
+      C3FFC2C2C2FFC2C2C2FF856A5CFF7A5E51FF9C7D6EFF6D564AFF715A4FFFA182
+      73FFA18273FF8A6F62FFDDDDDDFF7F6356FFA18273FFDADADAFFD3D3D3FFCECE
+      CEFFCBCBCBFFC8C8C8FF8A6F62FF7F6356FFA18273FF715A4FFF765F53FFA788
+      79FFA78879FF907568FFDFDFDFFF85695CFFA78879FFDEDEDEFFDDDDDDFFD9D9
+      D9FFD4D4D4FFD0D0D0FF907568FF85695CFFA78879FF765F53FF7A6358FFAE8F
+      80FFAE8F80FF977C6EFFE0E0E0FF8C7063FFAE8F80FFE0E0E0FFDFDFDFFFDEDE
+      DEFFDDDDDDFFD8D8D8FF977C6EFF8C7063FFAE8F80FF7A6358FF80685DFFB595
+      86FFB59586FF9E8375FFE0E0E0FFE1E1E1FFE2E2E2FFE2E2E2FFE1E1E1FFE0E0
+      E0FFE0E0E0FFDEDEDEFF9E8375FF92776AFFB59586FF80685DFF866E63FFBC9D
+      8EFFBC9D8EFFBC9D8EFFA58A7DFFA58A7DFFA58A7DFFA58A7DFFA58A7DFFA58A
+      7DFFA58A7DFFA58A7DFF9A7E71FF9A7E71FFBC9D8EFF866E63FF8B7468FFC4A4
+      95FFC4A495FFC4A495FFC4A495FFC4A495FFC4A495FFC4A495FFC4A495FFC4A4
+      95FFC4A495FFC4A495FFC4A495FFC4A495FFC4A495FF8B7468FF917A6EFFCBAC
+      9DFFB4998CFFB4998CFFB4998CFFB4998CFFB4998CFFB4998CFFB4998CFFB499
+      8CFFB4998CFFB4998CFFB4998CFFB4998CFFCBAC9DFF917A6EFF967F74FFD3B3
+      A4FFBCA193FFF4F4F4FFEBEBEBFFE3E3E3FFDDDDDDFFD9D9D9FFD6D6D6FFD5D5
+      D5FFD5D5D5FFD7D7D7FFDADADAFFBCA193FFD3B3A4FF967F74FF9B8479FFDABA
+      ABFFC2A79AFFFEFEFEFFF8F8F8FFF1F1F1FFECECECFFE7E7E7FFE3E3E3FFE1E1
+      E1FFDFDFDFFFDFDFDFFFDFDFDFFFC2A79AFFDABAABFF9B8479FFA1897EFFE0C1
+      B2FFC9AEA1FFFFFFFFFFFFFFFFFFFFFFFFFFFDFDFDFFF8F8F8FFF5F5F5FFF1F1
+      F1FFEDEDEDFFEAEAEAFFE7E7E7FFC9AEA1FFE0C1B2FFA1897EFFA58E83FFE6C7
+      B8FFCFB4A7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFCFCFCFFF7F7F7FFF1F1F1FFCFB4A7FFE6C7B8FFA58E83FFA99286FFECCC
+      BDFFD4B9ACFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFCFCFCFFD4B9ACFFECCCBDFFA99286FFAC9589FFF0D1
+      C2FFD9BEB0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFD9BEB0FFF0D1C2FFAC9589FF00000000AF98
+      8CFFAF988CFFAF988CFFAF988CFFAF988CFFAF988CFFAF988CFFAF988CFFAF98
+      8CFFAF988CFFAF988CFFAF988CFFAF988CFFAF988CFF00000000}
+    Layout = blGlyphTop
+    LookAndFeel.SkinName = 'Caramel'
+    SpeedButtonOptions.Transparent = True
+    TabOrder = 0
+    OnClick = btnSaveClick
+  end
+  object btnFamilyMgr: TcxButton
+    Left = 901
+    Top = 393
+    Width = 100
+    Height = 31
+    Caption = #44032#51313#44288#44228#44288#47532
+    Glyph.Data = {
+      36040000424D3604000000000000360000002800000010000000100000000100
+      2000000000000004000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000004800FF004200FF004400FF004900FF00000000000000005E5349FF3F33
+      28FF403428FF000000003E3327FF403428FF3E3327FFB0ABA6FFFFFFFFFFFFFF
+      FFFF005D00FF00FFFFFF1DBA2FFF005D00FFFFFFFFFFFFFFFFFF72675FFFFFFF
+      FFFFFFFFFFFFB2AAA1FFB2AAA1FFFFFFFFFFFFFFFFFFFFFFFFFF004800FF0040
+      00FF005D00FF3ED550FF1BB532FF005D00FF004400FF004900FF71665DFFFFFF
+      FFFFF7F0EAFF8B8178FF8B8178FFF7F1EBFFF2EBE5FFFFFFFFFF005D00FF00FF
+      FFFF11A103FF0EA20EFF0EA618FF0FAA1BFF11AE17FF005D00FF746960FFFFFF
+      FFFFF4EDE8FFF9F4EEFFF9F4EEFFF4EFE9FFF3EEE8FFFFFFFFFF005D00FF00FF
+      FFFF00FFFFFF00FFFFFF1BAF28FF23BA27FF00FFFFFF005D00FF776D63FFFFFF
+      FFFFFFFEFAFFFFFFFBFFFFFFFBFFFFFFFBFFFFFFFBFFFFFFFFFF005D00FF005D
+      00FF005D00FF00FFFFFF1EAD1CFF005D00FF005D00FF005D00FF7C7066FFFFFF
+      FFFFFFF8EAFFFFF8ECFFFFF8ECFFFFF8ECFFFFF8ECFFFFFCF7FFFFFFFFFFFFFF
+      FFFF005D00FF00FFFFFF00FFFFFF005D00FFFFFFFFFFFFFFFFFF7F7369FFFFFF
+      FFFFFFF2DEFFFFF3E0FFFFF3E0FFFFF3E0FFFFF3E0FFFFF3DFFFF7F6F3FFFFFF
+      FFFF005D00FF005D00FF005D00FF005D00FFFFFFFFFF7F7369FF82776DFFFFFF
+      FFFFFFEDD0FFFFEED3FFFFEED3FFFFEED3FFFFEED3FFFFEDD1FFF9F8F6FFFDFD
+      FBFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF82776DFF857A6FFFFFFF
+      FFFFFFE7C3FFFFE9C7FFFFE9C7FFFFE9C7FFFFE9C7FFFFE8C3FFFAF9F9FFECE5
+      DDFFECE6DEFFECE6DEFFECE6DEFFEBE4DCFFFFFFFFFF857A6FFF897E72FFFFFF
+      FFFFFFE0B0FFFFE2B4FFFFE2B4FFFFE2B4FFFFE2B4FFFFE0B0FFFBFAFBFFFBFA
+      F8FFFCFAF8FFFCFAF8FFFCFAF8FFFBF9F7FFFFFFFFFF897E72FF8D8175FFFFFF
+      FFFFFFFFFCFFFFFFFDFFFFFFFDFFFFFFFDFFFFFFFDFFFFFFFCFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF8F8377FF908478FFFFFF
+      FFFF0029FFFF0034FFFF0034FFFF0034FFFF0034FFFF0029FFFFFFFFFFFF8A7D
+      70FF908478FF908478FF908478FF908478FF92867AFF978B80FF93887AFFFFFF
+      FFFF1F55FFFF2C5FFFFF2C5FFFFF2C5FFFFF2C5FFFFF1F55FFFFFFFFFFFF9388
+      7BFF000000000000000000000000000000000000000000000000988C7FFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF988C
+      7FFF000000000000000000000000000000000000000000000000A09588FF9B90
+      83FF9A8E81FF9A8E81FF9A8E81FF9A8E81FF9A8E81FF9A8E81FF9B9083FFA095
+      88FF000000000000000000000000000000000000000000000000}
+    LookAndFeel.SkinName = 'Caramel'
+    SpeedButtonOptions.Transparent = True
+    TabOrder = 1
+    OnClick = btnFamilyMgrClick
+  end
+  object btnClose: TcxButton
+    Left = 901
+    Top = 83
+    Width = 100
+    Height = 50
+    Caption = #45803#44592
+    Glyph.Data = {
+      36040000424D3604000000000000360000002800000010000000100000000100
+      2000000000000004000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000036342EFF36342EFF36342EFF36342EFF3634
+      2EFF36342EFF36342EFF36342EFF36342EFF36342EFF00000000000000000000
+      000000000000000000060000000136342EFFE0E2E2FF7A7976FF36342EFF1F6E
+      43FF227A4BFF257E4EFF2A7E50FF2B7F50FF36342EFF00000000000100010001
+      0001000100010000A4FF0000A4FF36342EFFDEE0E0FFE0E2E2FFE0E2E2FF7A79
+      76FF36342EFF1E643EFF237446FF1F7E4BFF36342EFF00000000000100010001
+      0001000100010000A4FF2929EFFF0000A4FFE0E2E2FFD1D4D4FFBEC1C1FFE0E2
+      E2FFE0E2E2FF36342EFF18653BFF197544FF36342EFF000000000000A4FF0000
+      A4FF0000A4FF0000A4FF2929EFFF2929EFFF0000A4FFD1D4D4FFBEC1C1FFB7B9
+      B9FFE0E2E2FF36342EFF17623AFF196E41FF36342EFF000000000000A4FF2929
+      EFFF2929EFFF2929EFFF2929EFFF0000B4FF2929EFFF0000A4FFBEC1C1FFB7B9
+      B9FFE0E2E2FF36342EFF195E39FF15703FFF36342EFF000000000000A4FF2929
+      EFFF0000B4FF0000B4FF0000B4FF0000B4FF0000B4FF2929EFFF0000A4FF6A6C
+      6CFFE0E2E2FF36342EFF185B36FF136C3CFF36342EFF000000000000A4FF8282
+      FBFF0000CCFF0000CCFF0000CCFF0000CCFF0000CCFF8282FBFF0000A4FF7779
+      79FF5A5B5BFF36342EFF105932FF0E6638FF36342EFF000000000000A4FF8282
+      FBFF8282FBFF8282FBFF8282FBFF0000CCFF8282FBFF0000A4FFBBBDBDFFA2A4
+      A4FFE0E2E2FF36342EFF0D4E2BFF0D562FFF36342EFF000000000000A4FF0000
+      A4FF0000A4FF0000A4FF8282FBFF8282FBFF0000A4FFCDD0D0FFBEC1C1FFB7B9
+      B9FFE0E2E2FF36342EFF083E22FF074F2AFF36342EFF00000000000000000000
+      0000000000000000A4FF8282FBFF0000A4FFDCDEDEFFD0D3D3FFBEC1C1FFB7B9
+      B9FFE0E2E2FF36342EFF062D18FF064121FF36342EFF00000000000000000000
+      0000000000000000A4FF0000A4FF36342EFFE0E2E2FFD0D3D3FFBDC0C0FFB5B7
+      B7FFE0E2E2FF36342EFF001C0DFF003318FF36342EFF00000000000000000000
+      000000000000000000000000000036342EFFE0E2E2FFD0D3D3FFBDC0C0FFABAD
+      ADFFE0E2E2FF36342EFF000F07FF002813FF36342EFF00000000000000000000
+      000000000000000000000000000036342EFF36342EFF36342EFF36342EFF3634
+      2EFF36342EFF36342EFF36342EFF36342EFF36342EFF00000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000}
+    Layout = blGlyphTop
+    LookAndFeel.SkinName = 'Caramel'
+    ModalResult = 11
+    SpeedButtonOptions.Transparent = True
+    TabOrder = 2
+  end
+  object cxGroupBox4: TcxGroupBox
+    Left = 8
+    Top = 15
+    Caption = #54872#51088#47749
+    TabOrder = 3
+    Height = 50
+    Width = 220
+    object txtPatientName: TcxTextEdit
+      Left = 6
+      Top = 18
+      Enabled = False
+      Properties.Alignment.Horz = taCenter
+      Style.HotTrack = False
+      Style.LookAndFeel.SkinName = 'Caramel'
+      StyleDisabled.Color = clBtnFace
+      StyleDisabled.LookAndFeel.SkinName = 'Caramel'
+      StyleDisabled.TextColor = clWindowText
+      StyleFocused.LookAndFeel.SkinName = 'Caramel'
+      StyleHot.LookAndFeel.SkinName = 'Caramel'
+      TabOrder = 0
+      Text = 'txtPatientName'
+      Width = 200
+    end
+  end
+  object cxGroupBox6: TcxGroupBox
+    Left = 226
+    Top = 15
+    Caption = #49457#48324'/'#45208#51060
+    TabOrder = 4
+    Height = 50
+    Width = 220
+    object txtSexAge: TcxTextEdit
+      Left = 8
+      Top = 18
+      Enabled = False
+      Properties.Alignment.Horz = taCenter
+      Style.HotTrack = False
+      Style.LookAndFeel.SkinName = 'Caramel'
+      StyleDisabled.Color = clBtnFace
+      StyleDisabled.LookAndFeel.SkinName = 'Caramel'
+      StyleDisabled.TextColor = clWindowText
+      StyleFocused.LookAndFeel.SkinName = 'Caramel'
+      StyleHot.LookAndFeel.SkinName = 'Caramel'
+      TabOrder = 0
+      Text = 'txtUserID'
+      Width = 200
+    end
+  end
+  object cxGroupBox1: TcxGroupBox
+    Left = 8
+    Top = 65
+    Caption = #51652#45800#47749
+    TabOrder = 5
+    Height = 50
+    Width = 220
+    object txtDiag: TcxTextEdit
+      Left = 6
+      Top = 17
+      Enabled = False
+      Properties.ReadOnly = True
+      Style.Color = clBtnFace
+      Style.HotTrack = False
+      Style.LookAndFeel.SkinName = 'Caramel'
+      StyleDisabled.Color = clBtnFace
+      StyleDisabled.LookAndFeel.SkinName = 'Caramel'
+      StyleDisabled.TextColor = clWindowText
+      StyleFocused.LookAndFeel.SkinName = 'Caramel'
+      StyleHot.LookAndFeel.SkinName = 'Caramel'
+      TabOrder = 0
+      Text = 'txtUserID'
+      Width = 200
+    end
+  end
+  object cxGroupBox2: TcxGroupBox
+    Left = 226
+    Top = 65
+    Caption = #51452#52824#51032
+    TabOrder = 6
+    Height = 50
+    Width = 220
+    object txtDoctor: TcxTextEdit
+      Left = 8
+      Top = 17
+      Enabled = False
+      Properties.Alignment.Horz = taCenter
+      Style.HotTrack = False
+      Style.LookAndFeel.SkinName = 'Caramel'
+      StyleDisabled.LookAndFeel.SkinName = 'Caramel'
+      StyleDisabled.TextColor = clWindowText
+      StyleFocused.LookAndFeel.SkinName = 'Caramel'
+      StyleHot.LookAndFeel.SkinName = 'Caramel'
+      TabOrder = 0
+      Text = 'txtUserID'
+      Width = 201
+    end
+  end
+  object cxGroupBox3: TcxGroupBox
+    Left = 666
+    Top = 15
+    Caption = #51077#50896#54805#53468
+    TabOrder = 7
+    Height = 50
+    Width = 220
+    object txtInType: TcxTextEdit
+      Left = 6
+      Top = 17
+      Enabled = False
+      Properties.Alignment.Horz = taCenter
+      Style.HotTrack = False
+      Style.LookAndFeel.SkinName = 'Caramel'
+      StyleDisabled.LookAndFeel.SkinName = 'Caramel'
+      StyleDisabled.TextColor = clWindowText
+      StyleFocused.LookAndFeel.SkinName = 'Caramel'
+      StyleHot.LookAndFeel.SkinName = 'Caramel'
+      TabOrder = 0
+      Text = 'txtUserID'
+      Width = 201
+    end
+  end
+  object cxGroupBox5: TcxGroupBox
+    Left = 448
+    Top = 15
+    Caption = #51077#50896#51068#49884
+    TabOrder = 8
+    Height = 50
+    Width = 220
+    object cxDateInDate: TcxDateEdit
+      Left = 6
+      Top = 18
+      Enabled = False
+      Style.HotTrack = False
+      StyleDisabled.TextColor = clWindowText
+      TabOrder = 0
+      Width = 200
+    end
+  end
+  object cxGroupBox7: TcxGroupBox
+    Left = 448
+    Top = 65
+    Caption = #48373#51648#49324
+    TabOrder = 9
+    Height = 50
+    Width = 220
+    object txtWorker: TcxTextEdit
+      Left = 6
+      Top = 17
+      Enabled = False
+      Properties.Alignment.Horz = taCenter
+      Style.HotTrack = False
+      Style.LookAndFeel.SkinName = 'Caramel'
+      StyleDisabled.LookAndFeel.SkinName = 'Caramel'
+      StyleDisabled.TextColor = clWindowText
+      StyleFocused.LookAndFeel.SkinName = 'Caramel'
+      StyleHot.LookAndFeel.SkinName = 'Caramel'
+      TabOrder = 0
+      Text = 'txtPatientName'
+      Width = 200
+    end
+  end
+  object cxGroupBox8: TcxGroupBox
+    Left = 8
+    Top = 115
+    Caption = #51221#48372#51228#44277#51088
+    TabOrder = 10
+    Height = 50
+    Width = 220
+    object txtInfoDonor: TcxTextEdit
+      Left = 6
+      Top = 17
+      Properties.MaxLength = 15
+      Style.Color = 12968956
+      Style.HotTrack = False
+      Style.LookAndFeel.SkinName = 'Caramel'
+      StyleDisabled.Color = clBtnFace
+      StyleDisabled.LookAndFeel.SkinName = 'Caramel'
+      StyleFocused.LookAndFeel.SkinName = 'Caramel'
+      StyleHot.LookAndFeel.SkinName = 'Caramel'
+      TabOrder = 0
+      Text = 'txtUserID'
+      Width = 200
+    end
+  end
+  object cxGroupBox9: TcxGroupBox
+    Left = 226
+    Top = 115
+    Caption = #47732#45812#51068#49884
+    TabOrder = 11
+    Height = 50
+    Width = 220
+    object cxDateMeetingDate: TcxDateEdit
+      Left = 8
+      Top = 17
+      Style.Color = 15782908
+      Style.HotTrack = False
+      TabOrder = 0
+      Width = 200
+    end
+  end
+  object cxGroupBox22: TcxGroupBox
+    Left = 8
+    Top = 165
+    Caption = #51077#50896#46041#44592
+    TabOrder = 12
+    Height = 114
+    Width = 438
+    object memoInMotivation: TMemo
+      Left = 6
+      Top = 19
+      Width = 420
+      Height = 80
+      Color = 12968956
+      ImeName = 'Microsoft Office IME 2007'
+      Lines.Strings = (
+        'Memo1')
+      MaxLength = 1000
+      ScrollBars = ssVertical
+      TabOrder = 0
+      OnKeyDown = memoInMotivationKeyDown
+    end
+  end
+  object cxGroupBox10: TcxGroupBox
+    Left = 8
+    Top = 279
+    Caption = #51452#50836#47928#51228
+    TabOrder = 13
+    Height = 114
+    Width = 438
+    object memoMajorProblem: TMemo
+      Left = 6
+      Top = 19
+      Width = 420
+      Height = 80
+      Color = 12968956
+      ImeName = 'Microsoft Office IME 2007'
+      Lines.Strings = (
+        'Memo1')
+      MaxLength = 1000
+      ScrollBars = ssVertical
+      TabOrder = 0
+      OnKeyDown = memoInMotivationKeyDown
+    end
+  end
+  object cxGroupBox11: TcxGroupBox
+    Left = 7
+    Top = 393
+    Caption = #51077#50896#47141
+    TabOrder = 14
+    Height = 116
+    Width = 438
+    object memoInHistory: TMemo
+      Left = 7
+      Top = 19
+      Width = 420
+      Height = 80
+      Color = 12968956
+      ImeName = 'Microsoft Office IME 2007'
+      Lines.Strings = (
+        'Memo1')
+      MaxLength = 1000
+      ScrollBars = ssVertical
+      TabOrder = 0
+      OnKeyDown = memoInMotivationKeyDown
+    end
+  end
+  object cxGroupBox12: TcxGroupBox
+    Left = 7
+    Top = 509
+    Caption = #44060#51064#47141
+    TabOrder = 15
+    Height = 118
+    Width = 438
+    object memoPersonHistory: TMemo
+      Left = 7
+      Top = 23
+      Width = 420
+      Height = 80
+      Color = 12968956
+      ImeName = 'Microsoft Office IME 2007'
+      Lines.Strings = (
+        'Memo1')
+      MaxLength = 3000
+      ScrollBars = ssVertical
+      TabOrder = 0
+      OnKeyDown = memoInMotivationKeyDown
+    end
+  end
+  object cxGroupBox13: TcxGroupBox
+    Left = 448
+    Top = 165
+    Caption = 'Worker'#39's Opinion'
+    TabOrder = 16
+    Height = 228
+    Width = 438
+    object memoWorkerOpinion: TMemo
+      Left = 6
+      Top = 19
+      Width = 420
+      Height = 194
+      Color = 12968956
+      ImeName = 'Microsoft Office IME 2007'
+      Lines.Strings = (
+        'Memo1')
+      MaxLength = 3000
+      ScrollBars = ssVertical
+      TabOrder = 0
+      OnKeyDown = memoInMotivationKeyDown
+    end
+  end
+  object cxGroupBox14: TcxGroupBox
+    Left = 448
+    Top = 393
+    Caption = #44032#51313#44288#44228
+    TabOrder = 17
+    Height = 234
+    Width = 438
+    object cxGrid1: TcxGrid
+      Left = 6
+      Top = 20
+      Width = 420
+      Height = 197
+      TabOrder = 0
+      object cxGFamily: TcxGridDBTableView
+        DataController.DataSource = dsFamily
+        DataController.Summary.DefaultGroupSummaryItems = <>
+        DataController.Summary.FooterSummaryItems = <>
+        DataController.Summary.SummaryGroups = <>
+        OptionsData.Deleting = False
+        OptionsData.Editing = False
+        OptionsData.Inserting = False
+        OptionsView.GroupByBox = False
+        object cxGFamilyRelationshipName: TcxGridDBColumn
+          Caption = #44288#44228
+          DataBinding.FieldName = 'RelationshipName'
+          PropertiesClassName = 'TcxLabelProperties'
+          Properties.Alignment.Horz = taCenter
+          HeaderAlignmentHorz = taCenter
+          Options.Editing = False
+          Options.Filtering = False
+          Options.Sorting = False
+          Width = 50
+        end
+        object cxGFamilyFamilyName: TcxGridDBColumn
+          Caption = #49457#47749
+          DataBinding.FieldName = 'FamilyName'
+          PropertiesClassName = 'TcxLabelProperties'
+          Properties.Alignment.Horz = taCenter
+          HeaderAlignmentHorz = taCenter
+          Options.Editing = False
+          Options.Filtering = False
+          Options.Sorting = False
+          Width = 67
+        end
+        object cxGFamilyInMate: TcxGridDBColumn
+          Caption = #46041#44144
+          DataBinding.FieldName = 'InMate'
+          HeaderAlignmentHorz = taCenter
+          Options.Editing = False
+          Options.Filtering = False
+          Options.Sorting = False
+          Width = 39
+        end
+        object cxGFamilyHealth: TcxGridDBColumn
+          Caption = #44148#44053#49345#53468'('#51109#50528','#51656#48337')'
+          DataBinding.FieldName = 'Health'
+          HeaderAlignmentHorz = taCenter
+          Options.Editing = False
+          Options.Filtering = False
+          Options.Sorting = False
+          Width = 192
+        end
+        object cxGFamilyETC: TcxGridDBColumn
+          Caption = #52824#47308#48708
+          DataBinding.FieldName = 'Pay'
+          HeaderAlignmentHorz = taCenter
+          Options.Editing = False
+          Options.Filtering = False
+          Options.Sorting = False
+          Width = 49
+        end
+      end
+      object cxGrid1Level1: TcxGridLevel
+        GridView = cxGFamily
+      end
+    end
+  end
+  object Panel5: TPanel
+    Left = 304
+    Top = 169
+    Width = 131
+    Height = 13
+    BevelOuter = bvNone
+    Caption = #39'F1'#39' = Keyword '#49440#53469
+    Color = clMoneyGreen
+    ParentBackground = False
+    TabOrder = 18
+  end
+  object Panel1: TPanel
+    Left = 303
+    Top = 283
+    Width = 131
+    Height = 13
+    BevelOuter = bvNone
+    Caption = #39'F1'#39' = Keyword '#49440#53469
+    Color = clMoneyGreen
+    ParentBackground = False
+    TabOrder = 19
+  end
+  object Panel2: TPanel
+    Left = 303
+    Top = 397
+    Width = 131
+    Height = 13
+    BevelOuter = bvNone
+    Caption = #39'F1'#39' = Keyword '#49440#53469
+    Color = clMoneyGreen
+    ParentBackground = False
+    TabOrder = 20
+  end
+  object Panel3: TPanel
+    Left = 304
+    Top = 513
+    Width = 131
+    Height = 13
+    BevelOuter = bvNone
+    Caption = #39'F1'#39' = Keyword '#49440#53469
+    Color = clMoneyGreen
+    ParentBackground = False
+    TabOrder = 21
+  end
+  object Panel4: TPanel
+    Left = 742
+    Top = 169
+    Width = 131
+    Height = 13
+    BevelOuter = bvNone
+    Caption = #39'F1'#39' = Keyword '#49440#53469
+    Color = clMoneyGreen
+    ParentBackground = False
+    TabOrder = 22
+  end
+  object adoFamily: TADOQuery
+    Connection = dbMain.adoSocialWorkDB
+    CursorType = ctStatic
+    Parameters = <>
+    SQL.Strings = (
+      'SELECT *'
+      
+        '       ,(SELECT RELATIONSHIPNAME FROM RELATIONSHIPS WHERE RELATI' +
+        'ONSHIPS.RELATIONSHIPID=FAMILIES.RELATIONSHIPID) AS RELATIONSHIPN' +
+        'AME'
+      '  FROM FAMILIES'
+      ' WHERE InOutID=0')
+    Left = 662
+    Top = 448
+  end
+  object dsFamily: TDataSource
+    DataSet = adoFamily
+    Left = 718
+    Top = 448
+  end
+end

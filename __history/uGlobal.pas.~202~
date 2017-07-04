@@ -1,0 +1,103 @@
+unit uGlobal;
+
+interface
+uses IniFiles, Windows, sysUtils, StrUtils;
+
+const
+  IniFileName = 'SocialWork.ini';
+  UpdaterName = 'RHnCoUpdater.exe';
+
+type
+  TServerConfig = record
+    DataSource: string;
+    UpdateDBName: string;
+    SocialWorkDBName: string;
+    UserID: string;
+    Password: string;
+  public
+    procedure Copy(oServer: TServerConfig);
+  end;
+
+  TConfiguration = class
+    CurDir: string;
+    Version: string;
+    Server: TServerconfig;
+  private
+    procedure LoadServerConfiguration;
+    function SaveServerConfiguration(sVersion: string; oServer: TServerConfig): Boolean;
+  public
+    constructor create;
+  published
+  end;
+var
+  oConfig: TConfiguration;
+
+implementation
+uses uEncryption;
+
+{ TConfiguration }
+procedure TServerConfig.Copy(oServer: TServerConfig);
+begin
+  DataSource := trim(oServer.DataSource);
+  UpdateDBName := trim(oServer.UpdateDBName);
+  SocialWorkDBName := trim(oServer.SocialWorkDBName);
+  UserID := trim(oServer.UserID);
+  Password := trim(oServer.Password);
+end;
+
+constructor TConfiguration.create;
+begin
+  inherited;
+
+  CurDir := GetCurrentDir;
+  if RightStr(CurDir, 1) <> '\'  then
+    CurDir := CurDir + '\';
+
+  LoadServerConfiguration;
+end;
+
+procedure TConfiguration.LoadServerConfiguration;
+var
+  n: TIniFile;
+begin
+  n := TIniFile.Create(CurDir + IniFileName);
+
+  Version := n.ReadString('SocialWork', 'Version', '1.0');
+  Server.DataSource := n.ReadString('Server', 'DataSource', 'erp.ambu.or.kr');
+  Server.UpdateDBName := n.ReadString('Server', 'UpdateDBName', 'updateDB');
+  Server.SocialWorkDBName := n.ReadString('Server', 'SocialWorkDBName', 'SocialWork');
+  Server.UserID := n.ReadString('Server', 'UserID', 'updater');
+  Server.Password := Decoding(n.ReadString('Serer', 'Password', 'updater'));
+
+  n.Free;
+end;
+
+function TConfiguration.SaveServerConfiguration(sVersion: string;
+  oServer: TServerConfig): Boolean;
+var
+  n: TIniFile;
+begin
+  n := TIniFile.Create(CurDir + IniFileName);
+
+  try
+    n.WriteString('SocialWork', 'Version', sVersion);
+    n.WriteString('Server', 'DataSource', oServer.DataSource);
+    n.WriteString('Server', 'UpdateDBName', oServer.UpdateDBName);
+    n.WriteString('Server', 'SocialWorkDBName', oServer.SocialWorkDBName);
+    n.WriteString('Server', 'UserID', oServer.UserID);
+    n.WriteString('Server', 'Password', Encoding(oServer.Password));
+
+    Server.Copy(oServer);
+
+    result := true;
+  except
+    result := false;
+  end;
+end;
+
+initialization
+  oConfig := TConfiguration.Create;
+
+finalization
+  oConfig.Free;
+end.
