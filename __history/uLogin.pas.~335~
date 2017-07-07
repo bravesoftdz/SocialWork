@@ -15,7 +15,12 @@ uses
   dxSkinsDefaultPainters, dxSkinValentine, dxSkinXmas2008Blue, cxTextEdit,
   cxMaskEdit, cxDropDownEdit, Menus, cxButtons, cxLabel, IdBaseComponent,
   IdComponent, IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase,
-  IdFTP, uVersionList, ComCtrls, Registry;
+  IdFTP, uVersionList, ComCtrls, Registry, dxSkinBlueprint,
+  dxSkinDevExpressDarkStyle, dxSkinDevExpressStyle, dxSkinHighContrast,
+  dxSkinMetropolis, dxSkinMetropolisDark, dxSkinOffice2010Black,
+  dxSkinOffice2010Blue, dxSkinOffice2010Silver, dxSkinOffice2013DarkGray,
+  dxSkinOffice2013LightGray, dxSkinOffice2013White, dxSkinSevenClassic,
+  dxSkinSharpPlus, dxSkinTheAsphaltWorld, dxSkinVS2010, dxSkinWhiteprint;
 
 type
   TfrmLogin = class(TForm)
@@ -107,12 +112,14 @@ begin
   if dbMain.isValidUser(sHospitalName, sUserID, sPassword) then
   begin
     oConfig.User.HospitalName := sHospitalName;
+    oConfig.User.AppTitle := dbMain.GetAppTitle(oConfig.User.HospitalID);
     oConfig.SaveServerConfiguration(oConfig.SWServer, oConfig.FTPServer);
 
-    adoStoredProc.Close;
-    adoStoredProc.Parameters.ParamByName('@HospitalID').Value := oConfig.User.HospitalID;
-    adoStoredProc.Parameters.ParamByName('@UserID').Value := oConfig.User.UserID;
-    adoStoredProc.ExecProc;
+// disable SaveLog Procedure
+//    adoStoredProc.Close;
+//    adoStoredProc.Parameters.ParamByName('@HospitalID').Value := oConfig.User.HospitalID;
+//    adoStoredProc.Parameters.ParamByName('@UserID').Value := oConfig.User.UserID;
+//    adoStoredProc.ExecProc;
 
     ModalResult := mrOK;
   end
@@ -123,7 +130,7 @@ end;
 procedure TfrmLogin.btnUpdateClick(Sender: TObject);
 begin
   if oGlobal.YesNo('다운로드 하시겠습니까?') = mrYes then
-    DownLoadNewVersion;
+    DownLoadNewVersion(True);
 end;
 
 function TfrmLogin.DoUpdate: Boolean;
@@ -211,14 +218,14 @@ begin
   if bGoing then
     sGoing := ' Going'
   else
-    sGoing := '';
+    sGoing := ' NotGoing';
 
   // Parameter = HOST PORT USERNAME PASSWORD REGKEY DIR RUNFILENAME
   StrPCopy(CmdLine, sFileName + ' ' + oConfig.FTPServer.Host + ' ' +
       inttostr(cPORT) + ' ' + oConfig.FTPServer.UserName + ' ' +
       oConfig.FTPServer.Password + ' "' +
       cRegKey + 'update' + '" "' + oConfig.CurDir + '" ' +
-      oConfig.AppFileName) + sGoing;
+      oConfig.AppFileName + sGoing);
 
   CreateProcess(nil, CmdLine, nil, nil, False, NORMAL_PRIORITY_CLASS,
     nil, nil, si, pi);
@@ -358,6 +365,7 @@ end;
 function TfrmLogin.SetFTPServer: Boolean;
 begin
   try
+    IdFTP.Disconnect;
     IdFTP.Host := oConfig.FTPServer.Host;
     IdFTP.Port := cPORT;
     IdFTP.UserName := oConfig.FTPServer.UserName;

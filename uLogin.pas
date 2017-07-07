@@ -316,7 +316,7 @@ var
   i: integer;
 begin
   result := False;
-
+(*
   OutExp('Update 서버에 접속하고 있습니다...');
   if not SetFTPServer then
   begin
@@ -327,7 +327,7 @@ begin
   OutExp('업데이트 내역을 확인하고 있습니다...');
   if not DoUpdate then
     Exit;
-
+*) // 2017.07.07 // Delete to Check the Update Server
   OutExp('사회사업실 DB에 접속하고 있습니다...');
   if not SetSocialWorkDB then
   begin
